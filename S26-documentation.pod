@@ -2797,7 +2797,8 @@ placement link:
 =item C<http:> and C<https:>
 =item C<file:>
 
-For L<images|#Inserting Pictures> C<P<>> works as inline equivalent of a C<=picture> block.
+For L<images|#Inserting Pictures> C<P<>> works as inline equivalent of a C<=picture> block
+in the following form: C<P<alternative text|source of the image>>.
 
 
 =head3 Alias placements
