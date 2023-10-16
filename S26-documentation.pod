@@ -2840,6 +2840,52 @@ rather than:
 =nested
 The emergency signal is: dot dot dot dash dash dash dot dot dot.
 
+=head3 Backward links
+
+Bidirectional or backward linking refers to the ability to navigate
+from a destination page back to the source page through
+a hyperlink or other means.
+
+Usual link are works by the following way:
+
+=begin code :allow<B>
+ C<L<doc:perldata>>   ->  Perl data page
+   source                   destanation
+=end code
+
+Backward is working in anothe manner:
+
+=begin code :allow<B>
+  C<W<doc:perldata>>   <-  Perl data page   
+  destanation               source             
+=end code
+
+Here are examples of bidirectional or backward linking:
+
+=begin code :allow<B>
+ This text can reveal the meaning of B<W<glossoligation|defn:glossoligation>>
+=end code
+
+or:
+
+=begin code :allow<B>
+ We discuss here about B<W<doc:perldata>>.
+=end code
+
+A contextual backlink displays not only a reference 
+from another location, but the specific context around that 
+reference—for instance, the page of a book or the referencing 
+paragraph.
+
+Backward links operate similarly to standard links 
+but might be distinguished by color.
+
+Backward links may be highlighted by color, and it is essential 
+to see the context surrounding the backlink to understand 
+the implied meaning. Backlinks on the source page can be displayed 
+with surrounding text chunks or placed at the end of the text, 
+in the margin of the page, or highlighted in some other way.
+
 
 =head3 Entities
 
