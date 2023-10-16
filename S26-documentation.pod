@@ -6,12 +6,11 @@ This file is deliberately specified in Perl 6 Pod format
 =TITLE
 Synopsis 26 - Documentation
 
-=begin VERSION
-    =table
-        Maintainer:     Damian Conway
-        Date:           9 Apr 2005
-        Last Modified:  25 Jul 2014
-=end VERSION
+=for AUTHOR
+Damian Conway <L<C<damian@conway.org>|mailto:damian@conway.org>>
+Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
+
+=VERSION pre-1.0.0
 
 =head1
 Pod
@@ -2965,9 +2964,6 @@ create a self-converting documentation file like so:
 
 =end SUMMARY
 
-=for AUTHOR
-Damian Conway <L<C<damian@conway.org>|mailto:damian@conway.org>>
-
-=comment vim: filetype=perl6
+=LICENCE Artistic license 2.0
 
 =end pod
