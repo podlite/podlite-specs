@@ -2761,31 +2761,8 @@ placement link:
 
 =item C<http:> and C<https:>
 =item C<file:>
-=item C<man:>
-=item C<doc:>
-=item C<toc:>
 
-The C<toc:> form is a special pseudo-scheme that inserts a table of contents
-in place of the C<P<>> code. After the colon, list the block types that you
-wish to include in the table of contents. For example, to place a table of
-contents listing only top- and second-level headings:
-
-    P<toc: head1 head2>
-
-To place a table of contents that lists the top four levels of headings, as
-well as any tables:
-
-    P<toc: head1 head2 head3 head4 table>
-
-To place a table of diagrams (assuming a user-defined C<Diagram> block):
-
-    P<toc: Diagram>
-
-Note also that, for C<P<toc:...>>, all L<semantic blocks|#Semantic
-blocks> are treated as equivalent to C<head1> headings, and the
-C<=item1>/C<=item> equivalence is preserved.
-
-A document may have as many C<P<toc:...>> placements as necessary.
+For L<images|#Inserting Pictures> C<P<>> works as inline equivalent of a C<=picture> block.
 
 
 =head3 Alias placements
