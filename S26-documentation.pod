@@ -2229,6 +2229,41 @@ B<basis> or focus of the surrounding text; that it is of I<fundamental
 significance>. Such content would typically be rendered in a bold style or
 in C< <strong>...</strong> > tags.
 
+=head3 Mistake marking
+
+It possible strikethrough words using the code C<O<>, where 'O' stands
+for "Overstrike." This is a way to indicate that certain words are a
+mistake and should not be included in the document.
+
+ O<The sky is green.> Our planet's sky is usually blue.
+
+
+=head3 Text positioning
+
+Pod provides two formatting codes that allow positioning characters or words.
+
+=begin item
+To create subscript text, you can use the C<J<>> formatting code, where 'J' represents 
+"Junior text." Subscript positions one or more characters slightly below the normal
+line of type.
+
+ HJ<2>O
+
+This code renders as "H<sub>2</sub>O," which signifies that the '2' is positioned 
+slightly below the baseline, as is often seen in chemical formulas like H₂O (water).
+=end item
+
+=begin item
+To create superscript text, it possible to use the C<H<>> formatting code, where 'H'
+stands for "High text." Superscript positions one or more characters slightly
+above the normal line of type
+
+ XH<2>
+
+This code renders as "X<sup>2</sup>," indicating that the '2' is positioned 
+slightly above the baseline. This is commonly used for mathematical exponents, as in X².
+=end item
+    
 
 =head3 Definitions
 
