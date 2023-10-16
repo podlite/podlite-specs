@@ -1450,6 +1450,34 @@ This means you can create tables compactly, line-by-line:
         The Bowler      Carol Pinnsler    Haunted bowling ball
 =end code
 
+With header:
+
+=begin code
+ =begin table
+
+    Directive           Specifies
+    _________           ____________________________________________________
+    C<=begin>           Start of an explicitly terminated block
+    C<=config>          Lexical modifications to a block or formatting code
+    
+ =end table
+=end code
+
+Or:
+
+=begin code
+ =begin table
+
+    Programming Language        Possible Values 
+
+    Python                       python                 
+    Raku                         raku                   
+    HTML                         html                   
+    CSS                          css                    
+ 
+ =end table
+=end code
+
 or line-by-line with multi-line headers:
 
 =begin code
@@ -1484,6 +1512,151 @@ or with multi-line headers I<and> multi-line data:
     =end table
 =end code
 
+=head4 Advanced Table Format
+
+Tables may construct using C<=row> and C<=cell> blocks.
+The C<=row> blocks represent individual rows within the table.
+
+The C<=cell> blocks exist within rows and contain the actual content of the table.
+These cells can contain text, data, or other blocks.
+
+=begin code 
+  =begin table
+
+  =begin row
+    =cell Fruits
+    =cell Bananas
+    =cell Yellow and ripe
+  =end row
+
+  =begin row
+    =cell Vegetables
+    =cell Carrots
+    =begin cell
+     =para Crunchy and orange
+    =end cell
+  =end row
+
+  =end table
+=end code
+
+Each C<=row> block may have an optional C<:header> attribute, designating
+it as a header row. Header rows typically contain labels or titles
+for columns and are visually distinct.
+
+
+=begin code :allow<B>
+  =begin table
+
+  =begin row B<:header>
+    =cell Category
+    =cell Product
+    =cell Description
+  =end row
+
+  =begin row
+    =cell Fruits
+    =cell Bananas
+    =cell Yellow and ripe
+  =end row
+
+  =begin row
+    =cell Vegetables
+    =cell Carrots
+    =cell Crunchy and orange
+  =end row
+  
+  =end table
+=end code
+
+The C<=cell> blocks can also have two important attributes:
+
+=begin defn
+C<:colspan>
+
+This attribute specifies the number of columns a cell should span horizontally.
+It allows cells to merge and occupy multiple adjacent columns, creating a visually
+unified cell.
+=end defn
+
+=begin defn
+C<:rowspan>
+
+This attribute determines how many rows a cell should span vertically.
+Cells with C<:rowspan> can cover multiple rows in a table, creating a vertical merge effect.
+=end defn
+
+These example demonstrate how C<:colspan> and C<:rowspan> attributes can be used
+to create tables with merged cells, which is especially useful for complex
+data structures.
+
+=begin code
+    =begin table
+
+    =begin row :header
+      =for cell :colspan(2)
+      Item and Quantity 
+      =cell Description
+    =end row
+
+    =begin row
+      =cell Apples
+      =cell 5
+      =for cell :rowspan(2)
+      Fruit for snacking
+    =end row
+
+    =begin row
+      =cell Bananas
+      =cell 3
+    =end row
+
+    =end table
+=end code
+
+
+It draw somethink like this: 
+
+    ---------------------------------------------------------------
+    |         Item and Quantity        |     Description          |
+    |----------------------------------|--------------------------|
+    |   Apples     |      5            |                          |
+    |--------------|-------------------|    Fruit for snacking    |     
+    |   Bananas    |      3            |                          |
+    ---------------------------------------------------------------
+
+Each C<=row> block may only contain C<=cell> blocks or blank lines as delimiters.
+All other types of blocks within the C<=row> are implicitly wrapped
+by C<=cell> blocks.
+
+For example: 
+
+=begin code
+
+ =begin table
+
+  =begin row :header
+    =cell Diagram or Picture
+    =cell Description
+  =end row
+
+  =begin row
+    =picture spacecraft_in_orbit.jpg
+    =para
+    A vehicle designed for space travel
+  =end row
+
+  =begin row
+   =Mermaid
+       graph TD;
+       A[Space Station] --> B[Mars Base]
+   
+   A space station connected to a Mars base
+  =end row
+ 
+ =end table
+
+=end code
 
 =head3 Named blocks
 
