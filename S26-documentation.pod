@@ -548,6 +548,26 @@ Note that numbering is never explicit; it is always implied by context.
 =end defn
 
 =begin defn
+C<:checked>
+
+This attribute indicates that a checkbox should be added to that block. 
+It possible to apply a C<:checked> attributes to any block.
+The most common use of this option is to create L<task lists|#Task lists>.
+
+For unchecked checkbox the C<:!checked> is used.
+
+The task list item marker (checkbox) is added to the output. 
+In an HTML output, this would be represented as an 
+ C<<input type="checkbox">> element.
+
+The specification does not define how these checkboxes are interacted with.
+Implementors are free to choose whether they render them as disabled,
+unchangeable elements, or handle dynamic interactions like checking and unchecking
+in the final rendered document.
+
+=end defn
+
+=begin defn
 C<:formatted>
 
 This option specifies that the contents of the block should be treated as if
@@ -1297,6 +1317,49 @@ which produces:
 =para 3. Prophet!
 =end nested
 
+=head4 Task lists
+
+In addition to the ordered list Pod also supports 
+task lists, which are commonly known as checklists or to-do lists.
+
+To create a task list item just apply a C<:checked>
+attribute to C<=item> block.
+
+=begin code :allow<B> 
+ =for item B<:checked>
+ Buy groceries
+ =for item B<:!checked>
+ Clean the garage
+=end code
+
+The rendered output looks like this:
+
+ [ ] Buy groceries
+ [X] Clean the garage
+
+Alternatively, if item content starts with brackets with space (C<[ ]>)
+the item is treated as having a C<:!checked> attribute.
+To select a checkbox, add an C<x> in between the brackets (C<[x]>). it eqvivalent
+of C<:checked> attribute.
+
+For example:
+=begin code :allow<B> 
+ =item B<[ ]> Buy groceries
+ =itme B<[x]> Clean the garage 
+=end code
+
+It possiible to create multilevel to-do lists, which permits the 
+inclusion of various task levels or sub-tasks.
+Here's an example:
+
+=begin code :allow<B> 
+ B<=item1> [ ] Work
+   B<=item2> [ ] Prepare the presentation
+   =item2 [x] Send emails
+ =item1 [ ] Home
+   =item2 [ ] Vacuum the living room
+   =item2 [ ] Water the plants
+=end code
 
 =head4 Unordered lists
 
