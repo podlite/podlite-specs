@@ -2364,6 +2364,20 @@ single C<E<>> code, separated by semicolons:
 
     Perl 6 makes considerable use of E<LEFT DOUBLE ANGLE BRACKET;hellip;0xBB>.
 
+=head3 Emoji
+
+To include emoji codes in a Pod document, you can use the C<E<>> code along 
+with the colon-prefixed and postfix emoji code:
+
+    Pod uses emoji codes to express emotions and actions,
+    such as E<:thumbsup:> for approval and E<:smile:> for happiness.
+
+In this example, C<:smile:> and C<:thumbsup:> are emoji codes representing
+the respective emojis. You can use any valid emoji code in this format 
+to include emojis in your Pod document.
+
+Note that the specific emoji codes and the emojis they represent may vary
+depending on the platform or system you are using. 
 
 =head3 Indexing terms
 
