@@ -464,6 +464,16 @@ Pod predefines a small number of standard configuration options that can be
 applied uniformly to any built-in block type. These include:
 
 =begin defn
+C<:caption>
+
+This option specifies that the block may be given an associated description or title using the
+C<:caption> option.
+
+Usually, this description uses for build L<table of contents|#Table of contents>.
+
+=end defn
+
+=begin defn
 C<:id>
 
 This option allows to explicitly define identificator for blocks and use 
