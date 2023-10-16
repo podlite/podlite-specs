@@ -589,6 +589,32 @@ C<:formatted<B I>>.
 =end defn
 
 =begin defn
+C<:lang>
+
+This option used to L<provide information|#Assign programming language to code blocks> about the programming language
+used in a specific code block. This helps in ensuring that the code is 
+displayed and interpreted correctly by rendering engines or syntax highlighters.
+
+Here's a table that lists a few programming languages along with their possible 
+values for the C<:lang> attribute:
+
+=begin table :caption("Matching languages and lang attribute values")
+
+    Programming Language        Possible C<:lang> Values 
+
+    Python                       python                 
+    Raku                         raku                   
+    JavaScript                   javascript             
+    Java                         java                   
+    C++                          cpp                    
+    HTML                         html                   
+    CSS                          css                    
+
+=end table
+
+=end defn
+
+=begin defn
 C<:like>
 
 This option specifies that a block or config has the same formatting
@@ -952,6 +978,23 @@ sub demo {
 Note that the use of the C<:allow> option also makes it possible
 for verbatim L<formatting codes|#Formatting codes> (such as C<C<>>
 and C<V<>>) to L<contain other codes as well|#Pre-configuring formatting codes>.
+
+=head4 Assign programming language to code blocks
+
+The C<:lang> attribute will be used to provide information about the 
+programming language used in a particular block of code. This helps
+in ensuring that the code is correctly rendered and interpreted by the
+renderers or syntax highlighting tools.
+
+For example:
+
+=begin code :allow<B>
+ =begin code B<:lang<raku>>
+ sub demo {
+    say 'Hello R<name>';
+ }
+ =end code
+=end code 
 
 
 =head3 I/O blocks
