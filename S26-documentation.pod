@@ -2941,15 +2941,8 @@ or, equivalently:
 
     Raku makes considerable use of E<laquo> and E<raquo>.
 
-Multiple consecutive entities (in any format) can be specified in a
-single C<E<>> code, separated by semicolons:
-
-    Raku makes considerable use of E<LEFT DOUBLE ANGLE BRACKET;hellip;0xBB>.
-
-=head3 Emoji
-
-To include emoji codes in a Pod document, you can use the C<E<>> code along 
-with the colon-prefixed and postfix emoji code:
+To include emoji codes, you can use the C<E<>> code along 
+with the colon-prefixed and postfix emoji shortname:
 
     Pod uses emoji codes to express emotions and actions,
     such as E<:thumbsup:> for approval and E<:smile:> for happiness.
@@ -2960,6 +2953,12 @@ to include emojis in your Pod document.
 
 Note that the specific emoji codes and the emojis they represent may vary
 depending on the platform or system you are using. 
+
+Multiple consecutive entities (in any format) can be specified in a
+single C<E<>> code, separated by semicolons:
+
+    Raku makes considerable use of E<LEFT DOUBLE ANGLE BRACKET;hellip;0xBB;:smile:>.
+
 
 =head3 Indexing terms
 
