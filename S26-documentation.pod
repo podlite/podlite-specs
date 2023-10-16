@@ -1895,6 +1895,32 @@ Alternatively, you can define the image caption using the C<:caption> attribute.
  diag01.png
 =end code
 
+=head3 Mathematical formulas
+
+To include mathematical formulas, use a C<=formula> block with an inline version
+represented as C<F<>>.
+
+To insert mathematical expressions, use LaTeX-style syntax, which is
+a commonly used format for writing mathematical equations.
+
+=begin code :allow<B>
+  B<=formula>
+  x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+
+  In a right triangle, the length of the hypotenuse can be calculated 
+  using the Pythagorean theorem: B<F<a^2 + b^2 = c^2>>.
+
+  Euler's identity, B<F<e^{i\pi} + 1 = 0>>, is a fundamental equation in
+  complex analysis.
+
+=end code
+
+I possible to define the formule caption using the C<:caption> attribute.
+
+=begin code :allow<B>
+  =formula B< :caption<Quadratic Formula> >
+  x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+=end code
 
 
 =head2 Formatting codes
