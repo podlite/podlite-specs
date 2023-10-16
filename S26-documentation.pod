@@ -3005,51 +3005,6 @@ If the formatting code is unrecognized, the contents of the code (i.e.
 everything after the first colon) would normally be rendered as
 ordinary text.
 
-
-=head2 Encoding
-
-By default, Pod assumes that documents are Unicode, encoded in one
-of the three common schemes (UTF-8, UTF-16, or UTF-32). The particular
-scheme a document uses is autodiscovered by examination of the first few
-bytes of the file (where possible). If the autodiscovery fails, UTF-8 is
-assumed, and parsers may treat any non-UTF-8 bytes later in the
-document as fatal errors.
-
-At any point in a document, you can explicitly set or change the encoding
-of its content using the C<=encoding> directive:
-
-=begin code
-    =encoding ShiftJIS
-
-    =encoding Macintosh
-
-    =encoding KOI8-R
-=end code
-
-The specified encoding is used from the start of the I<next> line in
-the document. If a second C<=encoding> directive is encountered, the
-current encoding changes again after that line. Note, however, that
-the second encoding directive must itself be encoded using the first
-encoding scheme.
-
-This requirement also applies to an C<=encoding> directive at the very
-beginning of the file. That is, it must itself be encoded in
-the default UTF-8, -16, or -32. However, as a special case, the
-autodiscovery mechanism will (as far as possible) also attempt to
-recognize "self-encoded" C<=encoding> directives that begin at the first
-byte of the file. For example, at the start of a ShiftJIS-encoded file
-you can specify C<=encoding ShiftJIS> in the ShiftJIS encoding.
-
-An C<=encoding> directive affects any ambient code between the Pod
-as well. That is, Perl 6 uses C<=encoding> directives to determine the
-encoding of its source code as well as that of any documentation.
-
-Note that C<=encoding> is a fundamental Pod directive, like C<=begin> or
-C<=for>; it is I<not> an instance of an L<abbreviated block|#Abbreviated
-blocks>. Hence there is no paragraph or delimited form of the C<=encoding>
-directive (just as there is no paragraph or delimited form of C<=begin>).
-
-
 =head2 Block pre-configuration
 
 The C<=config> directive allows you to prespecify standard configuration
@@ -3073,7 +3028,7 @@ The general syntax for configuration directives is:
     =                   R<OPTIONAL EXTRA CONFIG OPTIONS>
 =end code
 
-Like C<=encoding>, a C<=config> is a directive, not a block. Hence,
+A C<=config> is a directive, not a block. Hence,
 there is no paragraph or delimited form of the C<=config> directive.
 Each C<=config> specification is lexically scoped to the surrounding
 block in which it is specified.
@@ -3415,7 +3370,6 @@ create a self-converting documentation file like so:
     _________           ____________________________________________________
     C<=begin>           Start of an explicitly terminated block
     C<=config>          Lexical modifications to a block or formatting code
-    C<=encoding>        Encoding scheme for subsequent text
     C<=end>             Explicit termination of a C<=begin> block
     C<=for>             Start of an implicitly (blank-line) terminated block
     C<=alias>           Define a Pod macro
