@@ -1363,7 +1363,7 @@ Here's an example:
 
 =head4 Unordered lists
 
-List items that are not C<:numbered> are treated as defining unordered
+List items that are not C<:numbered> or C<:checked> are treated as defining unordered
 lists. Typically, such lists are rendered with bullets. For example:
 
 =begin code
