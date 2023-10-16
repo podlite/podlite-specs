@@ -464,6 +464,14 @@ Pod predefines a small number of standard configuration options that can be
 applied uniformly to any built-in block type. These include:
 
 =begin defn
+C<:id>
+
+This option allows to explicitly define identificator for blocks and use 
+those IDs for linking, rather than relying on it content (see L<#Links>).
+
+=end defn
+
+=begin defn
 C<:nested>
 
 This option specifies that the block is to be nested within its current
@@ -2520,6 +2528,23 @@ The scheme name may also be omitted in that case:
 =begin code :allow<B>
     This mechanism is described under L<B<#Special Features>> below.
 =end code
+
+Pod include the possibility of assigning a unique identifier to a block.
+These identifiers can be explicitly assigned to any blocks using 
+the C<:id> attribute. Later, these identifiers are utilized for adressing blocks
+and creating links.
+
+=begin code :allow<B>
+    =for head1 :id<intro>
+    Introduction
+    =for para B<:id<id1>>
+    This is an introductory paragraph.
+
+    For more information, see L<here|B<#intro>> and L<here|B<#id1>>
+=end code
+
+In this example, the link reference to the header block identified by "intro"
+rather than the name "Introduction" and to the paragrapth block with identifier "id1".
 
 Normally a link is presented as some rendered version of the link
 specification itself. However, you can specify an alternate
