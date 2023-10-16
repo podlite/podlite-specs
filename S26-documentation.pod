@@ -608,70 +608,74 @@ within code blocks>.
 
 =end defn
 
-=begin defn
-C<:margin>
+=head2 Selectors
 
-This option specifies a character that indicates the left margin of the
-contents of the block. Normally this left margin is determined by the column
-at which the C<=> of the opening block-delimiter occurs. For example:
+Selectors consist of patterns that help identify and filter specific blocks
+within documents. Each pattern contains optional source of blocks and block names.
 
-=begin code
-    =head1 Indenting Pod blocks
+The general syntax is:
 
-        =begin para
-        This text is flush with the (virtual) left margin of
-        the Pod block because that margin is implicitly specified
-        by the C<=> of the C<=begin>
-        =end para
+=begin code :allow< R >
+R<EXTERNAL_SOURCE>
+or
+[ R<EXTERNAL_SOURCE> | ] [R<BLOCKS_SELECTOR>]
 =end code
 
-However, by using the C<:margin> option it is possible to specify a
-character that acts like an explicit margin when it occurs as the first
-non-whitespace character on any line within the block. For example:
+...where
 
-=begin code
-    =head1 Indenting Pod blocks
+=item EXTERNAL_SOURCE - optional source of blocks for filtering, default current document,
+=item BLOCK_SELECTOR - list of block names, filter for
 
-        =begin para :margin<|>
-            |This text is flush with the (virtual) left margin of
-            |the Pod block because that margin is explicitly marked
-            |by the C<|>, as specified by the block's C<:margin<|>> option.
-        =end para
-=end code
+For example:
 
-The virtual margin can even be to the left of the opening delimiter, which can
-be convenient to guide subsequent indentations. For example:
+=begin table :nested
 
-=begin code
-       sub foo {
+    Selector                                        Description
+    _______________________________________         ___________________________________________________
+    head1, head2, item1                             all head1, head2 and item1 blocks from document
 
-           V<=begin> pod :margin<|>
-           |=head1 Hey Look: Indented Pod!
-           |
-           |You can indent Pod in Perl 6
-           |which makes code look cleaner
-           |when documentation is interspersed
-           |
-           |     my $this is Code;
-           |
-           |=end pod
+    file:atricle.pod6 | head1, head2                all head1 and head2 blocks from atricle.pod6 file
 
-           ...
-       }
-=end code
+    file:./includes/*.pod6 | head1, head2           all head1 and head2 blocks from pod6 files placed 
+                                                    in includes directory
 
-When a C<:margin> option is used, each subsequent line (until the
-corresponding closing delimiter is encountered) simply has any text matching
-C</^^ \s* $margin_char/> automatically removed. This may include a line that
-then becomes the closing delimiter, as in the above example.
+    doc:Data::Dumper | code                         all code blocks from a module documentation
 
-Any line from which such a margin marker is removed automatically resets
-the implicit margin for subsequent lines of the block, setting it to the
-length of the "marginalized" indent that was just removed. This implicit
-margin is then used until the next line with an explicit margin marker
-is encountered, or the block terminates.
+    file:/docs/**/*.md | head1                      search headers with first level for all ".md" files 
+                                                    within the "docs" directory and its subdirectories.
+=end table
 
-=end defn
+Please note that while the Selector blocks provide a way to query and filter specific elements 
+within Markdown files, Markdown itself doesn't have formal named blocks like the Pod syntax. 
+Instead, Markdown uses a lightweight markup to structure content. The above table provides a mapping
+between Pod block names and their corresponding Markdown elements.
+
+=begin table :nested :caption("A table of correspondences for some Pod blocks and markdown blocks")
+
+    Pod                                             Markdown                Describtion
+    _______________________________________         ______________          _____________________________________
+    head1, head2, ...                                 #, ##, ...            Heading level 1,2...
+
+    C<=nested>                                          ">"                      blockquote
+
+    C<=para>                                            block of text          paragraph
+
+    C<N<>>                                               [^1]: footnote.       footnote
+
+    C<=Html>                                            <span>text<span>       HTML block
+    
+    C<O<text>>                                         ~~text~~               Strikethrough, "O for Overstrike"
+
+    C<H<text>>                                         ^text^                 Superscript, "H for High text"
+
+    C<J<text>>                                          ~text~                 Subscript, "J for Junior text"
+
+    C<F<>>, C<=formula>                              $,$$, ```math             Mathematical formulas 
+
+=end table
+
+The most common use of Selectors is to create L<table of contents|#Table of contents> and
+in L<include block|#Include Block>.
 
 =head2 Block types
 
