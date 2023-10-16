@@ -1838,6 +1838,62 @@ sources could potentially create vulnerabilities such as injecting harmful code
 or malicious material. Tools responsible for displaying and handling the content
 should be able to provide a warning in such situations.
 
+=head3 Inserting pictures
+ 
+Pod allows to include images using a C<=picture> block with an inline version
+represented as C<P<alternative text|source of the image>>:
+
+=begin code :allow<B>
+ B<=picture astronaut.png>
+ =para In the vast expanse of the cosmos, an intrepid B<P<astronaut|astronaut.png>>
+ floats weightlessly above the Earth.
+=end code
+
+The first non-blank line of content within the C<=picture> block specifies the
+source of the image and the remaining content is treated as caption.
+
+This source can be either local or remote, and it can be
+indicated using different schemas: C<https:> for remote images or C<file:> for local ones.
+If no schema is provided, it defaults to C<file:>.
+
+=begin code :allow<B>
+ =picture https://example.com/image.jpg
+ =picture file:/local/image.png
+ =picture /local/image.png
+ =picture ../image.png
+=end code
+
+Following the source line, it possible to include an image caption.
+
+=begin code 
+ =picture astronaut.png
+ In the vast expanse of the cosmos, an intrepid B<astronaut>
+ floats weightlessly above the Earth.
+=end code
+
+in delimited form of C<=picture> it possible to include as match texts as needed:
+
+=begin code 
+ =begin picture
+ astronaut.png
+ 
+ In the vast expanse of the cosmos, an intrepid B<astronaut>
+ floats weightlessly above the Earth.
+
+ This astronaut explores the vastness of space.
+ 
+ =end picture
+=end code
+
+It possible to use all inline markup codes that are 
+supported by L<ordinary paragraph blocks|#Ordinary paragraph blocks>.
+
+Alternatively, you can define the image caption using the C<:caption> attribute.
+
+=begin code :allow<B>
+ =for picture B<:caption<diagram>>
+ diag01.png
+=end code
 
 
 
