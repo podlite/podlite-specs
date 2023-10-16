@@ -12,6 +12,32 @@ Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
 
 =VERSION pre-1.0.0
 
+=begin CHANGES
+
+=head2 pre-1.0.0
+=head3 New:
+    =item add C<:id>, C<:caption>, C<:lang> attributes,
+    =item task lists, C<=item :checked>,
+    =item intro Selectors,
+    =item advanced table format, C<=row>,C<=cell> blocks,
+    C<:header>, C<:rowspan>, C<:colspan> attributes,
+    =item table of contents, C<=toc>,
+    =item include block, C<=include>,
+    =item inserting pictures, C<=picture>, C<P<>>,
+    =item mathematical formulas, C<=formula>, C<F<>>,
+    =item mistake marking,  C<O<>>,
+    =item text positioning, C<J<>>, C<H<>>,
+    =item Emoji, C<E<>>,
+    =item backward links, C<W<>>
+
+=head3 Deprecated/removed:
+    =item C<:margin> attribute,
+    =item C<=encoding> directive,
+    =item C<P<toc:>> due to C<=toc> block,
+    =item C<P<man:>>, C<P<doc:>> due to C<=include> block,
+
+=end CHANGES
+
 =head1
 Pod
 
