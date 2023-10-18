@@ -2239,7 +2239,7 @@ a commonly used format for writing mathematical equations.
 
 =end code
 
-I possible to define the formule caption using the C<:caption> attribute.
+It possible to define the formule caption using the C<:caption> attribute.
 
 =begin code :allow<B>
   =formula B< :caption<Quadratic Formula> >
