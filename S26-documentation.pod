@@ -27,7 +27,7 @@ Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
     =item mistake marking,  C<O<>>,
     =item text positioning, C<J<>>, C<H<>>,
     =item Emoji, C<E<>>,
-    =item backward links, C<W<>>
+    =item contextual backlinks, C<W<>>
     =item advanced table format, C<=row>,C<=cell> blocks,
     C<:header>, C<:rowspan>, C<:colspan> attributes,
     
@@ -2842,6 +2842,38 @@ placement link:
 For L<images|#Inserting Pictures> C<P<>> works as inline equivalent of a C<=picture> block
 in the following form: C<P<alternative text|source of the image>>.
 
+=head3 Contextual backlinks
+
+Pod introduces the concept of contextual backward links C<W<>> (or contextual backlinks),
+enhancing the traditional L<linking|#Links> mechanism by allowing to not
+only reference another location but also provide specific
+context around that reference. This context can take the form of opinions,
+additional information, or any relevant commentary that enhances the understanding 
+of the referenced material.
+
+For example:
+
+=begin code :allow<B>
+ This text can reveal the meaning of B<W<glossoligation|defn:glossoligation>>
+=end code
+
+or:
+
+=begin code :allow<B>
+ We discuss here about B<W<doc:perldata>>.
+=end code
+
+Contextual backlinks on the destination page can be displayed in various ways.
+They may appear with surrounding text chunks, providing context within
+the flow of the content. Alternatively, they can be placed at the end
+of the text, in the margin of the page, or highlighted in other visually
+distinctive ways.
+
+Like traditional L<links|#Links>, contextual backlinks allows the use of
+all available link schemes, including C<https:> and C<doc:>, to link to external content.
+
+Contextual backlinks might be visually distinguished from
+standard links through color coding.
 
 =head3 Alias placements
 
@@ -3547,7 +3579,7 @@ create a self-converting documentation file like so:
     C<T<...>>            Terminal output (typically rendered fixed-width)
     C<U<...>>            Unusual (typically rendered with underlining)
     C<V<V><...>>         Verbatim (internal formatting codes ignored)
-    C<W<...|...>>        Backward link
+    C<W<...|...>>        Contextual backlinks
     C<Y<>>               reserved
     C<X<...|..,..;...>>  Index entry (C<X<R<display text>|R<entry>,R<subentry>;...>>)
     C<Z<...>>            Zero-width comment (contents never rendered)
