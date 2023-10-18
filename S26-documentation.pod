@@ -23,6 +23,7 @@ Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
     =item include block, C<=include>,
     =item inserting pictures, C<=picture>, C<P<>>,
     =item mathematical formulas, C<=formula>, C<F<>>,
+    =item Markdown support, C<=markdown>
     =item mistake marking,  C<O<>>,
     =item text positioning, C<J<>>, C<H<>>,
     =item Emoji, C<E<>>,
@@ -2245,6 +2246,47 @@ I possible to define the formule caption using the C<:caption> attribute.
   x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 =end code
 
+=head3 Markdown support
+
+Pod includes built-in support for Markdown, making it easy to include Markdown
+content within Pod documents. This is achieved using the C<=markdown> block.
+
+=begin code :allow<B>
+  =begin markdown
+  ## Markdown Example
+
+  You can use all the standard Markdown syntax within this block. For example:
+
+  - *Italic text* using asterisks or underscores: *italic* or _italic_.
+  - **Bold text** using double asterisks or underscores: **bold** or __bold__.
+  - [Links](https://example.com) with the `[text](url)` syntax.
+  - Unordered lists using `-`, `*`, or `+`:
+
+  - Item 1
+  - Item 2
+
+  - Ordered lists using numbers:
+
+  1. First item
+  2. Second item
+
+  - Code blocks with backticks:
+
+  ```python
+  def hello_world():
+      print("Hello, World!")
+  ```
+
+  - Blockquotes with the `>` symbol:
+  
+    > This is a blockquote.
+
+  =end markdown
+=end code
+
+This block allows to seamlessly combine Pod's structured blocks with
+the flexibility of Markdown.
+
 
 =head2 Formatting codes
 
@@ -3471,6 +3513,7 @@ create a self-converting documentation file like so:
     C<=include>         Include other blocks, documents
     C<=picture>         Inserting pictures
     C<=formula>         Mathematical formulas
+    C<=markdown>        Markdown support
     C<=>R<RESERVED>     Semantic blocks (C<=SYNOPSIS>, C<=BUGS>, etc.)
     C<=>R<Typename>     User-defined block
 
