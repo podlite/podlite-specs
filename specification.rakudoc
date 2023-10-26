@@ -6,9 +6,9 @@ This file is deliberately specified in Rakudoc format
 =TITLE
 Raku Documentation
 
-=for AUTHOR
-Damian Conway <L<C<damian@conway.org>|mailto:damian@conway.org>>
-Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
+=for AUTHORS
+=item Damian Conway <L<C<damian@conway.org>|mailto:damian@conway.org>>
+=item Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
 
 =VERSION pre-1.0.0
 
@@ -63,7 +63,7 @@ textual content. All Rakudoc directives are considered to be special types
 of comments in Raku.
 
 Every directive starts either with an equals sign (C<=>) followed
-immediately by an identifier N<as specified in Synopsis 2>, or with
+immediately by an identifier, or with
 a C<#=> or C<#|> followed immediately by whitespace or an opening bracket.
 
 Directives that start with C<=> can be indented like the code they
@@ -145,8 +145,7 @@ Raku-ish option pairs. That is, any of:
 
 All option keys and values must, of course, be constants since Rakudoc is a
 specification language, not a programming language. Specifically, option
-values cannot be closures. See Synopsis 2 for details of the various
-Raku pair notations.
+values cannot be closures. 
 
 The configuration section may be extended over subsequent lines by
 starting those lines with an C<=> in the first (virtual) column followed
@@ -710,7 +709,7 @@ The general syntax is:
 =begin code :allow< R >
 R<EXTERNAL_SOURCE>
 or
-[ R<EXTERNAL_SOURCE> | ] [R<BLOCKS_SELECTOR>]
+[ R<EXTERNAL_SOURCE> | ] R<BLOCKS_SELECTOR>
 =end code
 
 ...where
@@ -726,7 +725,7 @@ For example:
     _______________________________________         ___________________________________________________
     head1, head2, item1                             all head1, head2 and item1 blocks from document
 
-    file:atricle.rakudoc | head1, head2                all head1 and head2 blocks from atricle.rakudoc file
+    file:article.rakudoc | head1, head2                all head1 and head2 blocks from article.rakudoc file
 
     file:./includes/*.pod6 | head1, head2           all head1 and head2 blocks from pod6 files placed 
                                                     in includes directory
