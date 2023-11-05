@@ -6,9 +6,9 @@ This file is deliberately specified in Raku Pod format
 =TITLE
 Raku Documentation
 
-=for AUTHOR
-Damian Conway <L<C<damian@conway.org>|mailto:damian@conway.org>>
-Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
+=for AUTHORS
+=item Damian Conway <L<C<damian@conway.org>|mailto:damian@conway.org>>
+=item Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
 
 =VERSION pre-1.0.0
 
