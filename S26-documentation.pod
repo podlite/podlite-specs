@@ -63,14 +63,18 @@ textual content. All Pod directives are considered to be special types
 of comments in Raku.
 
 Every directive starts either with an equals sign (C<=>) followed
-immediately by an identifier N<as specified in Synopsis 2>, or with
-a C<#=> or C<#|> followed immediately by whitespace or an opening bracket.
+immediately by an identifier.
+
+An identifier composed of an alphabetical character followed by 
+any combination of alphanumeric characters. Alphabetic and numeric 
+definitions encompass relevant Unicode characters. The underscore 
+is consistently treated as alphabetic. Additionally, an identifier 
+can include isolated apostrophes or hyphens, given that the subsequent
+character is alphabetic.
 
 Directives that start with C<=> can be indented like the code they
 interleave, but their initial C<=> must still be the first non-whitespace
-character on their line. Directives that start with C<#=> or C<#|> can be placed
-anywhere that a Raku comment can appear, though they are meaningful
-only in a subset of those places; see L<#Declarator blocks>.
+character on their line.
 
 An indented Pod block is considered to have a I<virtual left margin>,
 determined by the indentation of its opening delimiter.
@@ -86,12 +90,11 @@ aligning to tabstops spaced every C<($?TABSTOP // 8)> characters.
 Pod blocks
 
 The content of a document is specified within one or more D<blocks|block>.
-Every Pod block may be declared in any of four forms:
+Every Pod block may be declared in any of three forms:
 
 L<I<delimited style>|#Delimited blocks>, L<I<paragraph style>|#Paragraph
-blocks>, L<I<abbreviated style>|#Abbreviated blocks>, or L<I<declarator
-style>|#Declarator blocks>. The first three forms are all equivalent; the
-fourth is distinct.
+blocks>, or L<I<abbreviated style>|#Abbreviated blocks>.
+All of these forms are equivalent.
 
 Anything in a document that is neither a Pod directive nor contained
 within a Pod block is treated as "ambient" material. Typically this
@@ -269,192 +272,11 @@ For example:
 Note that abbreviated blocks cannot specify configuration information. If
 configuration is required, use a C<=for> or C<=begin>/C<=end> instead.
 
-
-=head3 Declarator blocks
-
-The fourth form of Pod block differs from the first three in that it
-does not specify an explicit typename. Instead, it obtains its identity
-and purpose from the Raku source code to which it is attached;
-specifically, from some nearby declarator.
-
-Declarator blocks are introduced by a special Raku comment: either C<#=>
-or C<#|>, which must be immediately followed by either by a space or an
-opening bracket. If followed by a space, the block is terminated by the
-end of line; if followed by one or more opening brackets, the block is
-terminated by the matching sequence of closing brackets.
-
-That is, declarator Pod blocks are syntactically like ordinary Raku
-single-line comments and embedded comments. The general syntax is:
-
-=begin code :allow< R >
-
-     #| R<BLOCK DATA TO END OF LINE>
-
-     #|{ R<BLOCK DATA>
-         R<MORE BLOCK DATA>
-       }
-
-     #= R<BLOCK DATA TO END OF LINE>
-
-     #={ R<BLOCK DATA>
-         R<MORE BLOCK DATA>
-       }
-
-=end code
-
-except that the bracketed forms may use I<any> valid Raku bracket delimiter
-(including repeated opening brackets), as described in Synopsis 2.
-
-Declarator Pod blocks must either precede or immediately follow a valid
-Raku declarator, and are then said to be "attached" to it. They are
-primarily intended to simplify the documentation of code interfaces.
-
-Declarator blocks that start with C<#|> attach to the declarator immediately
-after them (separated only by whitespace).  Declarator blocks that start with
-C<#=> attach to the declarator declared at the start of the line immediately
-before them. In all other respects they act just like comments (i.e. they are
-themselves whitespace as far as ambient source code is concerned). This means
-multiple declarator blocks can be specified in a row and will all attach to the
-same declarator.
-
-For example:
-
-=begin code
-
-    #| Base class for comms necromancy hierarchy
-    class Magic::Necrotelecomnicon {
-        has $.elemental;  #= Source of all power
-        has $!true_name;  #  Source of all self-protection (not documented)
-
-        method cast(#|{ A spell } Spell $s)
-        #= Initiate a specified spell normally
-        #= (do not use for class 7 spells)
-        {
-            do_raw_magic($s);
-        }
-
-
-        method kast(  #= Initiate a specified spell abnormally
-            Spell $s     #= The spell to be abnormally initiated
-        ) {
-            do_raw_magic($s, :alternative);
-        }
-
-        #| This subroutine does the real work
-        sub do_raw_magic (
-            Spell $s,         #= Which spell to invoke
-            *%options         #= How to invoke it
-        ) {...}
-    }
-
-    sub fu (Any $bar)
-    #=[ This text stored in C<&fu.WHY>, not in C<$bar.WHY>,
-        (because C<sub fu> is the declarator
-         at the I<start> of the preceding line)
-      ]
-
-    multi sub baz(Int $count, Str $name)
-        #=[ This text stored in C<&baz:(Int,Str).WHY>
-            (i.e. the C<.WHY> of the variant, not of the entire multisub)
-          ]
-
-    #| Attaches to the specific parameterized role, rather than the role group itself
-    role R[::T] {}
-    role R {}
-=end code
-
-A declarator can have multiple leading and/or trailing Pod comments, in
-which case they are concatenated with an intermediate newline when
-their object's C<.WHY> return value is stringified:
-
-   #| This is a special chainsaw
-   #| (Why, you ask?)
-   my SwissArmy $chainsaw    #= (It has a rocket launcher!)
-
-   say $chainsaw.WHY;    # prints: This is a special chainsaw
-                         #         (Why, you ask?)
-                         #         (It has a rocket launcher!)
-
-The individual leading and trailing Pod comments can be retrieved
-via the returned Pod object's C<.leading> and C<.trailing> methods:
-
-   say $chainsaw.WHY.leading;    # prints: This is a special chainsaw
-                                           (Why, you ask?)
-
-   say $chainsaw.WHY.trailing;   # prints: (It has a rocket launcher!)
-
-The Pod object representing each Declarator block is still appended to
-the current surrounding Pod object (e.g. to C<$=pod> at the top level).
-Each such block representation is an object of class
-C<Pod::Block::Declarator>, and has a C<.WHEREFORE> method that returns
-the code object or metaobject created by the declarator to which the
-documentation is attached.
-
-In other words, C<.WHY> and C<.WHEREFORE> are inverse operations:
-
-=code
-                            .WHY
-                 ----------------------------
-                |                            |
-                |                            v
-        -----------------            -----------------
-        | Declared code |            | Documentation |
-        |    object     |            |    object     |
-        -----------------            -----------------
-                ^                            |
-                |                            |
-                 ----------------------------
-                         .WHEREFORE
-
-
-
-When the L<default C<DOC INIT> block|#How Pod is parsed and processed>
-renders these Pod objects, it automatically includes information about
-the declarator as well. For instance, the earlier Necrotelecomnicon
-example might produce something like:
-
-=begin output
-      Name:  Magic::Necrotelecomnicon:
-      Desc:  Base class for comms necromancy hierarchy
-
-      Attrs:
-           .elemental       : Source of all power
-
-      Methods:
-           .cast(Spell $s)  : Initiate a specified spell normally
-           .kast(Spell $s)  : Initiate a specified spell abnormally
-
-      Subroutines:
-        do_raw_magic(       : This subroutine does the real work
-            Spell $s,         : Which spell to invoke
-            *%options         : How to invoke it
-        )
-
-=end output
-
-Note, however, that the exact rendering used for declarator blocks is
-implementation dependent, and may also be pre-empted explicitly by some
-L<C<DOC> configuration statement|#How Pod is parsed and processed>
-within the document, such as:
-
-    DOC use Pod::Markovian;
-
-or:
-
-    DOC INIT {
-        use Pod::Eiffelish::Long;
-
-        say eiffelish_long($=pod);
-
-        exit;
-    }
-
-
 =head3 Block equivalence
 
-The first three block specifications (delimited, paragraph, and
-abbreviated) are treated identically by the underlying documentation
-model, so you can use whichever form is most convenient for a particular
+The underlying documentation model treats all block
+specifications (delimited, paragraph, and abbreviated) the same way.
+It is possible to choose the form is most convenient for a particular
 documentation task. In the descriptions that follow, the abbreviated
 form will generally be used, but should be read as standing for all
 three forms equally.
@@ -479,12 +301,6 @@ or:
      Top Level Heading
      =end head1
 =end code
-
-Declarator blocks are distinct from these three forms. They do not have
-typenames of their own, but rather take their meaning and identity from
-the declared object or type to which they are attached. In general, they
-are used specifically to describe that declarand.
-
 
 =head3 Standard configuration options
 
@@ -2292,8 +2108,7 @@ the flexibility of Markdown.
 =head2 Formatting codes
 
 Formatting codes provide a way to add inline mark-up to a piece of text
-within the contents of (most types of) Pod block (including all
-L<declarator blocks|#Declarator blocks>). Formatting codes are
+within the contents of (most types of) Pod block. Formatting codes are
 themselves a type of block, and may nest other formatting codes.
 other type of block (most often, other formatting codes). In particular,
 you can nest comment blocks in the middle of a formatting code:
