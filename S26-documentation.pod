@@ -1644,25 +1644,6 @@ or:
     =Image http://www.perlfoundation.org/images/perl_logo_32x104.png
 =end code
 
-Named blocks are converted by the Pod parser to block objects;
-specifically, to objects of a subclass of the standard
-C<Pod::Block::Named> class.
-
-For example, the blocks of the previous example would be converted to
-objects of the classes C<Pod::Block::Named::Xhtml> and
-C<Pod::Block::Named::Image> respectively. Both of those classes
-would be automatically created as subclasses of the
-C<Pod::Block::Named> class (unless they were already defined in a module
-loaded via some prior L<C<DOC use>|#How Pod is parsed and processed>.
-
-The resulting object's C<.typename> method retrieves the short name of
-the block type: C<'Xhtml'>, C<'Image'>, etc. The object's C<.config>
-method retrieves the list of configuration options (if any). The
-object's C<.contents> method retrieves a list of the block's
-verbatim contents.
-
-Named blocks for which no explicit class has been defined or loaded are
-usually not rendered by the standard renderers.
 
 Note that all block names consisting entirely of lowercase or entirely of
 uppercase letters are reserved. See L<#Semantic blocks>.
@@ -1670,12 +1651,10 @@ uppercase letters are reserved. See L<#Semantic blocks>.
 
 =head3 Pod comments
 
-All Pod blocks are intrinsically Raku comments, but
-D<Pod comments|Pod comment> are comments that Pod renderers ignore too.
-That is, they are Pod blocks that are never to be rendered by any
-renderer. They are, of course, still included in any internal Pod
-representation, and are accessible via the Pod API...and via the
-C<$=pod> variable within a Raku program.
+D<Pod comments|Pod comment> refers to Pod blocks that should not
+be displayed by any renderer. However, they are still may be part of the
+internal Pod representation. However, they can still be part of internal
+Pod representation.
 
 Comments are useful for meta-documentation (documenting the documentation):
 
@@ -1695,18 +1674,6 @@ and for temporarily removing parts of a document:
     B<=begin comment>
     =item # Prophet!
     B<=end comment>
-=end code
-
-Note that, since the Raku interpreter never executes embedded Pod
-blocks, C<comment> blocks can also be used as an alternative form of
-nestable block comments in Raku:
-
-=begin code
-    =begin comment
-    for @files -> $file {
-        shell("rm -rf $file");
-    }
-    =end comment
 =end code
 
 =head3 The C<=finish> block
@@ -2494,7 +2461,7 @@ A link to the system manpages. For example:
 C<doc:>
 
 A link to some other documentation, typically a module or part of the
-core documentation; things that would normally be read with C<perl --doc>.
+core documentation.
 For example:
 
 =begin code :allow<B>
@@ -2706,31 +2673,6 @@ For example:
     laid out by A<VENDOR>, as specified at A<TERMS_URL>.
 =end code
 
-Any compile-time Raku object that starts with a sigil is automatically
-available within an alias placement as well. Unless the object is already
-a string type, it is converted to a string during document-generation by
-implicitly calling C<.perl> on it.
-
-So, for example, a document can refer to its own filename (as
-C<A<$?FILE>>), or to the subroutine inside which the specific Pod is nested
-(as C<A<&?ROUTINE>>), or to the current class (as C<A<$?CLASS>>).
-Similarly, the value of any program constants defined with sigils can be
-easily reproduced in documentation:
-
-=begin code
-    # Actual code...
-    constant Num $GROWTH_RATE = 1.6;
-
-    =pod
-    =head4 Standard Growth Rate
-
-    The standard growth rate is assumed to be A<$GROWTH_RATE>.
-=end code
-
-Non-mutating method calls on these objects are also allowed, so a
-document can reproduce the surrounding subroutine's signature
-(C<A<&?ROUTINE.signature>>) or the type of a constant
-(C<A<$GROWTH_RATE.WHAT>>).
 
 See L<#Aliases> for further details of the aliasing macro mechanism.
 
@@ -3214,112 +3156,6 @@ This would produce:
 Note that the C<open> method of class C<Database::Handle> stores the
 resulting low-level database handle in its private C<$!handle>
 attribute. By default, handles are opened to the file "C<db.log>".
-
-
-=head1 How Pod is parsed and processed
-
-Pod is just a collection of specialized forms of Raku comment. Every
-Raku implementation must provide a special command-line flag that
-locates, parses, and processes Pod to produce documentation. That flag
-is K<--doc>.
-
-Hence, to read Pod documentation you would type things like:
-
-    raku --doc  perlrun
-
-    raku --doc  DBI::DBD::Metadata
-
-    raku --doc  ./lib/My/Module.pm
-
-When the Raku interpreter is run in this mode, it sets the compiler
-hint C<$?DOC> to true. If the K<--doc> flag is given a value, that value
-(with a C<but true> added) is placed in C<$?DOC>. This can be used to
-specify, for example, the output format desired:
-
-    raku --doc=HTML perldelta  > perldelta.html
-
-Under K<--doc>, the interpreter runs in a special mode, parsing the
-source code (including the Pod, as it always does) during compilation
-and building the program's syntax tree. However, during parsing and
-initialization under K<--doc>, the interpreter executes any
-C<BEGIN>, C<CHECK>, and C<INIT> blocks (and equivalents, such as C<use>
-statements and subroutine declarations) that are preceded by the special
-prefix: C<DOC>
-
-When the K<--doc> is I<not> specified on the commandline, blocks and
-statements that are preceded by the C<DOC> prefix are not executed at all.
-
-By default, once the C<DOC INIT> phase is complete, the interpreter then
-calls a special default C<DOC INIT> block that walks the AST and
-generates the documentation, guided by the content of the C<$?DOC> hint,
-the C<$=pod> tree, and any C<DOC> blocks that have loaded Pod-related
-handler code.
-
-Because the conversion of documentation is just a variation on the
-standard Raku compilation process, the processing of any given file of
-Pod can be modified from within that file itself by the appropriate
-insertion of C<DOC> blocks. For example:
-
-    DOC use Pod::Markovian;
-
-or:
-
-    DOC BEGIN {
-        use Pod::Literate;
-
-        if ($?DOC ~~ /short/) {
-            literate_sequence(<
-                NAME
-                AUTHOR
-                SYNOPSIS
-                COPYRIGHT
-                WARRANTY
-                DESCRIPTION
-                INTERFACE
-                DIAGNOSTICS
-            >);
-        }
-        else {
-            literate_sequence(:default);
-        }
-
-You can even I<replace> the standard Pod processor with your own, so
-long as you remember to exit before the default C<DOC INIT> can run:
-
-    DOC INIT {
-        use My::Pod::To::Text;
-
-        pod_to_text( $=pod );
-
-        exit(0);
-    }
-
-The idea is that developers will be able to add their own documentation
-mechanisms simply by loading a module (via a C<DOC use>) to augment or
-override the default documentation behaviour. Such mechanisms can then
-be built using code written in standard Raku that accesses C<$=pod>,
-as well as using the C<.WHY> and C<.WHEREFORE> introspection methods of
-any constructs that have attached Pod blocks.
-
-Note also that this mechanism means that, on many systems, you can
-create a self-converting documentation file like so:
-
-=begin code
-    #! /usr/bin/raku --doc
-
-    =begin pod
-
-    =head1 A document that can write itself
-
-    Executing this document from the commandline will automatically
-    convert it to a readable text representation.
-
-    =head2 Et cetera
-    ...
-
-    =end pod
-
-=end code
 
 
 =begin SUMMARY
