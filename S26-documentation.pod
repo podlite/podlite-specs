@@ -40,6 +40,7 @@ Raku Documentation
     =item C<P<>> - placement links,
     =item Declarator block,
     =C<:formatted> attribute,
+    =C<:like> attribute
 
 =end CHANGES
 
@@ -447,22 +448,6 @@ values for the C<:lang> attribute:
     CSS                          css                    
 
 =end table
-
-=end defn
-
-=begin defn
-C<:like>
-
-This option specifies that a block or config has the same formatting
-properties as the type named by its value. This is useful for creating
-related L<configurations|#Block pre-configuration> or for making
-user-defined synonyms for existing types. For example:
-
-=begin code
-    =config head2  :like<head1> :formatted<I>
-
-    =config Subhead :like<head2>
-=end code
 
 =end defn
 
@@ -2788,40 +2773,17 @@ The general syntax for configuration directives is:
 A C<=config> is a directive, not a block. Hence,
 there is no paragraph or delimited form of the C<=config> directive.
 Each C<=config> specification is lexically scoped to the surrounding
-block in which it is specified.
+block or file in which it is specified.
 
 Note that, if a particular block later explicitly specifies a
 configuration option with the same key, that option overrides the
-pre-configured option. For example, given the heading configurations in the
-previous example, to specify a I<non>-basic second-level heading:
+pre-configured option. For example, given the code blocks configurations in the
+previous example, to specify another langiage for code block:
 
 =begin code
-    =for head2 :formatted<I U>
-    Details
+    =for code :lang<javascript>
+    print(JSON.stringify([1,2]]));
 =end code
-
-The C<:like> option causes the current formatting options for the
-named block type to be (lexically) I<replaced> by the complete
-formatting information of the block type specified as the C<:like>'s
-value. That other block type must already have been preconfigured. Any
-additional formatting specifications are subsequently added to that
-config. For example:
-
-=begin code :allow<B>
-    =comment  In the current scope make =head2 an "important" variant of =head1
-    =config head2 B<:like<head1>> :formatted<I>
-=end code
-
-Incidentally, this also means you can arrange for an explicit C<:formatted>
-option to I<augment> an existing C<=config>, rather than replacing
-it. Like so:
-
-=begin code :allow<B>
-    =comment  Mark this =head3 (but only this one) as being important
-            (in addition to the normal formatting)...
-    =head3 B<:like<head3>> :formatted<I>
-=end code
-
 
 =head3 Pre-configuring formatting codes
 
@@ -2831,17 +2793,13 @@ by naming it with a pair of angles as a suffix. For example:
 =begin code :allow<B>
     =comment  Always allow E<> codes in any (implicit or explicit) V<> code...
     B<=config V<>  :allow<E>>
-=end code
-
-=begin code :allow<B>
-    =comment  All inline code to be marked as important...
-    B<=config C<>  :formatted<I>>
+    =comment  All inline code allows I<>
+    B<=config C<>  :allow<I>>
 =end code
 
 Note that, even though the formatting code is named using single-angles,
 the preconfiguration applies regardless of the actual delimiters used on
 subsequent instances of the code.
-
 
 =head2 Aliases
 
