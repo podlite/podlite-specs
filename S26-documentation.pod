@@ -37,6 +37,7 @@ Raku Documentation
     =item C<=encoding> directive,
     =item C<P<toc:>> due to C<=toc> block,
     =item C<P<man:>>, C<P<doc:>> due to C<=include> block,
+    =C<:formatted> attribute,
 
 =end CHANGES
 
@@ -419,47 +420,6 @@ Implementors are free to choose whether they render them as disabled,
 unchangeable elements, or handle dynamic interactions like checking and unchecking
 in the final rendered document.
 
-=end defn
-
-=begin defn
-C<:formatted>
-
-This option specifies that the contents of the block should be treated as if
-they had one or more L<formatting codes|#Formatting codes> placed around them.
-
-For example, instead of:
-
-=begin code
-    =for comment
-        The next para is both important and fundamental,
-        so doubly emphasize it...
-
-    =begin para
-    B<I<
-    Warning: Do not immerse in water. Do not expose to bright light.
-    Do not feed after midnight.
-    >>
-    =end para
-=end code
-
-you can just write:
-
-=begin code :allow<B>
-    =begin para B<:formatted<B I>>
-    Warning: Do not immerse in water. Do not expose to bright light.
-    Do not feed after midnight.
-    =end para
-=end code
-
-The internal representations of these two versions are exactly the same,
-except that the second one retains the C<:formatted> option information
-as part of the resulting block object.
-
-Like all formatting codes, codes applied via a C<:formatted> are
-inherently cumulative. For example, if the block itself is already
-inside a formatting code, that formatting code will still apply, in
-addition to the extra "basis" and "important" formatting specified by
-C<:formatted<B I>>.
 =end defn
 
 =begin defn
@@ -2867,16 +2827,16 @@ ordinary text.
 The C<=config> directive allows you to prespecify standard configuration
 information that is applied to every block of a particular type.
 
-For example, to specify particular formatting for different levels of
-heading, you could preconfigure all the heading blocks with
-appropriate formatting schemes:
-
 =begin code
-    =config head1              :formatted<B U>  :numbered
-    =config head2 :like<head1> :formatted<I>
-    =config head3              :formatted<U>
-    =config head4 :like<head3> :formatted<I>
+
+    =config code     :lang<python> :allow<B>
+    =config head1    :numbered
+    
 =end code
+
+Here, two configurations are outlined. The first one sets 
+the language for code blocks to C<python> and allows bold formatting
+The second establishes that all level 1 headings will be numbered.
 
 The general syntax for configuration directives is:
 
