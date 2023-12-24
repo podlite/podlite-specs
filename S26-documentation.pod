@@ -37,6 +37,8 @@ Raku Documentation
     =item C<=encoding> directive,
     =item C<P<toc:>> due to C<=toc> block,
     =item C<P<man:>>, C<P<doc:>> due to C<=include> block,
+    =item C<P<>> - placement links,
+    =item Declarator block,
     =C<:formatted> attribute,
 
 =end CHANGES
@@ -602,7 +604,7 @@ example:
 
 which would produce:
 
-=begin nested :formatted<B>
+=begin nested
 1. The Problem
 
 2. The Solution
@@ -2523,68 +2525,6 @@ For example:
     His L<B<lexiphanic|>defn:lexiphania>> tendencies were, alas, incurable.
 =end code
 
-=head3 Placement links
-
-A second kind of linkE<mdash>the C<P<>> or B<placement link>E<mdash>works
-in the opposite direction. Instead of directing focus out to another
-document, it allows you to assimilate the contents of another document
-into your own.
-
-In other words, the C<P<>> formatting code takes a URI and (where possible)
-inserts the contents of the corresponding document inline in place of the
-code itself.
-
-C<P<>> codes are handy for breaking out standard elements of
-your documentation set into reusable components that can then be
-incorporated directly into multiple documents. For example:
-
-    =COPYRIGHT
-    P<file:/shared/docs/std_copyright.pod>
-
-    =DISCLAIMER
-    P<http://www.MegaGigaTeraPetaCorp.com/std/disclaimer.txt>
-
-might produce:
-
-=begin nested
-B<Copyright>
-
-This document is copyright (c) MegaGigaTeraPetaCorp, 2006. All rights reserved.
-
-B<Disclaimer>
-
-ABSOLUTELY NO WARRANTY IS IMPLIED. NOT EVEN OF ANY KIND. WE HAVE SOLD
-YOU THIS SOFTWARE WITH NO HINT OF A SUGGESTION THAT IT IS EITHER USEFUL
-OR USABLE. AS FOR GUARANTEES OF CORRECTNESS...DON'T MAKE US LAUGH! AT
-SOME TIME IN THE FUTURE WE MIGHT DEIGN TO SELL YOU UPGRADES THAT PURPORT
-TO ADDRESS SOME OF THE APPLICATION'S MANY DEFICIENCIES, BUT NO PROMISES
-THERE EITHER. WE HAVE MORE LAWYERS ON STAFF THAN YOU HAVE TOTAL
-EMPLOYEES, SO DON'T EVEN *THINK* ABOUT SUING US. HAVE A NICE DAY.
-=end nested
-
-If a renderer cannot find or access the external data source for a
-placement link, it must issue a warning and render the URI directly in
-some form, possibly as an outwards link. For example:
-
-=begin nested
-B<Copyright>
-
-See: L<std_copyright.pod|file:/shared/docs/std_copyright.pod>
-
-B<Disclaimer>
-
-See: L<http://www.MegaGigaTeraPetaCorp.com/std/disclaimer.txt>
-=end nested
-
-You can use the following URI forms in a
-placement link:
-
-=item C<http:> and C<https:>
-=item C<file:>
-
-For L<images|#Inserting Pictures> C<P<>> works as inline equivalent of a C<=picture> block
-in the following form: C<P<alternative text|source of the image>>.
-
 =head3 Contextual backlinks
 
 Pod introduces the concept of contextual backward links C<W<>> (or contextual backlinks),
@@ -2620,8 +2560,8 @@ standard links through color coding.
 
 =head3 Alias placements
 
-A variation on placement codes is the C<A<>> code, which is replaced
-by the contents of the named alias or object specified within its delimiters.
+The C<A<>> code is replaced by the contents of the named alias or object
+specified within its delimiters.
 For example:
 
 =begin code
@@ -3138,7 +3078,7 @@ attribute. By default, handles are opened to the file "C<db.log>".
     C<M<...:...>>        Module-defined code (C<M<R<scheme>:R<contents>>>)
     C<N<...>>            Note (not rendered inline)
     C<O<...>>            Strikethrough
-    C<P<...>>            Placement link, inline eqivalent for C<=picture> block
+    C<P<...>>            Inline eqivalent for C<=picture> block
     C<Q<>>               reserved
     C<V<R><...>>         Replaceable component or metasyntax
     C<S<...>>            Space characters to be preserved
