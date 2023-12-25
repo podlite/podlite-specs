@@ -1,10 +1,10 @@
 =begin pod
 
 =comment
-This file is deliberately specified in Raku Pod format
+This file is deliberately specified in Podlite format
 
 =TITLE
-Raku Documentation
+Podlite - a lightweight markup language
 
 =begin AUTHORS
 =item Damian Conway <L<C<damian@conway.org>|mailto:damian@conway.org>>
@@ -39,8 +39,8 @@ Raku Documentation
     =item C<P<man:>>, C<P<doc:>> due to C<=include> block,
     =item C<P<>> - placement links,
     =item Declarator block,
-    =C<:formatted> attribute,
-    =C<:like> attribute
+    =item C<:formatted> attribute,
+    =item C<:like> attribute
 
 =end CHANGES
 
@@ -90,8 +90,7 @@ thereafter considered the first column of the entire block's contents.
 As with Raku heredocs, the virtual margin treats leading tabs as
 aligning to tabstops spaced every C<($?TABSTOP // 8)> characters.
 
-=head2
-Pod blocks
+=head2 Pod blocks
 
 The content of a document is specified within one or more D<blocks|block>.
 Every Pod block may be declared in any of three forms:
