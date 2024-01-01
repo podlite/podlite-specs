@@ -1,4 +1,4 @@
-=begin pod
+=begin pod :puburl('/spec') :puburl('/spec')  :pubdate('2023-11-15 18:14:00')
 
 =comment
 This file is deliberately specified in Podlite format
