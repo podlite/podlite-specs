@@ -3,8 +3,7 @@
 =comment
 This file is deliberately specified in Podlite format
 
-=TITLE
-Podlite - a lightweight markup language
+=TITLE Podlite - a lightweight markup language
 
 =begin AUTHORS
 =item Damian Conway <L<C<damian@conway.org>|mailto:damian@conway.org>>
@@ -3051,6 +3050,6 @@ attribute. By default, handles are opened to the file "C<db.log>".
 
 =end SUMMARY
 
-=LICENCE Artistic license 2.0
+=LICENSE Artistic license 2.0
 
 =end pod
