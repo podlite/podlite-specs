@@ -1,9 +1,22 @@
-=begin pod :puburl('/spec') :puburl('/spec')  :pubdate('2023-11-15 18:14:00')
+=begin pod :puburl('/specification')  :pubdate('2023-11-15 18:14:00')
 
 =comment
 This file is deliberately specified in Podlite format
 
 =TITLE Podlite - a lightweight markup language
+
+=begin nested
+B<This document is still being worked on!>
+
+It's not finished yet, but it's available for everyone to see 
+and comment on. This way, it can get better with everyone's input.
+
+If you have any ideas to make it better, or if you have any questions,
+you're welcome to suggest changes or start a conversation on 
+our L<GitHub page|https://github.com/podlite/>.
+=end nested
+
+=Toc head1, head2,head3
 
 =begin AUTHORS
 =item Damian Conway <L<C<damian@conway.org>|mailto:damian@conway.org>>
@@ -528,7 +541,7 @@ between Pod block names and their corresponding Markdown elements.
 =end table
 
 The most common use of Selectors is to create L<table of contents|#Table of contents> and
-in L<include block|#Include Block>.
+in L<include block|#Include block>.
 
 =head2 Block types
 
@@ -2198,12 +2211,12 @@ To include other formatting codes in a C<C<>> code, you can lexically
 L<reconfigure|#Block pre-configuration> it:
 
 =begin code :allow<B>
-    =begin para
-    B<=config C<> :allow<E I>>
-    Raku makes extensive use of the C<B<E<laquo>>> and C<B<E<raquo>>>
-    characters, for example, in a hash look-up:
-    C<%hashB<I<E<laquo>>>keyB<I<E<raquo>>>>
-    =end para
+  =begin para
+  B<=config C<> :allow<E I>>
+  Raku makes extensive use of the C<B<E<laquo>>> and C<B<E<raquo>>>
+  characters, for example, in a hash look-up:
+  C<%hashB<I<E<laquo>>>keyB<I<E<raquo>>>>
+  =end para
 =end code
 
 To enable entities in I<every> C<C<...>> put a C<=config C<> :allow<E>>
@@ -2223,12 +2236,11 @@ eventually be replaced by an actual value. For example:
 or:
 
 =begin code :allow<B>
-    Then enter your details at the prompt:
-
-    =for input
-        Name: B<R<your surname>>
-          ID: B<R<your employee number>>
-        Pass: B<R<your 36-letter password>>
+  Then enter your details at the prompt:
+  =for input
+      Name: B<R<your surname>>
+        ID: B<R<your employee number>>
+      Pass: B<R<your 36-letter password>>
 =end code
 
 Typically replaceables would be rendered in R<fixed-width italics> or with
@@ -2270,8 +2282,8 @@ B<zero-width comment>, which should not be rendered by any renderer.
 For example:
 
 =begin code :allow<B>
-    The "exeunt" command B<Z<Think about renaming this command?>> is used
-    to quit all applications.
+  The "exeunt" command B<Z<Think about renaming this command?>> is used
+  to quit all applications.
 =end code
 
 In Perl 5 POD, the C<Z<>> code was widely used to break up text that would
@@ -2345,7 +2357,7 @@ A standard web URL. For example:
 
 =begin code :allow<B>
     This module needs the LAME library
-    (available from L<B<http://www.mp3dev.org/mp3/>>)
+    (available from LZ<><B<http://www.mp3dev.org/mp3/>>)
 =end code
 
 If the link does not start with C<//> it is treated as being relative to
@@ -2940,24 +2952,24 @@ C<class>, C<sub>, etc.) The declared object then becomes the (read-only)
 return value of the alias. For example:
 
 =begin code :allow<B>
-    B<=alias CLASSNAME>
-    class Database::Handle {
-        B<=alias ATTR>
-        has IO $!handle;
-
-        B<=alias OPEN>
-        my Bool method open ($filename?) {...}
-
-        B<=alias DEFNAME>
-        constant Str DEFAULT_FILENAME = 'db.log';
-
-        =for para
-            Note that the B<A<OPEN.name>> method of class B<A<CLASSNAME>>
-            stores the resulting low-level database handle
-            in its private B<A<ATTR.name>> attribute. By default,
-            handles are opened to the file "B<A<DEFNAME>>".
-
-    }
+ B<=alias CLASSNAME>
+ class Database::Handle {
+     B<=alias ATTR>
+     has IO $!handle;
+ 
+     B<=alias OPEN>
+     my Bool method open ($filename?) {...}
+ 
+     B<=alias DEFNAME>
+     constant Str DEFAULT_FILENAME = 'db.log';
+ 
+     =for para
+         Note that the B<A<OPEN.name>> method of class B<A<CLASSNAME>>
+         stores the resulting low-level database handle
+         in its private B<A<ATTR.name>> attribute. By default,
+         handles are opened to the file "B<A<DEFNAME>>".
+ 
+ }
 =end code
 
 This would produce:
@@ -2988,7 +3000,7 @@ attribute. By default, handles are opened to the file "C<db.log>".
 =begin table :nested
 
     Block typename      Specifies
-    ______________      ___________________________________________________
+    _______________     ____________________________________________________
     C<=code>            Verbatim pre-formatted sample source code
     C<=comment>         Content to be ignored by all renderers
     C<=defn>            Definition of a term
@@ -3001,7 +3013,7 @@ attribute. By default, handles are opened to the file "C<db.log>".
     C<=para>            Ordinary paragraph
     C<=pod>             No "ambient" blocks inside
     C<=table>           Simple rectangular table
-    C<=data>            Raku data section
+    C<=data>            Data section
     C<=finish>          No ambient blocks after this point
     C<=toc>             Autogenerated table of contents 
     C<=include>         Include other blocks, documents
@@ -3017,34 +3029,34 @@ attribute. By default, handles are opened to the file "C<db.log>".
 =config C<> :allow<R V>
 =begin table :nested
 
-    Formatting code      Specifies
-    _______________      ___________________________________________________
-    C<A<...>>            Replaced by contents of specified macro/object
-    C<B<...>>            Basis/focus of sentence (typically rendered bold)
-    C<C<...>>            Code (typically rendered fixed-width)
-    C<D<...|...;...>>    Definition (C<D<R<defined term>|R<synonym>;R<synonym>;...>>)
-    C<E<...;...>>        Entity names or numeric codepoints (C<E<R<entity1>;R<entity2>;...>>), emoji
-    C<F<...>>            Mathematical formula
-    C<G<...>>            reserved
-    C<H<...>>            Superscript
-    C<I<...>>            Important (typically rendered in italics)
-    C<J<...>>            Subscript
-    C<K<...>>            Keyboard input (typically rendered fixed-width)
-    C<L<...|...>>        Link (C<L<R<display text>|R<destination URI>>>)
-    C<M<...:...>>        Module-defined code (C<M<R<scheme>:R<contents>>>)
-    C<N<...>>            Note (not rendered inline)
-    C<O<...>>            Strikethrough
-    C<P<...>>            Inline eqivalent for C<=picture> block
-    C<Q<>>               reserved
-    C<V<R><...>>         Replaceable component or metasyntax
-    C<S<...>>            Space characters to be preserved
-    C<T<...>>            Terminal output (typically rendered fixed-width)
-    C<U<...>>            Unusual (typically rendered with underlining)
-    C<V<V><...>>         Verbatim (internal formatting codes ignored)
-    C<W<...|...>>        Contextual backlinks
-    C<Y<>>               reserved
-    C<X<...|..,..;...>>  Index entry (C<X<R<display text>|R<entry>,R<subentry>;...>>)
-    C<Z<...>>            Zero-width comment (contents never rendered)
+    Formatting code       Specifies
+    ___________________   ___________________________________________________
+    C<A<...>>             Replaced by contents of specified macro/object
+    C<B<...>>             Basis/focus of sentence (typically rendered bold)
+    C<C<...>>             Code (typically rendered fixed-width)
+    C<D<...|...;...>>     Definition (C<D<R<defined term>|R<synonym>;R<synonym>;...>>)
+    C<E<...;...>>         Entity names or numeric codepoints (C<E<R<entity1>;R<entity2>;...>>), emoji
+    C<F<...>>             Mathematical formula
+    C<G<...>>             reserved
+    C<H<...>>             Superscript
+    C<I<...>>             Important (typically rendered in italics)
+    C<J<...>>             Subscript
+    C<K<...>>             Keyboard input (typically rendered fixed-width)
+    C<L<...|...>>         Link (C<L<R<display text>|R<destination URI>>>)
+    C<M<...:...>>         Module-defined code (C<M<R<scheme>:R<contents>>>)
+    C<N<...>>             Note (not rendered inline)
+    C<O<...>>             Strikethrough
+    C<P<...>>             Inline eqivalent for C<=picture> block
+    C<Q<>>                reserved
+    C<V<R><...>>          Replaceable component or metasyntax
+    C<S<...>>             Space characters to be preserved
+    C<T<...>>             Terminal output (typically rendered fixed-width)
+    C<U<...>>             Unusual (typically rendered with underlining)
+    C<V<V><...>>          Verbatim (internal formatting codes ignored)
+    C<W<...|...>>         Contextual backlinks
+    C<Y<>>                reserved
+    C<X<...|..,..;...>>   Index entry (C<X<R<display text>|R<entry>,R<subentry>;...>>)
+    C<Z<...>>             Zero-width comment (contents never rendered)
 
 =end table
 
