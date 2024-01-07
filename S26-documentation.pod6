@@ -106,9 +106,8 @@ aligning to tabstops spaced every C<($?TABSTOP // 8)> characters.
 
 The content of a document is specified within one or more D<blocks|block>.
 Every Pod block may be declared in any of three forms:
-
-L<I<delimited style>|#Delimited blocks>, L<I<paragraph style>|#Paragraph
-blocks>, or L<I<abbreviated style>|#Abbreviated blocks>.
+I<L<delimited style|#Delimited blocks>>, I<L<paragraph style|#Paragraph
+blocks>>, or I<L<abbreviated style|#Abbreviated blocks>>.
 All of these forms are equivalent.
 
 Anything in a document that is neither a Pod directive nor contained
