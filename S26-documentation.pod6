@@ -56,32 +56,27 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
 
 =end CHANGES
 
-=head1
-Pod
+=head1 Podlite
 
-D<Pod> is an easy-to-use markup language with a simple, consistent
-underlying document object model. Pod can be used for writing language
+D<Podlite> is an easy-to-use markup language with a simple, consistent
+underlying document object model. Podlite can be used for writing language
 documentation, for documenting programs and modules, as well as for
 other types of document composition.
 
-Pod is an evolution of Perl 5's L<I<Plain Ol' Documentation>|doc:perlpod>
-(POD) markup. Compared to POD, Raku Pod is much more
-uniform, somewhat more compact, and considerably more expressive. The
-Pod dialect also differs in that it is a purely descriptive mark-up
-notation, with no presentational components.
+The Podlite is a purely descriptive mark-up notation, with no presentational
+components.
 
 
 =head2 General syntactic structure
 
-Pod documents are specified using D<directives|directive>, which are
+Podlite documents are specified using D<directives|directive>, which are
 used to declare configuration information and to delimit blocks of
-textual content. All Pod directives are considered to be special types
-of comments in Raku.
+textual content.
 
 Every directive starts either with an equals sign (C<=>) followed
 immediately by an identifier.
 
-An identifier composed of an alphabetical character followed by 
+An D<identifier|Podlite identifiers> composed of an alphabetical character followed by 
 any combination of alphanumeric characters. Alphabetic and numeric 
 definitions encompass relevant Unicode characters. The underscore 
 is consistently treated as alphabetic. Additionally, an identifier 
@@ -92,38 +87,34 @@ Directives that start with C<=> can be indented like the code they
 interleave, but their initial C<=> must still be the first non-whitespace
 character on their line.
 
-An indented Pod block is considered to have a I<virtual left margin>,
+An indented Podlite block is considered to have a I<virtual left margin>,
 determined by the indentation of its opening delimiter.
 
 In other words, if a directive is indented from the left margin, the
 column at which the first character of its opening delimiter appears is
 thereafter considered the first column of the entire block's contents.
 
-As with Raku heredocs, the virtual margin treats leading tabs as
-aligning to tabstops spaced every C<($?TABSTOP // 8)> characters.
+The virtual margin treats leading tabs as aligning to tabstops spaced 
+every C<($?TABSTOP // 8)> characters.
 
-=head2 Pod blocks
+=head2 Podlite blocks
 
 The content of a document is specified within one or more D<blocks|block>.
-Every Pod block may be declared in any of three forms:
+Every Podlite block may be declared in any of three forms:
 I<L<delimited style|#Delimited blocks>>, I<L<paragraph style|#Paragraph
 blocks>>, or I<L<abbreviated style|#Abbreviated blocks>>.
 All of these forms are equivalent.
 
-Anything in a document that is neither a Pod directive nor contained
-within a Pod block is treated as "ambient" material. Typically this
-would be the source code of the program that the Pod is documenting. Pod
-parsers still parse this text into the internal representation of the
-file, representing it as a C<Pod::Block::Ambient> block. Renderers
+Anything in a document that is neither a Podlite directive nor contained
+within a Podlite block is treated as "ambient" material. Typically this
+would be the source code of the program that the Podlite is documenting. 
+Podlite parsers still parse this text into the internal representation of the
+file, representing it as a "ambient" block. Renderers
 will I<usually> ignore such blocks, but see L<#Aliases>.
 
-In Perl 5's POD format, once a POD directive is encountered, the parser
-considers everything that follows to be POD, until an explicit C<=cut>
-directive is encountered, at which point the parser flips back to
-parsing ambient source code. The Raku Pod format is different. All Pod
-directives have a defined terminator and the Pod parser always reverts to
-"ambient" at the end of each Pod directive or block. To cause the parser
-to remain in Pod mode, you must enclose the desired Pod region in a
+All directives have a defined terminator and the Podlite parser always reverts to
+"ambient" at the end of each Podlite directive or block. To cause the parser
+to remain in "Pod" mode, you must enclose the desired Podlite region in a
 C<pod> block:
 
 =begin code :allow<B>
@@ -131,17 +122,21 @@ C<pod> block:
 
     =head1 A heading
 
-    This is Pod too. Specifically, this is a simple C<para> block
+    This is Podlite too. Specifically, this is a simple C<para> block
 
         $this = pod('also');  # Specifically, a code block
 
     B<=end pod>
 =end code
 
+For files with the extensions '.pod6' and '.podlite', their contents
+are implicitly wrapped in a C<pod> directive. Thus, the parser operates
+in "Pod" mode until the end of the file.
+
 =head3 Delimited blocks
 
 Delimited blocks are bounded by C<=begin> and C<=end> markers, both of
-which are followed by a valid Raku identifier, which is the
+which are followed by a valid Podlite identifier, which is the
 D<typename> of the block. Typenames that are entirely lowercase (for
 example: C<=begin head1>) or entirely uppercase (for example: C<=begin
 SYNOPSIS>) are reserved.
@@ -149,7 +144,7 @@ SYNOPSIS>) are reserved.
 After the typename, the rest of the C<=begin> marker line is treated as
 configuration information for the block. This information is used in
 different ways by different types of blocks, but is always specified using
-Raku-ish option pairs. That is, any of:
+any of:
 
 =for table :nested
  Value is...       Specify with...       Or with...       Or with...
@@ -160,10 +155,9 @@ Raku-ish option pairs. That is, any of:
  List              C«:key<1 2 3>»        C«:key[1,2,3]»   C«key => [1,2,3]»
  Hash              C«:key{a=>1, b=>2}»                    C«key => {a=>1, b=>2}»
 
-All option keys and values must, of course, be constants since Pod is a
+All option keys and values must, of course, be constants since Podlite is a
 specification language, not a programming language. Specifically, option
-values cannot be closures. See Synopsis 2 for details of the various
-Raku pair notations.
+values cannot be closures.
 
 The configuration section may be extended over subsequent lines by
 starting those lines with an C<=> in the first (virtual) column followed
@@ -173,7 +167,7 @@ The lines following the opening delimiter and configuration are the
 data or contents of the block, which continue until the block's matching
 C<=end> marker line. For most block types, these contents may be
 indented if you wish, without them being treated as L<code blocks|#Code
-blocks>. Unlike Perl 5, indented text is only treated as code within
+blocks>. Indented text is only treated as code within
 C<=pod>, L<C<=nested>|#Nesting blocks>, L<C<=item>|#Lists>, C<=code>,
 and L<semantic|#Semantic blocks> blocks.
 
@@ -211,11 +205,11 @@ For example:
 
 Note that no blank lines are required around the directives; blank
 lines within the contents are always treated as part of the contents.
-This is a universal feature of Pod.
+This is a universal feature of Podlite.
 
 Note also that in the following specifications, a "blank line" is a line
 that is either empty or that contains only whitespace characters. That
-is, a blank line matches the Raku pattern: C</^^ \h* $$/>. Pod uses
+is, a blank line matches the Raku pattern: C</^^ \h* $$/>. Podlite uses
 blank lines as delimiters, rather than empty lines, to minimize unpleasant
 surprises when stray spaces or tabs mysteriously turn up in hitherto
 empty lines.
@@ -224,7 +218,7 @@ empty lines.
 =head3 Paragraph blocks
 
 Paragraph blocks are introduced by a C<=for> marker and terminated by
-the next Pod directive or the first blank line (which is I<not>
+the next Podlite directive or the first blank line (which is I<not>
 considered to be part of the block's contents). The C<=for> marker is
 followed by the name of the block and optional configuration
 information. The general syntax is:
@@ -259,7 +253,7 @@ For example:
 Abbreviated blocks are introduced by an C<'='> sign in the
 first column, which is followed immediately by the typename of the
 block. The rest of the line is treated as block data, rather than as
-configuration. The content terminates at the next Pod directive or the
+configuration. The content terminates at the next Podlite directive or the
 first blank line (which is not part of the block data). The general
 syntax is:
 
@@ -318,7 +312,7 @@ or:
 
 =head3 Standard configuration options
 
-Pod predefines a small number of standard configuration options that can be
+Podlite predefines a small number of standard configuration options that can be
 applied uniformly to any built-in block type. These include:
 
 =begin defn
@@ -511,13 +505,13 @@ For example:
 =end table
 
 Please note that while the Selector blocks provide a way to query and filter specific elements 
-within Markdown files, Markdown itself doesn't have formal named blocks like the Pod syntax. 
+within Markdown files, Markdown itself doesn't have formal named blocks like the Podlite syntax. 
 Instead, Markdown uses a lightweight markup to structure content. The above table provides a mapping
-between Pod block names and their corresponding Markdown elements.
+between Podlite block names and their corresponding Markdown elements.
 
-=begin table :nested :caption("A table of correspondences for some Pod blocks and markdown blocks")
+=begin table :nested :caption("A table of correspondences for some Podlite blocks and markdown blocks")
 
-    Pod                                             Markdown                Describtion
+    Podlite                                             Markdown                Describtion
     _______________________________________         ______________          _____________________________________
     head1, head2, ...                                 #, ##, ...            Heading level 1,2...
 
@@ -544,11 +538,11 @@ in L<include block|#Include block>.
 
 =head2 Block types
 
-Pod offers notations for specifying a wide range of standard block types...
+Podlite offers notations for specifying a wide range of standard block types...
 
 =head3 Headings
 
-Pod provides an unlimited number of levels of heading, specified by the
+Podlite provides an unlimited number of levels of heading, specified by the
 C<=head>R<N> block marker. For example:
 
 =begin code
@@ -561,8 +555,8 @@ C<=head>R<N> block marker. For example:
                         =head86 A "Missed it by I<that> much!" heading
 =end code
 
-While Pod parsers are required to recognize and distinguish all levels
-of heading, Pod renderers are only required to provide distinct
+While Podlite parsers are required to recognize and distinguish all levels
+of heading, Podlite renderers are only required to provide distinct
 I<renderings> of the first four levels of heading (though they may, of
 course, provide more than that). Headings at levels without distinct
 renderings would typically be rendered like the lowest distinctly
@@ -830,7 +824,7 @@ For example:
 
 =head3 I/O blocks
 
-Pod also provides blocks for specifying the input and output of programs.
+Podlite also provides blocks for specifying the input and output of programs.
 
 The C<=input> block is used to specify pre-formatted keyboard input,
 which should be rendered without rejustification or squeezing of whitespace.
@@ -850,7 +844,7 @@ Unlike C<=code> blocks, both C<=input> and C<=output> blocks honour any
 nested formatting codes. This is particularly useful since a sample of
 input will often include prompts (which are, of course, output).
 Likewise a sample of output may contain the occasional interactive
-component. Pod provides L<special formatting codes|#Example specifiers>
+component. Podlite provides L<special formatting codes|#Example specifiers>
 (C<K<>> and C<T<>>) to indicate embedded input or output, so you can use
 the block type that indicates the overall purpose of the sample (i.e. is
 it demonstrating an input operation or an output sequence?) and then use
@@ -878,7 +872,7 @@ you could use the C<K<>> formatting code:
 
 =head3 Lists
 
-Lists in Pod are specified as a series of contiguous C<=item> blocks. No
+Lists in Podlite are specified as a series of contiguous C<=item> blocks. No
 special "container" directives or other delimiters are required to
 enclose the entire list. For example:
 
@@ -944,7 +938,7 @@ E<ndash> Gas
 =for para :nested(2)
 E<ndash> Chocolate
 
-Pod parsers must issue a warning if a "level-R<N+1>" C<=item> block
+Podlite parsers must issue a warning if a "level-R<N+1>" C<=item> block
 (e.g. an C<=item2>, C<=item3>, etc.) appears anywhere except where there
 is a preceding "level-R<N>" C<=item> in the same surrounding block. That
 is, an C<=item3> should only be specified if an C<=item2> appears
@@ -1064,7 +1058,7 @@ or explicitly mark the item itself as being unnumbered:
 
 The numbering of successive C<=item1> list items increments
 automatically, but is reset to 1 whenever any other kind of non-ambient
-Pod block appears between two C<=item1> blocks. For example:
+Podlite block appears between two C<=item1> blocks. For example:
 
 =begin code
     The options are:
@@ -1130,7 +1124,7 @@ which produces:
 
 =head4 Task lists
 
-In addition to the ordered list Pod also supports 
+In addition to the ordered list Podlite also supports 
 task lists, which are commonly known as checklists or to-do lists.
 
 To create a task list item just apply a C<:checked>
@@ -1309,7 +1303,7 @@ nesting are required:
     =end para
 =end code
 
-So Pod provides a C<=nested> block that marks all its contents as being
+So Podlite provides a C<=nested> block that marks all its contents as being
 nested:
 
 =begin code :allow<B>
@@ -1340,7 +1334,7 @@ The preceding example could equally have been specified:
 
 =head3 Tables
 
-Simple tables can be specified in Pod using a C<=table> block.
+Simple tables can be specified in Podlite using a C<=table> block.
 The table may be given an associated description or title using the
 C<:caption> option.
 
@@ -1606,12 +1600,12 @@ Note that all block names consisting entirely of lowercase or entirely of
 uppercase letters are reserved. See L<#Semantic blocks>.
 
 
-=head3 Pod comments
+=head3 Podlite comments
 
-D<Pod comments|Pod comment> refers to Pod blocks that should not
+D<Podlite comments|Podlite comment> refers to Podlite blocks that should not
 be displayed by any renderer. However, they are still may be part of the
-internal Pod representation. However, they can still be part of internal
-Pod representation.
+internal Podlite representation. However, they can still be part of internal
+Podlite representation.
 
 Comments are useful for meta-documentation (documenting the documentation):
 
@@ -1905,7 +1899,7 @@ should be able to provide a warning in such situations.
 
 =head3 Inserting pictures
  
-Pod allows to include images using a C<=picture> block with an inline version
+Podlite allows to include images using a C<=picture> block with an inline version
 represented as C<P<alternative text|source of the image>>:
 
 =begin code :allow<B>
@@ -1989,8 +1983,8 @@ It possible to define the formule caption using the C<:caption> attribute.
 
 =head3 Markdown support
 
-Pod includes built-in support for Markdown, making it easy to include Markdown
-content within Pod documents. This is achieved using the C<=markdown> block.
+Podlite includes built-in support for Markdown, making it easy to include Markdown
+content within Podlite documents. This is achieved using the C<=markdown> block.
 
 =begin code :allow<B>
   =begin markdown
@@ -2032,7 +2026,7 @@ the flexibility of Markdown.
 =head2 Formatting codes
 
 Formatting codes provide a way to add inline mark-up to a piece of text
-within the contents of (most types of) Pod block. Formatting codes are
+within the contents of (most types of) Podlite block. Formatting codes are
 themselves a type of block, and may nest other formatting codes.
 other type of block (most often, other formatting codes). In particular,
 you can nest comment blocks in the middle of a formatting code:
@@ -2043,7 +2037,7 @@ you can nest comment blocks in the middle of a formatting code:
     and with emphasis.>
 =end code
 
-All Pod formatting codes consist of a single capital letter followed
+All Podlite formatting codes consist of a single capital letter followed
 immediately by a set of angle brackets. The brackets contain the text or
 data to which the formatting code applies. You can use a set of single
 angles (C«<...>»), a set of double angles (C<«...»>), or multiple
@@ -2083,7 +2077,7 @@ or delimiters with more consecutive angles than your text contains:
 A formatting code ends at the matching closing angle bracket(s), or at
 the end of the enclosing block or formatting code in which the opening
 angle bracket was specified, whichever comes first (this includes paragraph
-and abbreviated blocks, ending with blank a line). Pod parsers are
+and abbreviated blocks, ending with blank a line). Podlite parsers are
 required to issue a warning whenever a formatting code is terminated by
 the end of an outer block rather than by its own delimiter (unless the
 user explicitly disables the warning).
@@ -2091,7 +2085,7 @@ user explicitly disables the warning).
 
 =head3 Significance indicators
 
-Pod provides three formatting codes that flag their contents with
+Podlite provides three formatting codes that flag their contents with
 increasing levels of significance:
 
 =item
@@ -2121,7 +2115,7 @@ mistake and should not be included in the document.
 
 =head3 Text positioning
 
-Pod provides two formatting codes that allow positioning characters or words.
+Podlite provides two formatting codes that allow positioning characters or words.
 
 =begin item
 To create subscript text, you can use the C<J<>> formatting code, where 'J' represents 
@@ -2174,7 +2168,7 @@ term (or any of its specified synonyms) within a hypertext.
 
 =head3 Example specifiers
 
-Pod provides formatting codes for specifying inline examples of input,
+Podlite provides formatting codes for specifying inline examples of input,
 output, code, and metasyntax:
 
 =begin item
@@ -2314,7 +2308,7 @@ L<C<=comment> block|#Comments>.
 
 =head4 Comments as category markers
 
-Most Pod renderers will provide a mechanism that allows particular Pod
+Most Podlite renderers will provide a mechanism that allows particular Pod
 blocks to be explicitly excluded or included if they match a particular
 pattern. For example, a renderer might be instructed to omit any block
 that contains the pattern C</CONFIDENTIAL/>. Corresponding "invisibility
@@ -2344,7 +2338,7 @@ any link specification.
 Usually, in schemes where an internal address makes sense, it will be
 separated from the preceding external address by a C<#>, unless the
 particular addressing scheme requires some other syntax. When new
-addressing schemes are created specifically for Pod it is strongly
+addressing schemes are created specifically for Podlite it is strongly
 recommended that C<#> be used to mark the start of internal addresses.
 
 Standard schemes include:
@@ -2521,7 +2515,7 @@ For example:
 
 =head3 Contextual backlinks
 
-Pod introduces the concept of contextual backward links C<W<>> (or contextual backlinks),
+Podlite introduces the concept of contextual backward links C<W<>> (or contextual backlinks),
 enhancing the traditional L<linking|#Links> mechanism by allowing to not
 only reference another location but also provide specific
 context around that reference. This context can take the form of opinions,
@@ -2596,7 +2590,7 @@ The emergency signal is: dot dot dot dash dash dash dot dot dot.
 =head3 Entities
 
 To include Unicode code points or HTML5 character references in a
-Pod document, specify the required D<entity|entities> using the C<E<>> code.
+Podlite document, specify the required D<entity|entities> using the C<E<>> code.
 
 If the C<E<>> contains a number, that number is treated as the decimal
 Unicode value for the desired code point. For example:
@@ -2813,16 +2807,16 @@ subsequent instances of the code.
 =head2 Aliases
 
 The C<=alias> directive provides a way to define lexically scoped
-synonyms for longer Pod sequences, (meta)object declarators from the
+synonyms for longer Podlite sequences, (meta)object declarators from the
 code, or even entire chunks of ambient source. These synonyms can then
-be inserted into subsequent Pod using the
+be inserted into subsequent Podlite using the
 L<C<A<> formatting code>|#Alias placements>.
 
-Note that C<=alias> is a fundamental Pod directive, like C<=begin> or
+Note that C<=alias> is a fundamental Podlite directive, like C<=begin> or
 C<=for>; there are no equivalent paragraph or delimited forms.
 
 There are two forms of C<=alias> directive: macro aliases and contextual
-aliases. Both forms are lexically scoped to the surrounding Pod block.
+aliases. Both forms are lexically scoped to the surrounding Podlite block.
 
 =head3 Macro aliases
 
@@ -2990,7 +2984,7 @@ attribute. By default, handles are opened to the file "C<db.log>".
     C<=config>          Lexical modifications to a block or formatting code
     C<=end>             Explicit termination of a C<=begin> block
     C<=for>             Start of an implicitly (blank-line) terminated block
-    C<=alias>           Define a Pod macro
+    C<=alias>           Define a Podlite macro
 
 =end table
 
