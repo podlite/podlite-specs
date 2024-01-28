@@ -113,9 +113,9 @@ file, representing it as a "ambient" block. Renderers
 will I<usually> ignore such blocks, but see L<#Aliases>.
 
 All directives have a defined terminator and the Podlite parser always reverts to
-"ambient" at the end of each Podlite directive or block. To cause the parser
-to remain in "Pod" mode, you must enclose the desired Podlite region in a
-C<pod> block:
+D<"ambient"|Ambient mode; parser modes> at the end of each Podlite directive or 
+block. To cause the parser to remain in "Pod" mode, you must enclose the desired 
+Podlite region in a C<pod> block:
 
 =begin code :allow<B>
     B<=begin pod>
@@ -129,9 +129,14 @@ C<pod> block:
     B<=end pod>
 =end code
 
-For files with the extensions '.pod6' and '.podlite', their contents
-are implicitly wrapped in a C<pod> directive. Thus, the parser operates
-in "Pod" mode until the end of the file.
+The contents of files with the extensions '.pod6' and '.podlite' are 
+implicitly wrapped in a C<=pod> directive. This puts the parser in 
+D<"Pod" mode|Pod mode; parser modes> for the entire file, treating
+ all text as Podlite even if it's not inside an explicit block.
+
+For '.md' and '.markdown' files, the parser operates in D<"Markdown" 
+mode|Markdown mode; parser modes> for the entire file, treating all 
+text as markdown even if it is not inside an C<=markdown> block.
 
 =head3 Delimited blocks
 
@@ -2481,7 +2486,7 @@ The scheme name may also be omitted in that case:
     This mechanism is described under L<B<#Special Features>> below.
 =end code
 
-Pod include the possibility of assigning a unique identifier to a block.
+Podlite include the possibility of assigning a unique identifier to a block.
 These identifiers can be explicitly assigned to any blocks using 
 the C<:id> attribute. Later, these identifiers are utilized for adressing blocks
 and creating links.
