@@ -1,14 +1,20 @@
-Perl 6 Design Documents
-=======================
 
-This repository contains the Perl 6 design documents, also called "Synopses",
-in Pod (5 and 6) format. A [regularly updated HTML
-version](http://design.perl6.org/) is available.
+<div align="center">
 
-Historically, these documents have determined the direction of Perl 6. As
-implementations matured, this role shifted (and still shifts) towards
-documenting the experience from the implementations.
+[![Podlite](https://github.com/zag/specs/raw/podlite-specification/assets/podlite_logo_256x256.png)](https://podlite.org)
 
-Instead the [test suite](https://github.com/perl6/roast/) is becoming the
-specification, and the "specs" in the repository name of the design documents
-tends to mean "speculations" now.
+</div>
+
+**Podlite is a block-based markup language designed for flexibility and ease of use.**
+
+Unbound by any specific domain, programming language, or concept, Podlite stands out as a universal markup language. It's versatile enough to be successfully implemented across various development fields, from web development to scientific research.
+
+Podlite is not limited to any specific application domain, programming language, or concept.
+
+In addition, the support for Markdown markup as a standard block adds convenience and allows for the use of familiar syntax for text formatting.
+
+One of the key features of Podlite is its extensibility. This allows for defining unique and domain-specific blocks and expanding the language's functionality according to the requirements of your project.
+
+Its flexibility makes it an ideal tool for creating documentation, blogs, educational materials, and much more.
+
+Podlite aims to provide users with a means for creativity and expressing ideas in a structured form, while ensuring ease of use and high flexibility in content creation.
