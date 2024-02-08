@@ -5,7 +5,7 @@
 
 </div>
 
-**Podlite is a block-based markup language designed for flexibility and ease of use.**
+**Podlite is a lightweight block-based markup language designed for flexibility and ease of use.**
 
 Unbound by any specific domain, programming language, or concept, Podlite stands out as a universal markup language. It's versatile enough to be successfully implemented across various development fields, from web development to scientific research.
 
