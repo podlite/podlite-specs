@@ -23,9 +23,14 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
 =item Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
 =end AUTHORS
 
-=VERSION 1.0.0-beta1
+=VERSION 1.0.0-beta2
 
 =begin CHANGES
+
+=head2 1.0.0-beta2
+=head3 New:
+=head3 Deprecated/removed:
+    =item markers in comments
 
 =head2 1.0.0-beta1
 =head3 New:
@@ -2311,24 +2316,6 @@ verbatim, which often eliminates the need for the C<V<>> as well:
 
 The C<Z<>> formatting code is the inline equivalent of a
 L<C<=comment> block|#Comments>.
-
-=head4 Comments as category markers
-
-Most Podlite renderers will provide a mechanism that allows particular Pod
-blocks to be explicitly excluded or included if they match a particular
-pattern. For example, a renderer might be instructed to omit any block
-that contains the pattern C</CONFIDENTIAL/>. Corresponding "invisibility
-markers" can then be placed inside C<Z<>> comments within any block that
-should not normally be displayed. For example:
-
-=for code :allow<B>
-    class Widget is Bauble
-    {
-        has $.things; #= a collection of other stuff
-        #={ Z<CONFIDENTIAL>
-            This variable needs to be replaced for political reasons
-        }
-    }
 
 =head3 Links
 
