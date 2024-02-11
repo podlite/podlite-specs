@@ -30,6 +30,7 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
 =head2 1.0.0-beta2
 =head3 New:
 =head3 Deprecated/removed:
+    =item C<=finish>
     =item markers in comments
 
 =head2 1.0.0-beta1
@@ -699,7 +700,7 @@ directive. For example:
         previous directive
 =end code
 
-Within a C<=pod>, C<=item>, C<=defn>, C<=nested>, C<=finish>, or
+Within a C<=pod>, C<=item>, C<=defn>, C<=nested>, or
 L<semantic|#Semantic blocks> block, ordinary paragraphs do not require
 an explicit marker or delimiters, but there is also an explicit C<para>
 marker (which may be used anywhere):
@@ -752,7 +753,7 @@ For example:
 =end code
 
 Implicit code blocks may only be used within C<=pod>, C<=item>, C<=defn>,
-C<=nested>, C<=finish>, or L<semantic|#Semantic blocks> blocks.
+C<=nested>, or L<semantic|#Semantic blocks> blocks.
 
 There is also an explicit C<=code> block (which can be specified within
 I<any> other block type, not just C<=pod>, C<=item>, etc.):
@@ -1636,22 +1637,6 @@ and for temporarily removing parts of a document:
     =item # Prophet!
     B<=end comment>
 =end code
-
-=head3 The C<=finish> block
-
-The C<=finish> block is special in that all three of its forms
-(L<delimited|#Delimited blocks>, L<paragraph|#Paragraph blocks>, and
-L<abbreviated|#Abbreviated blocks>) are terminated only by the end of the
-current file. That is, neither C<=finish> nor C<=for finish> are terminated by the
-next blank line, and C<=end finish> has no effect within a C<=begin finish> block.
-A warning is issued if an explicit C<=end finish> appears within a document.
-
-An C<=finish> block indicates the end-point of any ambient material within
-the document. This means that the parser will treat all the remaining
-text in the file as Pod, even if it is not inside an explicit block. In
-other words, apart from its special end-of-file termination behaviour,
-an C<=finish> block is in all other respects identical to a C<=pod> block.
-
 
 =head3 Data blocks
 
