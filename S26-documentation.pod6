@@ -1953,7 +1953,8 @@ The first non-blank line of content within the C<=picture> block specifies the
 source of the image and the remaining content is treated as caption.
 
 This source can be either local or remote, and it can be
-indicated using different schemas: C<https:> for remote images or C<file:> for local ones.
+indicated using different schemas: C<https:> for remote images, C<file:> for
+local ones, or C<data> for L<embedded images|#Data blocks> in to the document.
 If no schema is provided, it defaults to C<file:>.
 
 =begin code :allow<B>
@@ -1961,6 +1962,7 @@ If no schema is provided, it defaults to C<file:>.
  =picture file:/local/image.png
  =picture /local/image.png
  =picture ../image.png
+ =picture data:Logo
 =end code
 
 Following the source line, it possible to include an image caption.
