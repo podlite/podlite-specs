@@ -1912,6 +1912,22 @@ or, equivalently:
 =VERSION 1.0.0
 =end code
 
+Podlite detects type of the included file by its extension.
+For example, if the included file has a C<.md> extension, 
+it is treated as a Markdown file.
+
+To override the type of the included file by extension, you can use the C<:mime-type>
+attribute. This attribute allows you to specify the MIME type of the included file.
+For example:
+
+=begin code
+  =for include :mime-type('text/podlite')
+  file:./includes/text.txt 
+=end code
+
+The C<:mime-type> attribute is particularly useful when including files with 
+extensions that do not match their actual MIME type.
+
 It's crucial to think about security concerns, as adding content from external
 sources could potentially create vulnerabilities such as injecting harmful code
 or malicious material. Tools responsible for displaying and handling the content
