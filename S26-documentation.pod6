@@ -1691,6 +1691,34 @@ can be used to hint at the type of data contained if the C<:mime/type> is not
 explicitly provided.
 =end defn
 
+=begin defn
+C<:mime-type>
+
+This option indicates the MIME type of the data, such as C<image/png> for PNG images,
+which helps in determining how the data should be interpretered and processed.
+
+Here is a list of few well-known mime types and their corresponding file extensions:
+
+=table
+    MIME Type                      | File Extension
+    ------------------             | --------------
+    text/plain                     | .txt
+    text/markdown                  | .md, .markdown
+    text/podlite                   | .podlite, .pod6
+    application/json               | .json
+    application/xml                | .xml
+    image/jpeg                     | .jpg, .jpeg
+    image/png                      | .png
+    application/pdf                | .pdf
+    application/zip                | .zip
+    audio/mpeg                     | .mp3
+    video/mp4                      | .mp4
+    application/msword             | .doc, .docx
+    text/csv                       | .csv
+    text/tab-separated-values      | .tsv, .tab
+
+=end defn
+
 
 Example of storing images in C<=data> blocks:
 
