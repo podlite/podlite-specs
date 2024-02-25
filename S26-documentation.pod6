@@ -2805,42 +2805,33 @@ E<dagger> Plants grow without soil, using mineral nutrient solutions.
 =end nested
 
 
-=head3 Module-defined formatting codes
+=head3 Module-defined handler for extends markup features
 
-This section is not yet implemented
+The C<M<>> code in Podlite extends the language's capabilities by allowing users 
+to specify additional processing instructions within their documents. 
+This is achieved by combining content text with a custom scheme specifier, 
+followed by extra content that is passed verbatim to a handler function.
 
-=begin comment
-Modules loaded with a L<C<DOC use>|#How Podlite is parsed and processed>
-can define classes that implement new formatting codes, which can
-then be specified using the C<M<>> code. An C<M<>> code must start with
-a colon-terminated scheme specifier. The rest of the enclosed text is
-treated as the (verbatim) contents of the formatting code. For example:
+The structure of the C<M<>> markup code as follows: 
 
-=begin code :allow<B>
-    DOC use Pod::TT;
+    M< CONTENT-TEXT|SCHEME: VERBATIM_EXTRA_CONTENT>
 
-    =head1 Overview of the B<M<TT: $CLASSNAME >> class
-    (version B<M<TT: $VERSION>>)
+This syntax includes an optional CONTENT-TEXT section, followed by a
+ scheme specifier (SCHEME:) and then the VERBATIM_EXTRA_CONTENT. 
+The scheme specifier should follow the same rules as for L<Named blocks|#Named blocks>.
+The scheme specifier allows the verbatim extra content (VERBATIM_EXTRA_CONTENT),
+which may include additional attributes or instructions for the markup code handler.
 
-    B<M<TT: get_description($CLASSNAME) >>
-=end code
+An example of how this code might be used is :
 
-The C<M<>> formatting code is the inline equivalent of a
-L<named block|#Named blocks>.
+=for code :allow<B>
+    B<M<> This text is highlighted in yellowB<|Marker: yellow>>.
 
-Internally an C<M<>> code is converted to an object derived from the
-C<Pod::FormattingCode::Named> class. The name of the scheme becomes
-the final component of the object's classname. For instance, the C<M<>>
-code in the previous example would be converted to a
-C<Pod::FormattingCode::Named::TT> object, whose C<.typename>
-method retrieves the string C<"TT"> and whose C<.contents>
-method retrieves a list of the formatting code's (verbatim,
-unformatted) contents.
+In this example, the text s "This text is highlighted in yellow"> is subject
+to special handling specified by the C<Marker:> scheme and  C<yellow>, indicating 
+that the textshould be highlighted in yellow.
 
-If the formatting code is unrecognized, the contents of the code (i.e.
-everything after the first colon) would normally be rendered as
-ordinary text.
-=end comment
+
 
 =head2 Block pre-configuration
 
