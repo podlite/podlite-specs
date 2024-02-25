@@ -1599,6 +1599,11 @@ For example:
 
 =head4 Table from CSV files or data blocks
 
+It is possible to create tables from files or data blocks. 
+To do this, use the C<file:> or C<data:> schema in the first non-blank line
+to specify the source of the table data.
+For example:
+
 =begin code :allow<B>
   =table B<file:recipe_ingredients.csv>
   
