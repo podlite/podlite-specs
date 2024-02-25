@@ -1719,6 +1719,21 @@ Here is a list of few well-known mime types and their corresponding file extensi
 
 =end defn
 
+=begin defn
+C<:access-time> and C<:modify-time>
+
+This attributes record time for when the data was last accessed or
+edited.
+
+=end defn
+
+=begin defn
+C<encoding>
+
+This option specifies the encoding method used to store the data.
+For non-text data, such as images in the PNG format, 
+the encoding method C<base64> is used.
+=end defn
 
 Example of storing images in C<=data> blocks:
 
