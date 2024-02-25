@@ -1713,13 +1713,8 @@ within a source file, and as many times as required.
 Note that in Podlite, it is possible to specify C<=data> blocks
 I<after> the point in the source where their contents will be used.
 
-When C<$=data> itself is stringified, it returns the concatenation of all
-the unkeyed C<=data> blocks the parser has seen.
-
 C<=data> blocks are never rendered by the standard Podlite renderers.
 
-
-=end comment
 =head3 Semantic blocks
 
 All uppercase block typenames are reserved for specifying standard
