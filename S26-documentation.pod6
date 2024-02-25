@@ -1640,18 +1640,20 @@ and for temporarily removing parts of a document:
 
 =head3 Data blocks
 
-This section is not yet implemented
+The C<=data> block is used to embed various types of data directly into a document.
 
-=begin comment
+For example, to include a CSV file in a document, it is possible to 
+use the following syntax:
 
-Named Podlite blocks whose typename is C<data> are the Podlite equivalent of
-the Perl 5 C<__DATA__> section. The difference is that C<=data> blocks are
-just regular Podlite blocks and may appear anywhere within a source file, and as
-many times as required.
+=begin code :allow<B>
 
-There is a corresponding variable, C<$=data>, from which each C<=data> block
-can be retrieved. C<$=data> holds an object that does both the Associative
-and Positional roles.
+  =begin data :key<sales_data> :mime-type<text/csv>
+    name,month,amount
+    John Doe,January,1000
+    Jane Doe,February,1500
+  =end data
+
+=end code
 
 Each C<=data> block can be given a C<:key> option, to name it. The contents
 of any C<=data> block with a key are accessible (as a single string) via
