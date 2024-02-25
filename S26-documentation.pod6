@@ -1678,11 +1678,15 @@ they appear in the file. For example:
 
 =begin code :allow<B>
 
-    say 'The second anti_Virtue is: ', $=data[1];
+    =begin data :key<Logo> :filename<Logo.png> :mime-type<image/png>
+    = :access-time<2022-01-01T00:00:00Z>  :modify-time<2022-01-02T10:00:00Z>
+    = :encoding<base64>
+    iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAS0lEQVR4AWPOPfjpvWZSW4db
+    ZLk+kwTHP24HUQYGfi4WTiZVAcYfDtIMDCJc/38xK6TWth37wcrw7cufF8yeeWUGrL8Z33Ey
+    /t0HAMBnF2nt5sNRAAAAAElFTkSuQmCC
+    =end data
 
-    =data Industry
-    =data Patience
-    =data Humility
+    =picture data:Logo
 
 =end code
 
