@@ -1597,6 +1597,25 @@ For example:
 
 =end code
 
+=head4 Table from CSV files or data blocks
+
+=begin code :allow<B>
+  =table B<file:recipe_ingredients.csv>
+  
+  =for table :caption('Basic cake recipe ingredients')
+  B<data:recipe_ingredients>
+
+  =begin data :key<recipe_ingredients> :mime-type<text/csv>
+    ingredient,quantity,unit
+    flour,2,cups
+    sugar,1,cups
+    eggs,2,items
+    butter,0.5,cups
+    baking powder,2,teaspoons
+  =end data
+=end code
+
+
 =head3 Named blocks
 
 Blocks whose names contain at least one uppercase and one lowercase
