@@ -16,18 +16,31 @@ you're welcome to suggest changes or start a conversation on
 our L<GitHub page|https://github.com/podlite/podlite-specs>.
 =end nested
 
-=Toc head1, head2,head3
+=toc head1, head2, head3
 
 =begin AUTHORS
 =item Damian Conway <L<C<damian@conway.org>|mailto:damian@conway.org>>
 =item Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
 =end AUTHORS
 
-=VERSION 1.0.0-beta1
+=VERSION 1.0-beta2
 
 =begin CHANGES
 
-=head2 1.0.0-beta1
+=head2 1.0-beta2
+=head3 New:
+    =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>
+    =item C<:mime-type> attribute for C<=include> and C<=data> blocks
+    =item introduce С<data:> schema for use in =picture and C<=table>
+    =item render tables from CSV files, C<=table>
+    =item new markdown mode for parser
+    =item M<> - extends inline markup features
+    
+=head3 Deprecated/removed:
+    =item C<=finish>
+    =item markers in comments
+
+=head2 1.0-beta1
 =head3 New:
     =item add C<:id>, C<:caption>, C<:lang> attributes,
     =item task lists, C<=item> and C<:checked> attribute,
@@ -111,11 +124,18 @@ would be the source code of the program that the Podlite is documenting.
 Podlite parsers still parse this text into the internal representation of the
 file, representing it as a "ambient" block. Renderers
 will I<usually> ignore such blocks, but see L<#Aliases>.
+This is the D<default mode|Default mode; parser modes> of the parser.
 
 All directives have a defined terminator and the Podlite parser always reverts to
 D<"ambient"|Ambient mode; parser modes> at the end of each Podlite directive or 
-block. To cause the parser to remain in "Pod" mode, you must enclose the desired 
-Podlite region in a C<pod> block:
+block.
+
+The C<=pod> block puts the parser in D<"pod" mode|Pod mode; parser modes>, 
+treating all text between blocks as implicit paragraph Podlite, even if 
+it's not inside an explicit block.
+
+To keep the parser in "pod" mode, enclose the desired Podlite region 
+in a C<pod> block:
 
 =begin code :allow<B>
     B<=begin pod>
@@ -129,14 +149,16 @@ Podlite region in a C<pod> block:
     B<=end pod>
 =end code
 
-The contents of files with the extensions '.pod6' and '.podlite' are 
-implicitly wrapped in a C<=pod> directive. This puts the parser in 
-D<"Pod" mode|Pod mode; parser modes> for the entire file, treating
- all text as Podlite even if it's not inside an explicit block.
+The contents of files with the extensions '.podlite' and '.pod6' are 
+implicitly wrapped in a C<=pod> directive.
 
 For '.md' and '.markdown' files, the parser operates in D<"Markdown" 
 mode|Markdown mode; parser modes> for the entire file, treating all 
 text as markdown even if it is not inside an C<=markdown> block.
+
+Any other file extension puts the parser in default mode. The L<C<=include>
+block|#Include block > has a mechanism to override this behavior by using 
+the C<:mime-type> attribute for the included files.
 
 =head3 Delimited blocks
 
@@ -694,7 +716,7 @@ directive. For example:
         previous directive
 =end code
 
-Within a C<=pod>, C<=item>, C<=defn>, C<=nested>, C<=finish>, or
+Within a C<=pod>, C<=item>, C<=defn>, C<=nested>, or
 L<semantic|#Semantic blocks> block, ordinary paragraphs do not require
 an explicit marker or delimiters, but there is also an explicit C<para>
 marker (which may be used anywhere):
@@ -747,7 +769,7 @@ For example:
 =end code
 
 Implicit code blocks may only be used within C<=pod>, C<=item>, C<=defn>,
-C<=nested>, C<=finish>, or L<semantic|#Semantic blocks> blocks.
+C<=nested>, or L<semantic|#Semantic blocks> blocks.
 
 There is also an explicit C<=code> block (which can be specified within
 I<any> other block type, not just C<=pod>, C<=item>, etc.):
@@ -790,19 +812,19 @@ or more formatting codes. Those codes will then remain active inside the
 code block. For example:
 
 =begin code
-    =begin code :allow< B R >
-    sub demo {
-        B<say> 'Hello R<name>';
-    }
-    =end code
+  =begin code :allow< B R >
+  sub demo {
+      B<say> 'Hello R<name>';
+  }
+  =end code
 =end code
 
 would be rendered:
 
 =begin code :allow< B R >
-sub demo {
-    B<say> 'Hello R<name>';
-}
+  sub demo {
+      B<say> 'Hello R<name>';
+  }
 =end code
 
 Note that the use of the C<:allow> option also makes it possible
@@ -819,11 +841,11 @@ renderers or syntax highlighting tools.
 For example:
 
 =begin code :allow<B>
- =begin code B<:lang<raku>>
- sub demo {
-    say 'Hello R<name>';
- }
- =end code
+  =begin code B<:lang<raku>>
+  sub demo {
+     say 'Hello R<name>';
+  }
+  =end code
 =end code 
 
 
@@ -1144,8 +1166,8 @@ attribute to C<=item> block.
 
 The rendered output looks like this:
 
- [ ] Buy groceries
- [X] Clean the garage
+ [X] Buy groceries
+ [ ] Clean the garage
 
 Alternatively, if item content starts with brackets with space (C<[ ]>)
 the item is treated as having a C<:!checked> attribute.
@@ -1154,8 +1176,8 @@ of C<:checked> attribute.
 
 For example:
 =begin code :allow<B> 
- =item B<[ ]> Buy groceries
- =itme B<[x]> Clean the garage 
+ =item B<[x]> Buy groceries
+ =itme B<[ ]> Clean the garage 
 =end code
 
 It possiible to create multilevel to-do lists, which permits the 
@@ -1392,14 +1414,15 @@ Or:
 =begin code
  =begin table
 
-    Programming Language        Possible Values 
+    Energy Source                Benefit
 
-    Python                       python                 
-    Raku                         raku                   
-    HTML                         html                   
-    CSS                          css                    
- 
- =end table
+    Solar power                  Reduces electricity bills
+    Wind energy                  Clean power source
+    Hydroelectric power          Highly efficient
+    Geothermal energy            Low emissions
+    Biomass                      Reduces waste
+
+=end table
 =end code
 
 or line-by-line with multi-line headers:
@@ -1545,7 +1568,7 @@ It draw somethink like this:
     |         Item and Quantity        |     Description          |
     |----------------------------------|--------------------------|
     |   Apples     |      5            |                          |
-    |--------------|-------------------|    Fruit for snacking    |     
+    |--------------|-------------------|    Fruit for snacking    |
     |   Bananas    |      3            |                          |
     ---------------------------------------------------------------
 
@@ -1581,6 +1604,30 @@ For example:
  =end table
 
 =end code
+
+=head4 Table from CSV files or data blocks
+
+It is possible to create tables from files or data blocks. 
+To do this, use the C<file:> or C<data:> schema in the first non-blank line
+to specify the source of the table data.
+For example:
+
+=begin code :allow<B>
+  =table B<file:recipe_ingredients.csv>
+  
+  =for table :caption('Basic cake recipe ingredients')
+  B<data:recipe_ingredients>
+
+  =begin data :key<recipe_ingredients> :mime-type<text/csv>
+    ingredient,quantity,unit
+    flour,2,cups
+    sugar,1,cups
+    eggs,2,items
+    butter,0.5,cups
+    baking powder,2,teaspoons
+  =end data
+=end code
+
 
 =head3 Named blocks
 
@@ -1632,79 +1679,126 @@ and for temporarily removing parts of a document:
     B<=end comment>
 =end code
 
-=head3 The C<=finish> block
-
-The C<=finish> block is special in that all three of its forms
-(L<delimited|#Delimited blocks>, L<paragraph|#Paragraph blocks>, and
-L<abbreviated|#Abbreviated blocks>) are terminated only by the end of the
-current file. That is, neither C<=finish> nor C<=for finish> are terminated by the
-next blank line, and C<=end finish> has no effect within a C<=begin finish> block.
-A warning is issued if an explicit C<=end finish> appears within a document.
-
-An C<=finish> block indicates the end-point of any ambient material within
-the document. This means that the parser will treat all the remaining
-text in the file as Pod, even if it is not inside an explicit block. In
-other words, apart from its special end-of-file termination behaviour,
-an C<=finish> block is in all other respects identical to a C<=pod> block.
-
-
 =head3 Data blocks
 
-This section is not yet implemented
+The C<=data> block is used to embed various types of data directly into a document.
 
-=begin comment
+For example, to include a CSV file in a document, it is possible to 
+use the following syntax:
 
-Named Podlite blocks whose typename is C<data> are the Podlite equivalent of
-the Perl 5 C<__DATA__> section. The difference is that C<=data> blocks are
-just regular Podlite blocks and may appear anywhere within a source file, and as
-many times as required.
+=begin code :allow<B>
 
-There is a corresponding variable, C<$=data>, from which each C<=data> block
-can be retrieved. C<$=data> holds an object that does both the Associative
-and Positional roles.
+  =begin data :key<sales_data> :mime-type<text/csv>
+    name,month,amount
+    John Doe,January,1000
+    Jane Doe,February,1500
+  =end data
+
+=end code
 
 Each C<=data> block can be given a C<:key> option, to name it. The contents
-of any C<=data> block with a key are accessible (as a single string) via
-the Associative aspect of C<$=data> object. For example:
+of any C<=data> block with a key are addressable via
+the C<data> schema. For example:
+
+=begin code
+  =begin data :key<employee_data> :mime-type<text/csv>
+    id,name,position,department
+    1,John Doe,Manager,Marketing
+    2,Jane Smith,Developer,Engineering
+    3,Bob Brown,Designer,Product
+  =end data
+
+  =table data:employee_data
+
+=end code
+
+Each =data block can include several attributes to provide additional information
+about the contained data:
+
+=begin defn
+C<:filename>
+
+This option specifies the original file name of the embedded data, which 
+can be used to hint at the type of data contained if the C<:mime/type> is not 
+explicitly provided.
+=end defn
+
+=begin defn
+C<:mime-type>
+
+This option indicates the MIME type of the data, such as C<image/png> for PNG images,
+which helps in determining how the data should be interpretered and processed.
+
+Here is a list of few well-known mime types and their corresponding file extensions:
+
+=table
+    MIME Type                      | File Extension
+    ------------------             | --------------
+    text/plain                     | .txt
+    text/markdown                  | .md, .markdown
+    text/podlite                   | .podlite, .pod6
+    application/json               | .json
+    application/xml                | .xml
+    image/jpeg                     | .jpg, .jpeg
+    image/png                      | .png
+    application/pdf                | .pdf
+    application/zip                | .zip
+    audio/mpeg                     | .mp3
+    video/mp4                      | .mp4
+    application/msword             | .doc, .docx
+    text/csv                       | .csv
+    text/tab-separated-values      | .tsv, .tab
+
+=end defn
+
+=begin defn
+C<:access-time> and C<:modify-time>
+
+This attributes record time for when the data was last accessed or
+edited.
+
+=end defn
+
+=begin defn
+C<encoding>
+
+This option specifies the encoding method used to store the data.
+For non-text data, such as images in the PNG format, 
+the encoding method C<base64> is used.
+=end defn
+
+Example of storing images in C<=data> blocks:
 
 =begin code :allow<B>
 
-    =begin data :key<Virtues>
-    Laziness
-    Impatience
-    Hubris
+    =begin data :key<Logo> :filename<Logo.png> :mime-type<image/png>
+    = :access-time<2022-01-01T00:00:00Z>  :modify-time<2022-01-02T10:00:00Z>
+    = :encoding<base64>
+    iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAS0lEQVR4AWPOPfjpvWZSW4db
+    ZLk+kwTHP24HUQYGfi4WTiZVAcYfDtIMDCJc/38xK6TWth37wcrw7cufF8yeeWUGrL8Z33Ey
+    /t0HAMBnF2nt5sNRAAAAAElFTkSuQmCC
     =end data
 
-    say 'The three virtues are:';
-    say $=data<Virtues>;
+    =picture data:Logo
 
 =end code
 
-The contents of any C<=data> block that does not have a C<:key> are
-accessible (as a single string) via the Positional aspect of
-C<$=data>. Unkeyed C<=data> blocks are stored in the same order
-they appear in the file. For example:
+In the example above, we have a C<=data> block with C<:id> C<Logo> that stores
+the base64-encoded image data. We also specify the filename, mime type,
+access time, and edit time as attributes of the C<=data> block.
 
-=begin code :allow<B>
+The image can then be referenced using the `=picture` block with the scheme
+C<data:> and the block name C<Logo>.
 
-    say 'The second anti_Virtue is: ', $=data[1];
 
-    =data Industry
-    =data Patience
-    =data Humility
-
-=end code
+The C<=data> blocks are just regular Podlite blocks and may appear anywhere
+within a source file, and as many times as required.
 
 Note that in Podlite, it is possible to specify C<=data> blocks
 I<after> the point in the source where their contents will be used.
 
-When C<$=data> itself is stringified, it returns the concatenation of all
-the unkeyed C<=data> blocks the parser has seen.
-
 C<=data> blocks are never rendered by the standard Podlite renderers.
 
-
-=end comment
 =head3 Semantic blocks
 
 All uppercase block typenames are reserved for specifying standard
@@ -1898,6 +1992,22 @@ or, equivalently:
 =VERSION 1.0.0
 =end code
 
+Podlite detects type of the included file by its extension.
+For example, if the included file has a C<.md> extension, 
+it is treated as a Markdown file.
+
+To override the type of the included file by extension, you can use the C<:mime-type>
+attribute. This attribute allows you to specify the MIME type of the included file.
+For example:
+
+=begin code
+  =for include :mime-type('text/podlite')
+  file:./includes/text.txt 
+=end code
+
+The C<:mime-type> attribute is particularly useful when including files with 
+extensions that do not match their actual MIME type.
+
 It's crucial to think about security concerns, as adding content from external
 sources could potentially create vulnerabilities such as injecting harmful code
 or malicious material. Tools responsible for displaying and handling the content
@@ -1918,7 +2028,8 @@ The first non-blank line of content within the C<=picture> block specifies the
 source of the image and the remaining content is treated as caption.
 
 This source can be either local or remote, and it can be
-indicated using different schemas: C<https:> for remote images or C<file:> for local ones.
+indicated using different schemas: C<https:> for remote images, C<file:> for
+local ones, or C<data> for L<embedded images|#Data blocks> in to the document.
 If no schema is provided, it defaults to C<file:>.
 
 =begin code :allow<B>
@@ -1926,6 +2037,7 @@ If no schema is provided, it defaults to C<file:>.
  =picture file:/local/image.png
  =picture /local/image.png
  =picture ../image.png
+ =picture data:Logo
 =end code
 
 Following the source line, it possible to include an image caption.
@@ -2025,7 +2137,7 @@ content within Podlite documents. This is achieved using the C<=markdown> block.
   =end markdown
 =end code
 
-This block allows to seamlessly combine Pod's structured blocks with
+This block allows to seamlessly combine Podlite's structured blocks with
 the flexibility of Markdown.
 
 
@@ -2285,20 +2397,19 @@ For example:
   to quit all applications.
 =end code
 
-In Perl 5 POD, the C<Z<>> code was widely used to break up text that would
-otherwise be considered mark-up:
-
+In certain scenarios, the C<Z<>> code is used to break up text that 
+would otherwise be considered mark-up:
 =begin code :allow<B>
-    In Perl 5 POD, the ZB<Z<>><> code was widely used to break up text
-    that would otherwise be considered mark-up.
+  In certain scenarios, the ZB<Z<>><> code is used to break up text that 
+  would otherwise be considered mark-up.
 =end code
 
 That technique still works, but it's now easier to accomplish the same goal
 using a verbatim formatting code:
 
 =begin code :allow<B>
-    In Perl 5 POD, the B«V<V<Z<>>>» code was widely used to break up text
-    that would otherwise be considered mark-up.
+  In certain scenarios, the B«V<V<Z<>>>» code is used to break up text that 
+  would otherwise be considered mark-up.
 =end code
 
 Moreover, the C<C<>> code automatically treats its contents as being
@@ -2311,24 +2422,6 @@ verbatim, which often eliminates the need for the C<V<>> as well:
 
 The C<Z<>> formatting code is the inline equivalent of a
 L<C<=comment> block|#Comments>.
-
-=head4 Comments as category markers
-
-Most Podlite renderers will provide a mechanism that allows particular Pod
-blocks to be explicitly excluded or included if they match a particular
-pattern. For example, a renderer might be instructed to omit any block
-that contains the pattern C</CONFIDENTIAL/>. Corresponding "invisibility
-markers" can then be placed inside C<Z<>> comments within any block that
-should not normally be displayed. For example:
-
-=for code :allow<B>
-    class Widget is Bauble
-    {
-        has $.things; #= a collection of other stuff
-        #={ Z<CONFIDENTIAL>
-            This variable needs to be replaced for political reasons
-        }
-    }
 
 =head3 Links
 
@@ -2465,7 +2558,7 @@ Serial Number for a publication. For example:
 
 =end defn
 
-To refer to a specific section within a webpage, manpage, or Pod
+To refer to a specific section within a webpage, manpage, or Podlite
 document, add the name of that section after the main link, separated by
 a C<#>. For example:
 
@@ -2719,42 +2812,40 @@ E<dagger> Plants grow without soil, using mineral nutrient solutions.
 =end nested
 
 
-=head3 Module-defined formatting codes
+=head3 Module-defined handler for extends markup features
 
-This section is not yet implemented
+The C<M<>> code in Podlite extends the language's capabilities by allowing users 
+to specify additional processing instructions within their documents. 
+This is achieved by combining content text with a custom scheme specifier, 
+followed by extra content that is passed verbatim to a handler function.
 
-=begin comment
-Modules loaded with a L<C<DOC use>|#How Podlite is parsed and processed>
-can define classes that implement new formatting codes, which can
-then be specified using the C<M<>> code. An C<M<>> code must start with
-a colon-terminated scheme specifier. The rest of the enclosed text is
-treated as the (verbatim) contents of the formatting code. For example:
+The structure of the C<M<>> markup code as follows: 
 
-=begin code :allow<B>
-    DOC use Pod::TT;
+    M< CONTENT-TEXT|SCHEME: VERBATIM_EXTRA_CONTENT>
 
-    =head1 Overview of the B<M<TT: $CLASSNAME >> class
-    (version B<M<TT: $VERSION>>)
+This syntax includes an optional CONTENT-TEXT section, followed by a
+ scheme specifier (SCHEME:) and then the VERBATIM_EXTRA_CONTENT. 
+The scheme specifier should follow the same rules as for L<Named blocks|#Named blocks>.
+The scheme specifier allows the verbatim extra content (VERBATIM_EXTRA_CONTENT),
+which may include additional attributes or instructions for the markup code handler.
 
-    B<M<TT: get_description($CLASSNAME) >>
-=end code
+An example of how this code might be used is :
 
-The C<M<>> formatting code is the inline equivalent of a
-L<named block|#Named blocks>.
+=for code :allow<B>
+    B<M<> This text is highlighted in yellowB<|Marker: yellow>>.
 
-Internally an C<M<>> code is converted to an object derived from the
-C<Pod::FormattingCode::Named> class. The name of the scheme becomes
-the final component of the object's classname. For instance, the C<M<>>
-code in the previous example would be converted to a
-C<Pod::FormattingCode::Named::TT> object, whose C<.typename>
-method retrieves the string C<"TT"> and whose C<.contents>
-method retrieves a list of the formatting code's (verbatim,
-unformatted) contents.
+In this example, the text s "This text is highlighted in yellow"> is subject
+to special handling specified by the C<Marker:> scheme and  C<yellow>, indicating 
+that the textshould be highlighted in yellow.
 
-If the formatting code is unrecognized, the contents of the code (i.e.
-everything after the first colon) would normally be rendered as
-ordinary text.
-=end comment
+
+If the C<SCHEME:> is unrecognized, the content text (CONTENT-TEXT) should be
+rendered as ordinary text. This ensures that documents remain readable even 
+if specific processing instructions cannot be executed.
+
+This feature enhances the flexibility and capability of Podlite documents,
+enabling custom formatting and behavior that goes beyond standard markup features.
+
 
 =head2 Block pre-configuration
 
@@ -3013,7 +3104,6 @@ attribute. By default, handles are opened to the file "C<db.log>".
     C<=pod>             No "ambient" blocks inside
     C<=table>           Simple rectangular table
     C<=data>            Data section
-    C<=finish>          No ambient blocks after this point
     C<=toc>             Autogenerated table of contents 
     C<=include>         Include other blocks, documents
     C<=picture>         Inserting pictures
