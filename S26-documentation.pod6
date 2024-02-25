@@ -141,10 +141,8 @@ in a C<pod> block:
     B<=end pod>
 =end code
 
-The contents of files with the extensions '.pod6' and '.podlite' are 
-implicitly wrapped in a C<=pod> directive. This puts the parser in 
-D<"Pod" mode|Pod mode; parser modes> for the entire file, treating
- all text as Podlite even if it's not inside an explicit block.
+The contents of files with the extensions '.podlite' and '.pod6' are 
+implicitly wrapped in a C<=pod> directive.
 
 For '.md' and '.markdown' files, the parser operates in D<"Markdown" 
 mode|Markdown mode; parser modes> for the entire file, treating all 
