@@ -805,19 +805,19 @@ or more formatting codes. Those codes will then remain active inside the
 code block. For example:
 
 =begin code
-    =begin code :allow< B R >
-    sub demo {
-        B<say> 'Hello R<name>';
-    }
-    =end code
+  =begin code :allow< B R >
+  sub demo {
+      B<say> 'Hello R<name>';
+  }
+  =end code
 =end code
 
 would be rendered:
 
 =begin code :allow< B R >
-sub demo {
-    B<say> 'Hello R<name>';
-}
+  sub demo {
+      B<say> 'Hello R<name>';
+  }
 =end code
 
 Note that the use of the C<:allow> option also makes it possible
@@ -834,11 +834,11 @@ renderers or syntax highlighting tools.
 For example:
 
 =begin code :allow<B>
- =begin code B<:lang<raku>>
- sub demo {
-    say 'Hello R<name>';
- }
- =end code
+  =begin code B<:lang<raku>>
+  sub demo {
+     say 'Hello R<name>';
+  }
+  =end code
 =end code 
 
 
