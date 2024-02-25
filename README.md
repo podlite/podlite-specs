@@ -22,7 +22,7 @@ Podlite aims to provide users with a means for creativity and expressing ideas i
 
 [The specification](https://github.com/podlite/podlite-specs/blob/main/Specification.pod6) for the Podlite markup language is written using Podlite markup itself.
 
-
+<div align="center">
 <table border=0><tr><td valign=top><div align="center">
 
 ##### specification
@@ -66,3 +66,4 @@ Podlite aims to provide users with a means for creativity and expressing ideas i
 * [github.com/podlite](https://github.com/podlite/)
 
 </td></tr></table>
+</div>
