@@ -2390,20 +2390,19 @@ For example:
   to quit all applications.
 =end code
 
-In Perl 5 POD, the C<Z<>> code was widely used to break up text that would
-otherwise be considered mark-up:
-
+In certain scenarios, the C<Z<>> code is used to break up text that 
+would otherwise be considered mark-up:
 =begin code :allow<B>
-    In Perl 5 POD, the ZB<Z<>><> code was widely used to break up text
-    that would otherwise be considered mark-up.
+  In certain scenarios, the ZB<Z<>><> code is used to break up text that 
+  would otherwise be considered mark-up.
 =end code
 
 That technique still works, but it's now easier to accomplish the same goal
 using a verbatim formatting code:
 
 =begin code :allow<B>
-    In Perl 5 POD, the B«V<V<Z<>>>» code was widely used to break up text
-    that would otherwise be considered mark-up.
+  In certain scenarios, the B«V<V<Z<>>>» code is used to break up text that 
+  would otherwise be considered mark-up.
 =end code
 
 Moreover, the C<C<>> code automatically treats its contents as being
