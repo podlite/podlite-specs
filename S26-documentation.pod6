@@ -149,6 +149,10 @@ For '.md' and '.markdown' files, the parser operates in D<"Markdown"
 mode|Markdown mode; parser modes> for the entire file, treating all 
 text as markdown even if it is not inside an C<=markdown> block.
 
+Any other file extension puts the parser in default mode. The L<C<=include>
+block|#Include block > has a mechanism to override this behavior by using 
+the C<:mime-type> attribute for the included files.
+
 =head3 Delimited blocks
 
 Delimited blocks are bounded by C<=begin> and C<=end> markers, both of
