@@ -2832,6 +2832,13 @@ to special handling specified by the C<Marker:> scheme and  C<yellow>, indicatin
 that the textshould be highlighted in yellow.
 
 
+If the C<SCHEME:> is unrecognized, the content text (CONTENT-TEXT) should be
+rendered as ordinary text. This ensures that documents remain readable even 
+if specific processing instructions cannot be executed.
+
+This feature enhances the flexibility and capability of Podlite documents,
+enabling custom formatting and behavior that goes beyond standard markup features.
+
 
 =head2 Block pre-configuration
 
