@@ -1690,6 +1690,17 @@ they appear in the file. For example:
 
 =end code
 
+In the example above, we have a C<=data> block with C<:id> C<Logo> that stores
+the base64-encoded image data. We also specify the filename, mime type,
+access time, and edit time as attributes of the C<=data> block.
+
+The image can then be referenced using the `=picture` block with the scheme
+C<data:> and the block name C<Logo>.
+
+
+The C<=data> blocks are just regular Podlite blocks and may appear anywhere
+within a source file, and as many times as required.
+
 Note that in Podlite, it is possible to specify C<=data> blocks
 I<after> the point in the source where their contents will be used.
 
