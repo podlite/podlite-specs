@@ -1150,8 +1150,8 @@ attribute to C<=item> block.
 
 The rendered output looks like this:
 
- [ ] Buy groceries
- [X] Clean the garage
+ [X] Buy groceries
+ [ ] Clean the garage
 
 Alternatively, if item content starts with brackets with space (C<[ ]>)
 the item is treated as having a C<:!checked> attribute.
@@ -1160,8 +1160,8 @@ of C<:checked> attribute.
 
 For example:
 =begin code :allow<B> 
- =item B<[ ]> Buy groceries
- =itme B<[x]> Clean the garage 
+ =item B<[x]> Buy groceries
+ =itme B<[ ]> Clean the garage 
 =end code
 
 It possiible to create multilevel to-do lists, which permits the 
