@@ -1407,14 +1407,15 @@ Or:
 =begin code
  =begin table
 
-    Programming Language        Possible Values 
+    Energy Source                Benefit
 
-    Python                       python                 
-    Raku                         raku                   
-    HTML                         html                   
-    CSS                          css                    
- 
- =end table
+    Solar power                  Reduces electricity bills
+    Wind energy                  Clean power source
+    Hydroelectric power          Highly efficient
+    Geothermal energy            Low emissions
+    Biomass                      Reduces waste
+
+=end table
 =end code
 
 or line-by-line with multi-line headers:
