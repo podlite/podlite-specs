@@ -120,8 +120,14 @@ will I<usually> ignore such blocks, but see L<#Aliases>.
 
 All directives have a defined terminator and the Podlite parser always reverts to
 D<"ambient"|Ambient mode; parser modes> at the end of each Podlite directive or 
-block. To cause the parser to remain in "Pod" mode, you must enclose the desired 
-Podlite region in a C<pod> block:
+block.
+
+The C<=pod> block puts the parser in D<"pod" mode|Pod mode; parser modes>, 
+treating all text between blocks as implicit paragraph Podlite, even if 
+it's not inside an explicit block.
+
+To keep the parser in "pod" mode, enclose the desired Podlite region 
+in a C<pod> block:
 
 =begin code :allow<B>
     B<=begin pod>
