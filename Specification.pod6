@@ -27,6 +27,10 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
 
 =begin CHANGES
 
+=head3 New:
+
+=head3 Deprecated/removed:
+  =item Contextual aliases
 =head2 1.0-beta2
 =head3 New:
     =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>
