@@ -16,7 +16,7 @@ you're welcome to suggest changes or start a conversation on
 our L<GitHub page|https://github.com/podlite/podlite-specs>.
 =end nested
 
-=Toc head1, head2,head3
+=toc head1, head2, head3
 
 =begin AUTHORS
 =item Damian Conway <L<C<damian@conway.org>|mailto:damian@conway.org>>
@@ -2552,7 +2552,7 @@ Serial Number for a publication. For example:
 
 =end defn
 
-To refer to a specific section within a webpage, manpage, or Pod
+To refer to a specific section within a webpage, manpage, or Podlite
 document, add the name of that section after the main link, separated by
 a C<#>. For example:
 
