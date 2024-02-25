@@ -29,13 +29,12 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
 
 =head2 1.0-beta2
 =head3 New:
-    =head3 New:
-        =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>
-        =item C<:mime-type> attribute for C<=include> and C<=data> blocks
-        =item introduce С<data:> schema for use in =picture and C<=table>
-        =item render tables from CSV files, C<=table>
-        =item new markdown mode for parser
-        =item M<> - extends inline markup features
+    =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>
+    =item C<:mime-type> attribute for C<=include> and C<=data> blocks
+    =item introduce С<data:> schema for use in =picture and C<=table>
+    =item render tables from CSV files, C<=table>
+    =item new markdown mode for parser
+    =item M<> - extends inline markup features
     
 =head3 Deprecated/removed:
     =item C<=finish>
