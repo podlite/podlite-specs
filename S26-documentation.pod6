@@ -1656,19 +1656,18 @@ use the following syntax:
 =end code
 
 Each C<=data> block can be given a C<:key> option, to name it. The contents
-of any C<=data> block with a key are accessible (as a single string) via
-the Associative aspect of C<$=data> object. For example:
+of any C<=data> block with a key are addressable via
+the C<data> schema. For example:
 
-=begin code :allow<B>
+=begin code
+  =begin data :key<employee_data> :mime-type<text/csv>
+    id,name,position,department
+    1,John Doe,Manager,Marketing
+    2,Jane Smith,Developer,Engineering
+    3,Bob Brown,Designer,Product
+  =end data
 
-    =begin data :key<Virtues>
-    Laziness
-    Impatience
-    Hubris
-    =end data
-
-    say 'The three virtues are:';
-    say $=data<Virtues>;
+  =table data:employee_data
 
 =end code
 
