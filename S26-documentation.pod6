@@ -2130,7 +2130,7 @@ content within Podlite documents. This is achieved using the C<=markdown> block.
   =end markdown
 =end code
 
-This block allows to seamlessly combine Pod's structured blocks with
+This block allows to seamlessly combine Podlite's structured blocks with
 the flexibility of Markdown.
 
 
