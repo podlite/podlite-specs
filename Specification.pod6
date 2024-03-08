@@ -801,18 +801,18 @@ code). Explicit C<=code> blocks may also contain empty lines.
 
 =head4 Formatting within code blocks
 
-Although C<=code> blocks automatically disregard all L<formatting
-codes|#Formatting codes>, occasionally you may still need to specify
+Although C<=code> blocks automatically disregard all L<markup
+codes|#Markup codes>, occasionally you may still need to specify
 some formatting within a code block. For example, you may wish
 to emphasize a particular keyword in an example (using a C<B<>> code). Or
 you may want to indicate that part of the example is metasyntactic
 (using the C<R<>> code). Or you might need to insert a non-ASCII
 character (using the C<E<>> code).
 
-You can specify a list of formatting codes that should still be
+You can specify a list of markup codes that should still be
 recognized within a code block using the C<:allow> option. The value of
 the C<:allow> option must be a list of the (single-letter) names of one
-or more formatting codes. Those codes will then remain active inside the
+or more markup codes. Those codes will then remain active inside the
 code block. For example:
 
 =begin code
