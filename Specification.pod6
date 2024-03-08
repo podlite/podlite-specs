@@ -2157,9 +2157,9 @@ markup codes can nest:
     and with emphasis.>
 =end code
 
-All Podlite formatting codes consist of a single capital letter followed
+All Podlite markup codes consist of a single capital letter followed
 immediately by a set of angle brackets. The brackets contain the text or
-data to which the formatting code applies. You can use a set of single
+data to which the markup code applies. You can use a set of single
 angles (C«<...>»), a set of double angles (C<«...»>), or multiple
 single-angles (C«<<<...>>>»).
 
@@ -2366,24 +2366,24 @@ respective fonts should be used.
 
 =head3 Verbatim text
 
-The C<V<>> formatting code treats its entire contents as being B<verbatim>,
-disregarding every apparent formatting code within it. For example:
+The C<V<>> markup code treats its entire contents as being B<verbatim>,
+disregarding every apparent markup code within it. For example:
 
-    The B<V< V<> >> formatting code disarms other codes
+    The B<V< V<> >> markup code disarms other codes
     such as V< I<>, C<>, B<>, and M<> >.
 
 Note, however that the C<V<>> code only changes the way its
 contents are parsed, I<not> the way they are rendered. That is, the
 contents are still wrapped and formatted like plain text, and the
-effects of any formatting codes surrounding the C<V<>> code
+effects of any markup codes surrounding the C<V<>> code
 are still applied to its contents. For example the previous example
 is rendered:
 
 =nested
-The B<V< V<> >> formatting code disarms other codes
+The B<V< V<> >> markup code disarms other codes
 such as V< I<>, C<>, B<>, and M<> >.
 
-You can prespecify formatting codes that remain active within
+You can prespecify markup codes that remain active within
 a C<V<>> code, using the L<C<:allow>|#Formatting within code blocks>
 option.
 
