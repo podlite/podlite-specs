@@ -544,7 +544,7 @@ between Podlite block names and their corresponding Markdown elements.
 
     Podlite                                             Markdown                Describtion
     _______________________________________         ______________          _____________________________________
-    head1, head2, ...                                 #, ##, ...            Heading level 1,2...
+    C<=head1>, C<=head2>, ...                                 #, ##, ...            Heading level 1,2...
 
     C<=nested>                                          ">"                      blockquote
 
