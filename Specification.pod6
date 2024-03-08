@@ -2390,7 +2390,7 @@ option.
 
 =head3 Inline comments
 
-The C<Z<>> formatting code indicates that its contents constitute a
+The C<Z<>> markup code indicates that its contents constitute a
 B<zero-width comment>, which should not be rendered by any renderer.
 For example:
 
@@ -2407,7 +2407,7 @@ would otherwise be considered mark-up:
 =end code
 
 That technique still works, but it's now easier to accomplish the same goal
-using a verbatim formatting code:
+using a verbatim markup code:
 
 =begin code :allow<B>
   In certain scenarios, the B«V<V<Z<>>>» code is used to break up text that 
@@ -2422,7 +2422,7 @@ verbatim, which often eliminates the need for the C<V<>> as well:
     that would otherwise be considered mark-up.
 =end code
 
-The C<Z<>> formatting code is the inline equivalent of a
+The C<Z<>> markup code is the inline equivalent of a
 L<C<=comment> block|#Comments>.
 
 =head3 Links
