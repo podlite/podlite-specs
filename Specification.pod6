@@ -2145,7 +2145,7 @@ This block allows to seamlessly combine Podlite's structured blocks with
 the flexibility of Markdown.
 
 
-=head2 Formatting codes
+=head2 Markup codes
 
 Formatting codes provide a way to add inline mark-up to a piece of text
 within the contents of (most types of) Podlite block. Formatting codes are
