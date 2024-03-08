@@ -2288,11 +2288,11 @@ term (or any of its specified synonyms) within a hypertext.
 
 =head3 Example specifiers
 
-Podlite provides formatting codes for specifying inline examples of input,
+Podlite provides markup codes for specifying inline examples of input,
 output, code, and metasyntax:
 
 =begin item
-The C<T<>> formatting code specifies that the contained text is
+The C<T<>> markup code specifies that the contained text is
 B<terminal output>; that is: something that a program might print out.
 Such content would typically be rendered in a T<fixed-width font> or with
 C< <samp>...</samp> > tags. The contents of a C<T<>> code are always
@@ -2302,25 +2302,25 @@ C<=output> block.
 =end item
 
 =begin item
-The C<K<>> formatting code specifies that the contained text is
+The C<K<>> markup code specifies that the contained text is
 B<keyboard input>; that is: something that a user might type in. Such
 content would typically be rendered in a K<fixed-width font> (preferably a
-different font from that used for the C<T<>> formatting code) or with
+different font from that used for the C<T<>> markup code) or with
 C< <kbd>...</kbd> > tags. The contents of a C<K<>> code are always
 L<space-preserved| #Space-preserving text>. The C<K<>> code is the
 inline equivalent of the C<=input> block.
 =end item
 
 =begin item
-The C<C<>> formatting code specifies that the contained text is B<code>;
+The C<C<>> markup code specifies that the contained text is B<code>;
 that is, something that might appear in a program or specification. Such
 content would typically be rendered in a C<fixed-width font> (preferably
-a different font from that used for the C<T<>> or C<K<>> formatting
+a different font from that used for the C<T<>> or C<K<>> markup
 codes) or with C< <code>...</code> > tags. The contents of a C<C<>> code
 are L<space-preserved| #Space-preserving text> and L<verbatim| #Verbatim text>.
 The C<C<>> code is the inline equivalent of the C<=code> block.
 
-To include other formatting codes in a C<C<>> code, you can lexically
+To include other markup codes in a C<C<>> code, you can lexically
 L<reconfigure|#Block pre-configuration> it:
 
 =begin code :allow<B>
@@ -2337,7 +2337,7 @@ at the top of the document
 =end item
 
 =begin item
-The C<R<>> formatting code specifies that the contained text is a
+The C<R<>> markup code specifies that the contained text is a
 B<replaceable item>, a placeholder, or a metasyntactic variable. It is
 used to indicate a component of a syntax or specification that should
 eventually be replaced by an actual value. For example:
