@@ -2914,10 +2914,7 @@ L<C<A<> markup code>|#Alias placements>.
 Note that C<=alias> is a fundamental Podlite directive, like C<=begin> or
 C<=for>; there are no equivalent paragraph or delimited forms.
 
-There are two forms of C<=alias> directive: macro aliases and contextual
-aliases. Both forms are lexically scoped to the surrounding Podlite block.
-
-=head3 Macro aliases
+Macro aliases are lexically scoped to the surrounding Podlite block.
 
 The simplest form of alias takes two arguments. The first is an
 identifier (which is usually specified in uppercase, though this is
@@ -2926,7 +2923,7 @@ lines of replacement text.
 
 This creates a lexically scoped Podlite macro that can be invoked during
 document generation by placing the identifier (i.e. the first argument
-of the alias) in an C<A<>> formatting code. This formatting code is then
+of the alias) in an C<A<>> markup code. This markup code is then
 replaced by the text returned by new macro.
 
 The replacement text returned by the alias macro begins at the first
