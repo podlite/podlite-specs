@@ -2147,11 +2147,9 @@ the flexibility of Markdown.
 
 =head2 Markup codes
 
-Formatting codes provide a way to add inline mark-up to a piece of text
-within the contents of (most types of) Podlite block. Formatting codes are
-themselves a type of block, and may nest other formatting codes.
-other type of block (most often, other formatting codes). In particular,
-you can nest comment blocks in the middle of a formatting code:
+Markup codes enable inline markup within the text of (most) Pod block types.
+They are a form of block that can contain only other markup codes. Specifically,
+markup codes can nest:
 
 =begin code :allow<B V>
     V<B><I shall say this loudly
