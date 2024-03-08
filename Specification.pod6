@@ -1965,8 +1965,8 @@ structure intact.
 The C<=include> block is followed by an L<"Selector"|#Selectors> that specifies the 
 content to be included.
 
-In this example, the content of the file "chapter01.pod6" located in the 
-"./includes" directory is included:
+In this example, the content of the file C<chapter01.pod6> located in the 
+C<./includes> directory is included:
 
 =begin code 
  =include file:./includes/chapter01.pod6
