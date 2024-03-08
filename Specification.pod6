@@ -2862,7 +2862,7 @@ information that is applied to every block of a particular type.
 =end code
 
 Here, two configurations are outlined. The first one sets 
-the language for code blocks to C<python> and allows bold formatting
+the language for code blocks to C<python> and allows bold markup.
 The second establishes that all level 1 headings will be numbered.
 
 The general syntax for configuration directives is:
@@ -2887,9 +2887,9 @@ previous example, to specify another langiage for code block:
     print(JSON.stringify([1,2]]));
 =end code
 
-=head3 Pre-configuring formatting codes
+=head3 Pre-configuring markup codes
 
-You can also lexically preconfigure a L<formatting code|#Formatting codes>,
+You can also lexically preconfigure a L<markup code|#Markup codes>,
 by naming it with a pair of angles as a suffix. For example:
 
 =begin code :allow<B>
@@ -2899,7 +2899,7 @@ by naming it with a pair of angles as a suffix. For example:
     B<=config C<>  :allow<I>>
 =end code
 
-Note that, even though the formatting code is named using single-angles,
+Note that, even though the markup code is named using single-angles,
 the preconfiguration applies regardless of the actual delimiters used on
 subsequent instances of the code.
 
@@ -2909,7 +2909,7 @@ The C<=alias> directive provides a way to define lexically scoped
 synonyms for longer Podlite sequences, (meta)object declarators from the
 code, or even entire chunks of ambient source. These synonyms can then
 be inserted into subsequent Podlite using the
-L<C<A<> formatting code>|#Alias placements>.
+L<C<A<> markup code>|#Alias placements>.
 
 Note that C<=alias> is a fundamental Podlite directive, like C<=begin> or
 C<=for>; there are no equivalent paragraph or delimited forms.
