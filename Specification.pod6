@@ -2234,10 +2234,10 @@ mistake and should not be included in the document.
 
 =head3 Text positioning
 
-Podlite provides two formatting codes that allow positioning characters or words.
+Podlite provides two markup codes that allow positioning characters or words.
 
 =begin item
-To create subscript text, you can use the C<J<>> formatting code, where 'J' represents 
+To create subscript text, you can use the C<J<>> markup code, where 'J' represents 
 "Junior text." Subscript positions one or more characters slightly below the normal
 line of type.
 
@@ -2248,7 +2248,7 @@ slightly below the baseline, as is often seen in chemical formulas like H₂O (w
 =end item
 
 =begin item
-To create superscript text, it possible to use the C<H<>> formatting code, where 'H'
+To create superscript text, it possible to use the C<H<>> markup code, where 'H'
 stands for "High text." Superscript positions one or more characters slightly
 above the normal line of type
 
