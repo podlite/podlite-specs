@@ -693,7 +693,7 @@ B<2.3.8.6.1.9. The Rescue of the Kobayashi Maru>
 
 Ordinary paragraph blocks consist of text that is to be formatted into
 a document at the current level of nesting, with whitespace
-squeezed, lines filled, and any special L<inline mark-up|#Formatting codes>
+squeezed, lines filled, and any special L<inline mark-up|#Markup codes>
 applied.
 
 Ordinary paragraphs consist of one or more consecutive lines of text,
@@ -754,7 +754,7 @@ blank lines are preserved.
 
 Code blocks are used to specify pre-formatted text (typically source
 code), which should be rendered without rejustification, without
-whitespace-squeezing, and without recognizing any inline formatting
+whitespace-squeezing, and without recognizing any inline markup
 codes. Code blocks also have an implicit L<nesting|#Nesting blocks>
 associated with them. Typically these blocks are used to show examples
 of code, mark-up, or other textual specifications, and are rendered
@@ -2978,7 +2978,7 @@ text ever has to be changed, it need only be modified in a single place:
     Directive           Specifies
     _________           ____________________________________________________
     C<=begin>           Start of an explicitly terminated block
-    C<=config>          Lexical modifications to a block or formatting code
+    C<=config>          Lexical modifications to a block or markup code
     C<=end>             Explicit termination of a C<=begin> block
     C<=for>             Start of an implicitly (blank-line) terminated block
     C<=alias>           Define a Podlite macro
@@ -3014,7 +3014,7 @@ text ever has to be changed, it need only be modified in a single place:
 
 =end table
 
-=head2 Formatting codes
+=head2 Inline markup codes
 =config C<> :allow<R V>
 =begin table :nested
 
@@ -3041,7 +3041,7 @@ text ever has to be changed, it need only be modified in a single place:
     C<S<...>>             Space characters to be preserved
     C<T<...>>             Terminal output (typically rendered fixed-width)
     C<U<...>>             Unusual (typically rendered with underlining)
-    C<V<V><...>>          Verbatim (internal formatting codes ignored)
+    C<V<V><...>>          Verbatim (internal markup codes ignored)
     C<W<...|...>>         Contextual backlinks
     C<Y<>>                reserved
     C<X<...|..,..;...>>   Index entry (C<X<R<display text>|R<entry>,R<subentry>;...>>)
