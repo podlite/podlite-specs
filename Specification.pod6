@@ -1362,7 +1362,6 @@ The preceding example could equally have been specified:
     B<=end nested>
 =end code
 
-
 =head3 Tables
 
 Simple tables can be specified in Podlite using a C<=table> block.
@@ -1408,7 +1407,7 @@ With header:
     Directive           Specifies
     _________           ____________________________________________________
     C<=begin>           Start of an explicitly terminated block
-    C<=config>          Lexical modifications to a block or formatting code
+    C<=config>          Lexical modifications to a block or markup code
     
  =end table
 =end code
@@ -2205,21 +2204,21 @@ user explicitly disables the warning).
 
 =head3 Significance indicators
 
-Podlite provides three formatting codes that flag their contents with
+Podlite provides three markup codes that flag their contents with
 increasing levels of significance:
 
 =item
-The C<U<>> formatting code specifies that the contained text is
+The C<U<>> markup code specifies that the contained text is
 B<unusual> or distinctive; that it is of I<minor significance>. Typically
 such content would be rendered in an underlined style.
 
 =item
-The C<I<>> formatting code specifies that the contained text is
+The C<I<>> markup code specifies that the contained text is
 B<important>; that it is of I<major significance>. Such content would
 typically be rendered in italics or in C< <em>...</em> > tags
 
 =item
-The C<B<>> formatting code specifies that the contained text is the
+The C<B<>> markup code specifies that the contained text is the
 B<basis> or focus of the surrounding text; that it is of I<fundamental
 significance>. Such content would typically be rendered in a bold style or
 in C< <strong>...</strong> > tags.
