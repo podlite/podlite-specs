@@ -127,7 +127,7 @@ within a Podlite block is treated as "ambient" material. Typically this
 would be the source code of the program that the Podlite is documenting. 
 Podlite parsers still parse this text into the internal representation of the
 file, representing it as a "ambient" block. Renderers
-will I<usually> ignore such blocks, but see L<#Aliases>.
+will I<usually> ignore such blocks.
 This is the D<default mode|Default mode; parser modes> of the parser.
 
 All directives have a defined terminator and the Podlite parser always reverts to
