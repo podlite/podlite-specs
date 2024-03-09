@@ -2835,18 +2835,16 @@ An example of how this code might be used is :
 =for code :allow<B>
     B<M<> This text is highlighted in yellowB<|Marker: yellow>>.
 
-In this example, the text s "This text is highlighted in yellow"> is subject
-to special handling specified by the C<Marker:> scheme and  C<yellow>, indicating 
+In this example, the text C<"This text is highlighted in yellow"> is subject
+to special handling specified by the C<Marker:> scheme and C<yellow>, indicating 
 that the textshould be highlighted in yellow.
-
 
 If the C<SCHEME:> is unrecognized, the content text (CONTENT-TEXT) should be
 rendered as ordinary text. This ensures that documents remain readable even 
 if specific processing instructions cannot be executed.
 
 This feature enhances the flexibility and capability of Podlite documents,
-enabling custom formatting and behavior that goes beyond standard markup features.
-
+enabling custom markup and behavior that goes beyond standard markup features.
 
 =head2 Block pre-configuration
 
