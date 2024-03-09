@@ -832,8 +832,8 @@ would be rendered:
 =end code
 
 Note that the use of the C<:allow> option also makes it possible
-for verbatim L<formatting codes|#Formatting codes> (such as C<C<>>
-and C<V<>>) to L<contain other codes as well|#Pre-configuring formatting codes>.
+for verbatim L<markup codes|#Markup codes> (such as C<C<>>
+and C<V<>>) to L<contain other codes as well|#Pre-configuring markup codes>.
 
 =head4 Assign programming language to code blocks
 
@@ -1981,7 +1981,7 @@ of content from all the Markdown files:
 It's possible to include blocks from the same document being worked on.
 This feature proves valuable when reusing parts of existing content.
 
-For instance, a semantic block "VERSION" can be included as demonstrated:
+For instance, a semantic block C<=VERSION> can be included as demonstrated:
 
 =begin code :allow<B>
 B<=include VERSION>
@@ -2193,11 +2193,11 @@ or delimiters with more consecutive angles than your text contains:
     The Perl 5 heredoc syntax was: CB«<<<» <<END_MARKER B«>>>»
 =end code
 
-A formatting code ends at the matching closing angle bracket(s), or at
-the end of the enclosing block or formatting code in which the opening
+A markup code ends at the matching closing angle bracket(s), or at
+the end of the enclosing block or markup code in which the opening
 angle bracket was specified, whichever comes first (this includes paragraph
 and abbreviated blocks, ending with blank a line). Podlite parsers are
-required to issue a warning whenever a formatting code is terminated by
+required to issue a warning whenever a markup code is terminated by
 the end of an outer block rather than by its own delimiter (unless the
 user explicitly disables the warning).
 
@@ -2261,7 +2261,7 @@ slightly above the baseline. This is commonly used for mathematical exponents, a
 
 =head3 Definitions
 
-The C<D<>> formatting code indicates that the contained text is a
+The C<D<>> markup code indicates that the contained text is a
 B<definition>, introducing a term that the adjacent text
 elucidates. It is the inline equivalent of a C<=defn> block.
 For example:
@@ -2276,7 +2276,7 @@ A definition may be given synonyms, which are specified after a vertical bar
 and separated by semicolons:
 
 =begin code :allow<B>
-    A B<D<formatting code|formatting codes;formatters>> provides a way
+    A B<D<markup code|markup codes;formatters>> provides a way
     to add inline mark-up to a piece of text.
 =end code
 
