@@ -28,7 +28,7 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
 =begin CHANGES
 
 =head3 New:
-
+  =item Notification blocks, C<:notify> attribute for C<=nested> blocks
 =head3 Deprecated/removed:
   =item Contextual aliases
 =head2 1.0-beta2
@@ -2969,6 +2969,25 @@ text ever has to be changed, it need only be modified in a single place:
     =alias VENDOR      Last Chance Receivers Intl
     =alias TERMS_URLS  L<http://www.c11.com/generic_conditions>
 =end code
+
+=head2 Notification blocks
+
+These blocks, often referred to as admonitions, callouts, or alerts,
+serve to draw the reader's attention to different types of content, 
+such as tips, warnings, or important notes. 
+
+To create specially formatted blocks to highlight information in Podlite 
+the =nested block and :notice attribute are utilized.
+
+For example:
+
+=begin code :allow<B>
+    B<=begin nested> B<:notify<tip>>
+    Remember to always use oven mitts when handling hot bakeware
+    to prevent burns.
+    B<=end nested>
+=end code
+
 
 =begin SUMMARY
 
