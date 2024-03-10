@@ -3031,6 +3031,12 @@ of the information using the foldable option.
   =end nested
 =end code
 
+It is possible to create title-only callouts by omitting the body.
+
+=begin code 
+  =for nested :notify<important> :folded :caption<"Title-only callout">
+=end code
+
 Notification blocks are displayed with distinctive colors and 
 icons that indicate the significance of the content.
 
