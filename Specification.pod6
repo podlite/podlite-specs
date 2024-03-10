@@ -872,17 +872,17 @@ serifed for code, bold sans-serif for input, and regular sans-serif for
 output).
 
 Unlike C<=code> blocks, both C<=input> and C<=output> blocks honour any
-nested formatting codes. This is particularly useful since a sample of
+nested markup codes. This is particularly useful since a sample of
 input will often include prompts (which are, of course, output).
 Likewise a sample of output may contain the occasional interactive
-component. Podlite provides L<special formatting codes|#Example specifiers>
+component. Podlite provides L<special markup codes|#Example specifiers>
 (C<K<>> and C<T<>>) to indicate embedded input or output, so you can use
 the block type that indicates the overall purpose of the sample (i.e. is
 it demonstrating an input operation or an output sequence?) and then use
-the "contrasting" formatting code within the block.
+the "contrasting" markup code within the block.
 
 For example, to include a small amount of input in a sample of output
-you could use the C<K<>> formatting code:
+you could use the C<K<>> markup code:
 
 =begin code :allow<B>
     =begin output
