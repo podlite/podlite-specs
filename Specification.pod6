@@ -2989,6 +2989,19 @@ For example:
 =end code
 
 
+It is possible to customize the title of the block and control the visibility 
+of the information using the foldable option.
+
+=begin code :allow<I B Z> 
+  =begin nested B<:caption<"Astronaut's Reminder">> :notify<important> B<:folded>
+    Space missions require meticulous planning and adherence to safety protocols.
+    Neglecting these can lead to mission failure or, worse, endanger lives.
+  =end nested
+=end code
+
+Notification blocks are displayed with distinctive colors and 
+icons that indicate the significance of the content.
+
 =begin SUMMARY
 
 =head2 Directives
