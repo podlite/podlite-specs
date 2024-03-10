@@ -2616,7 +2616,27 @@ corresponds to a specific part of the document set. An example would be:
     ...
 =end code
 
+When Podlite processes a link, it can automatically use the document's title
+from the C<=TITLE> or C<=NAME> blocks as the display text for the hyperlink if no
+explicit text is provided. For example:
 
+=begin code :allow<B>
+
+    =for TITLE :id<Specification>
+    The Specification of Podlite
+
+   =para
+   Please read "B<L<doc:Specification>>".
+
+=end code
+
+... will be rendered as:
+
+=begin code :allow<B>
+
+ Please read "B<The Specification of Podlite>".
+
+=end code
 
 =end defn
 
