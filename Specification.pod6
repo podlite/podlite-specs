@@ -2988,6 +2988,38 @@ For example:
     B<=end nested>
 =end code
 
+Below is a table that outlines the different types of notification blocks
+along with a brief description of each type.
+
+=begin table :caption<"Types of Notification blocks">
+    
+    Type          Description
+    ----------    ------------------------------------------------------
+    note          Provides additional information and context without
+                  interrupting the flow of the main content
+                  
+    tip           Offers advice for doing things better or more easily
+    
+    important     Signifies that the information is crucial for 
+                  understanding or success
+    
+    warning       Indicates urgent information that requires immediate 
+                  attention to avoid potential problems
+    
+    caution       Advises readers about potential negative outcomes or 
+                  risks associated with certain actions
+
+=end table
+
+=begin comment
+TODO:
+custom (e.g. `faq`, etc.)???       Allows for specifying the specific context or content.
+
+    =begin nested :caption<"Foldable FAQ: Question 1"> :notice<faq> :folded
+    This is how you make content foldable for a cleaner look.
+    =end nested
+
+=end comment
 
 It is possible to customize the title of the block and control the visibility 
 of the information using the foldable option.
