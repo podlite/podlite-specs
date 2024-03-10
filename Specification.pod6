@@ -2587,14 +2587,19 @@ A link to the system manpages. For example:
 =begin defn
 C<doc:>
 
-A link to some other documentation, typically a module or part of the
-core documentation.
+A link to other documents by utilizing semantic blocks 
+such as C<=TITLE> or C<=NAME> as anchor points for these links.
+
 For example:
 
 =begin code :allow<B>
-    You may wish to use L<B<doc:Data::Dumper>> to
-    view the results. See also: L<B<doc:perldata>>.
+
+    B<=NAME Dumper>
+
+    You may wish to use L<B<doc:Dumper>> to
+    view the results.
 =end code
+
 
 =end defn
 
