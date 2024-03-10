@@ -3021,8 +3021,9 @@ custom (e.g. `faq`, etc.)???       Allows for specifying the specific context or
 
 =end comment
 
+By default, the title of the notification block is its type identifier in title case.
 It is possible to customize the title of the block and control the visibility 
-of the information using the foldable option.
+of the information using the C<:caption> and C<:folded> options.
 
 =begin code :allow<I B Z> 
   =begin nested B<:caption<"Astronaut's Reminder">> :notify<important> B<:folded>
