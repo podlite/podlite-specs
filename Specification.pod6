@@ -537,6 +537,9 @@ values for the C<:lang> attribute:
 
 =end table
 
+If the language is not specified, the default language is used based 
+on the file extension or mime type of the current document.
+
 =end defn
 
 =begin defn
