@@ -492,6 +492,25 @@ For example:
   Green Energy Overview 
 =end code
 
+=begin comment
+TODO: my be it may sense to add a C<:folded-caption> attribute to 
+define a custom title for the collapsed block.
+
+The C<:folded-caption> attribute allows for defining a custom title 
+for the collapsed block. If no caption is provided, rendering systems
+may automatically use the C<:caption> attribute. If the C<:caption> 
+attribute is not present, the first line or paragraph of the block 
+is used as the default title. For semantic blocks, the name of the
+block can be used as the default title.
+
+
+=begin code
+    =picture :folded(1) :folded-caption("Wind Turbine Fields")
+    Images/wind_turbines.jpg
+    Wind turbines stand tall against the sky, harnessing
+    the power of the wind to generate energy 
+=end code
+=end comment
 =end defn
 
 =begin defn
