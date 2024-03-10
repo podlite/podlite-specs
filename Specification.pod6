@@ -469,6 +469,29 @@ This option specifies whether the block is foldable and, if specified,
 whether it should be collapsed or expanded by default. This feature is
 useful in managing the length of documents and focusing the reader's
 attention on certain sections as needed.
+
+A C<:!folded> or C<:folded(0)> expands the callout by default, and a 
+C<:folded> or C<:folded(1)> collapses it instead.
+
+=begin code :allow<B> 
+  =for table B<:folded> :caption('Culinary Techniques for Sustainability')
+    Sous-vide   Low energy consumption
+    ----------  -------------------------
+    Steaming    Preserves nutrients
+    Baking      Efficient for batch cooking
+=end code
+
+When applied to a block element, such as a heading, the attribute typically
+affects all headings with lower-level content, creating a hierarchical
+folding effect.
+
+For example:
+
+=begin code :allow<B>
+  =for B<head2 :folded>
+  Green Energy Overview 
+=end code
+
 =end defn
 
 =begin defn
