@@ -29,6 +29,7 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
 
 =head3 New:
   =item Notification blocks, C<:notify> attribute for C<=nested> blocks
+  =item C<:folded> attribute
   =item C<:folded-levels> for C<=toc> block
 =head3 Deprecated/removed:
   =item Contextual aliases
@@ -459,6 +460,15 @@ Implementors are free to choose whether they render them as disabled,
 unchangeable elements, or handle dynamic interactions like checking and unchecking
 in the final rendered document.
 
+=end defn
+
+=begin defn
+C<:folded>
+
+This option specifies whether the block is foldable and, if specified,
+whether it should be collapsed or expanded by default. This feature is
+useful in managing the length of documents and focusing the reader's
+attention on certain sections as needed.
 =end defn
 
 =begin defn
