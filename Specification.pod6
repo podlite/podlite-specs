@@ -1688,7 +1688,7 @@ For example:
 =end code
 
 
-=head3 Named blocks
+=head3 Custom blocks
 
 Blocks whose names contain at least one uppercase and one lowercase
 letter are assumed to be destined for specialized renderers or parser
@@ -1706,6 +1706,9 @@ or:
     =Image http://www.perlfoundation.org/images/perl_logo_32x104.png
 =end code
 
+Alongside the verbatim or placeholder content, the renderer could provide
+an unobtrusive yet informative error message, explaining that the Custom block
+could not be processed.
 
 Note that all block names consisting entirely of lowercase or entirely of
 uppercase letters are reserved. See L<#Semantic blocks>.
