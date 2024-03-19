@@ -141,7 +141,7 @@ treating all text between blocks as implicit paragraph Podlite, even if
 it's not inside an explicit block.
 
 To keep the parser in "pod" mode, enclose the desired Podlite region 
-in a C<pod> block:
+in a C<=pod> block:
 
 =begin code :allow<B>
   B<=begin pod>
@@ -1760,7 +1760,7 @@ use the following syntax:
 
 Each C<=data> block can be given a C<:key> option, to name it. The contents
 of any C<=data> block with a key are addressable via
-the C<data> schema. For example:
+the C<data:> schema. For example:
 
 =begin code
   =begin data :key<employee_data> :mime-type<text/csv>
@@ -2326,8 +2326,8 @@ line of type.
 
  HJ<2>O
 
-This code renders as "H<sub>2</sub>O," which signifies that the '2' is positioned 
-slightly below the baseline, as is often seen in chemical formulas like H₂O (water).
+This code renders as C<H<sub>2</sub>O>, which signifies that the '2' is positioned 
+slightly below the baseline, as is often seen in chemical formulas like C<H₂O> (water).
 =end item
 
 =begin item
@@ -2337,8 +2337,8 @@ above the normal line of type
 
  XH<2>
 
-This code renders as "X<sup>2</sup>," indicating that the '2' is positioned 
-slightly above the baseline. This is commonly used for mathematical exponents, as in X².
+This code renders as C<X<sup>2</sup>>, indicating that the C<'2'> is positioned 
+slightly above the baseline. This is commonly used for mathematical exponents, as in C<X²>.
 =end item
     
 
