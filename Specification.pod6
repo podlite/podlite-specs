@@ -144,15 +144,15 @@ To keep the parser in "pod" mode, enclose the desired Podlite region
 in a C<pod> block:
 
 =begin code :allow<B>
-    B<=begin pod>
+  B<=begin pod>
 
-    =head1 A heading
+  =head1 A heading
 
-    This is Podlite too. Specifically, this is a simple C<para> block
+  This is Podlite too. Specifically, this is a simple C<para> block
 
-        $this = pod('also');  # Specifically, a code block
+      $this = pod('also');  # Specifically, a code block
 
-    B<=end pod>
+  B<=end pod>
 =end code
 
 The contents of files with the extensions '.podlite' and '.pod6' are 
@@ -835,17 +835,17 @@ There is also an explicit C<=code> block (which can be specified within
 I<any> other block type, not just C<=pod>, C<=item>, etc.):
 
 =begin code :allow<B>
-     The C<loud_update()> subroutine adds feedback:
+  The C<loud_update()> subroutine adds feedback:
 
-        B<=begin code>
+    B<=begin code>
 
-        sub loud_update ($who, $status) {
-            say "$who -> $status";
+    sub loud_update ($who, $status) {
+        say "$who -> $status";
 
-            silent_update($who, $status);
-        }
+        silent_update($who, $status);
+    }
 
-        B<=end code>
+    B<=end code>
 =end code
 
 As the previous example demonstrates, within an explicit C<=code> block
