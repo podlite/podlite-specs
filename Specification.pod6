@@ -941,19 +941,19 @@ For example, to include a small amount of input in a sample of output
 you could use the C<K<>> markup code:
 
 =begin code :allow<B>
-    =begin output
-        Name:    Baracus, B.A.
-        Rank:    Sgt
-        Serial:  1PTDF007
-
-        Do you want additional personnel details? B<K<y>>
-
-        Height:  180cm/5'11"
-        Weight:  104kg/230lb
-        Age:     49
-
-        Print? B<K<n>>
-    =end output
+  =begin output
+      Name:    Baracus, B.A.
+      Rank:    Sgt
+      Serial:  1PTDF007
+  
+      Do you want additional personnel details? B<K<y>>
+  
+      Height:  180cm/5'11"
+      Weight:  104kg/230lb
+      Age:     49
+  
+      Print? B<K<n>>
+  =end output
 =end code
 
 
@@ -2978,9 +2978,9 @@ information that is applied to every block of a particular type.
 
 =begin code
 
-    =config code     :lang<python> :allow<B>
-    =config head1    :numbered
-    =config head2    :folded
+  =config code     :lang<python> :allow<B>
+  =config head1    :numbered
+  =config head2    :folded
     
 =end code
 
