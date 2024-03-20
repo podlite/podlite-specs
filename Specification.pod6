@@ -632,13 +632,13 @@ Podlite provides an unlimited number of levels of heading, specified by the
 C<=head>R<N> block marker. For example:
 
 =begin code
-    =head1 A Top Level Heading
+  =head1 A Top Level Heading
 
-      =head2 A Second Level Heading
+    =head2 A Second Level Heading
 
-        =head3 A third level heading
+      =head3 A third level heading
 
-                        =head86 A "Missed it by I<that> much!" heading
+            =head86 A "Missed it by I<that> much!" heading
 =end code
 
 While Podlite parsers are required to recognize and distinguish all levels
@@ -655,26 +655,26 @@ You can specify that a heading is numbered using the C<:numbered> option. For
 example:
 
 =begin code
-    =for head1 :numbered
-    The Problem
-
-    =for head1 :numbered
-    The Solution
-
-        =for head2 :numbered
-        Analysis
-
-            =for head3
-            Overview
-
-            =for head3
-            Details
-
-        =for head2 :numbered
-        Design
-
-    =for head1 :numbered
-    The Implementation
+  =for head1 :numbered
+  The Problem
+  
+  =for head1 :numbered
+  The Solution
+  
+      =for head2 :numbered
+      Analysis
+  
+          =for head3
+          Overview
+  
+          =for head3
+          Details
+  
+      =for head2 :numbered
+      Design
+  
+  =for head1 :numbered
+  The Implementation
 =end code
 
 which would produce:
