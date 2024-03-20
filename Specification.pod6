@@ -993,15 +993,15 @@ C<=item1>, C<=item2>, C<=item3>, etc. blocks. Note that C<=item> is just
 an abbreviation for C<=item1>. For example:
 
 =begin code
-     =item1  Animal
-     =item2     Vertebrate
-     =item2     Invertebrate
-
-     =item1  Phase
-     =item2     Solid
-     =item2     Liquid
-     =item2     Gas
-     =item2     Chocolate
+  =item1  Animal
+  =item2     Vertebrate
+  =item2     Invertebrate
+  
+  =item1  Phase
+  =item2     Solid
+  =item2     Liquid
+  =item2     Gas
+  =item2     Chocolate
 =end code
 
 which would be rendered something like:
@@ -3001,7 +3001,7 @@ block or file in which it is specified.
 Note that, if a particular block later explicitly specifies a
 configuration option with the same key, that option overrides the
 pre-configured option. For example, given the code blocks configurations in the
-previous example, to specify another langiage for code block:
+previous example, to specify another language for code block:
 
 =begin code
     =for code :lang<javascript>
