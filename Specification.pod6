@@ -154,10 +154,10 @@ in a C<=pod> block:
   B<=end pod>
 =end code
 
-The contents of files with the extensions '.podlite' and '.pod6' are 
+The contents of files with the extensions C<.podlite> and C<.pod6> are 
 implicitly wrapped in a C<=pod> directive.
 
-For '.md' and '.markdown' files, the parser operates in D<"Markdown" 
+For C<.md> and C<.markdown> files, the parser operates in D<"Markdown" 
 mode|Markdown mode; parser modes> for the entire file, treating all 
 text as markdown even if it is not inside an C<=markdown> block.
 
@@ -800,7 +800,7 @@ and likewise the longer C<=for> and C<=begin>/C<=end> forms. For example:
   B<=end para>
 =end code
 
-As the previous example implies, when any form of explicit C<para> block
+As the previous example implies, when any form of explicit C<=para> block
 is used, any whitespace at the start of each line is removed during rendering.
 In addition, within a delimited C<=begin para>/C<=end para> block, any
 blank lines are preserved.
