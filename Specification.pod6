@@ -2050,7 +2050,7 @@ In this example, the content of the file C<chapter01.pod6> located in the
 C<./includes> directory is included:
 
 =begin code 
- =include file:./includes/chapter01.pod6
+=include file:./includes/chapter01.pod6
 =end code
 
 A wildcard L<"Selector"|#Selectors> serves this purpose, enabling inclusion 
@@ -2532,7 +2532,7 @@ A standard web URL. For example:
 
 =begin code :allow<B>
     This module needs the LAME library
-    (available from LZ<><B<http://www.mp3dev.org/mp3/>>)
+    (available from L<B<http://www.mp3dev.org/mp3/>>)
 =end code
 
 If the link does not start with C<//> it is treated as being relative to
@@ -2598,11 +2598,10 @@ such as C<=TITLE> or C<=NAME> as anchor points for these links.
 For example:
 
 =begin code :allow<B>
-
-    B<=NAME Dumper>
-
-    You may wish to use L<B<doc:Dumper>> to
-    view the results.
+  B<=NAME Dumper>
+  
+  You may wish to use L<B<doc:Dumper>> to
+  view the results.
 =end code
 
 Moreover, the C<doc:> scheme allows the use of an C<:id> attribute within
@@ -2627,8 +2626,8 @@ explicit text is provided. For example:
 
 =begin code :allow<B>
 
-    =for TITLE :id<Specification>
-    The Specification of Podlite
+   =for TITLE :id<Specification>
+       The Specification of Podlite
 
    =para
    Please read "B<L<doc:Specification>>".
