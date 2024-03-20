@@ -5,8 +5,7 @@ This file is deliberately specified in Podlite format
 
 =TITLE Podlite - a lightweight markup language
 
-=begin nested
-B<This document is still being worked on!>
+=begin nested :notify<warning> :caption('This document is still being worked on!')
 
 It's not finished yet, but it's available for everyone to see 
 and comment on. This way, it can get better with everyone's input.
