@@ -781,23 +781,23 @@ an explicit marker or delimiters, but there is also an explicit C<para>
 marker (which may be used anywhere):
 
 =begin code :allow<B>
-     B<=para>
-     This is an ordinary paragraph.
-     Its text  will   be     squeezed     and
-     short lines filled.
+  B<=para>
+  This is an ordinary paragraph.
+  Its text  will   be     squeezed     and
+  short lines filled.
 =end code
 
 and likewise the longer C<=for> and C<=begin>/C<=end> forms. For example:
 
 =begin code :allow<B>
-     B<=begin para>
-         This is an ordinary paragraph.
-         Its text  will   be     squeezed     and
-         short lines filled.
-
-         This is I<still> part of the same paragraph,
-         which continues until an...
-     B<=end para>
+  B<=begin para>
+    This is an ordinary paragraph.
+    Its text  will   be     squeezed     and
+    short lines filled.
+    
+    This is I<still> part of the same paragraph,
+    which continues until an...
+  B<=end para>
 =end code
 
 As the previous example implies, when any form of explicit C<para> block
