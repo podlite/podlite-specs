@@ -721,13 +721,13 @@ in a heading consists of a single literal C<#> character, the C<#> is
 removed and the heading is treated as if it had a C<:numbered> option:
 
 =begin code
-    =head1 # The Problem
-    =head1 # The Solution
-    =head2   # Analysis
-    =head3       Overview
-    =head3       Details
-    =head2   # Design
-    =head1 # The Implementation
+  =head1 # The Problem
+  =head1 # The Solution
+  =head2   # Analysis
+  =head3       Overview
+  =head3       Details
+  =head2   # Design
+  =head1 # The Implementation
 =end code
 
 Note that, even though renderers are not required to distinctly render
@@ -963,15 +963,15 @@ special "container" directives or other delimiters are required to
 enclose the entire list. For example:
 
 =begin code
-     The seven suspects are:
-
-     =item  Happy
-     =item  Dopey
-     =item  Sleepy
-     =item  Bashful
-     =item  Sneezy
-     =item  Grumpy
-     =item  Keyser Soze
+  The seven suspects are:
+  
+  =item  Happy
+  =item  Dopey
+  =item  Sleepy
+  =item  Bashful
+  =item  Sneezy
+  =item  Grumpy
+  =item  Keyser Soze
 =end code
 
 List items have one implicit level of nesting:
