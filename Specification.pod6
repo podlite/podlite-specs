@@ -3016,10 +3016,10 @@ You can also lexically preconfigure a L<markup code|#Markup codes>,
 by naming it with a pair of angles as a suffix. For example:
 
 =begin code :allow<B>
-    =comment  Always allow E<> codes in any (implicit or explicit) V<> code...
-    B<=config V<>  :allow<E>>
-    =comment  All inline code allows I<>
-    B<=config C<>  :allow<I>>
+  =comment  Always allow E<> codes in any (implicit or explicit) V<> code...
+  B«=config V<>  :allow<E>»
+  =comment  All inline code allows I<>
+  B«=config C<>  :allow<I>»
 =end code
 
 Note that, even though the markup code is named using single-angles,
