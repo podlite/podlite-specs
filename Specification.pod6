@@ -703,17 +703,17 @@ It is usually better to preset a numbering scheme for each heading
 level, in a series of L<configuration blocks|#Block pre-configuration>:
 
 =begin code :allow<B Z>
-    B<=config head1 :numbered
-    Z<>=config head2 :numbered
-    Z<>=config head3 :!numbered>
-
-    =head1 The Problem
-    =head1 The Solution
-    =head2   Analysis
-    =head3     Overview
-    =head3     Details
-    =head2   Design
-    =head1 The Implementation
+  B<=config head1 :numbered
+  Z<>=config head2 :numbered
+  Z<>=config head3 :!numbered>
+  
+  =head1 The Problem
+  =head1 The Solution
+  =head2   Analysis
+  =head3     Overview
+  =head3     Details
+  =head2   Design
+  =head1 The Implementation
 =end code
 
 Alternatively, as a short-hand, if the first whitespace-delimited word
