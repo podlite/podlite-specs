@@ -34,16 +34,16 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
   =item Contextual aliases
 =head2 1.0-beta2
 =head3 New:
-    =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>
-    =item C<:mime-type> attribute for C<=include> and C<=data> blocks
-    =item introduce С<data:> schema for use in =picture and C<=table>
-    =item render tables from CSV files, C<=table>
-    =item new markdown mode for parser
-    =item M<> - extends inline markup features
+    =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>,
+    =item C<:mime-type> attribute for C<=include> and C<=data> blocks,
+    =item introduce С<data:> schema for use in =picture and C<=table>,
+    =item render tables from CSV files, C<=table>,
+    =item new markdown mode for parser,
+    =item C<M<>> - extends inline markup features.
     
 =head3 Deprecated/removed:
-    =item C<=finish>
-    =item markers in comments
+    =item C<=finish>,
+    =item markers in comments.
 
 =head2 1.0-beta1
 =head3 New:
@@ -54,13 +54,13 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
     =item include block, C<=include>,
     =item inserting pictures, C<=picture>, C<P<>>,
     =item mathematical formulas, C<=formula>, C<F<>>,
-    =item Markdown support, C<=markdown>
+    =item Markdown support, C<=markdown>,
     =item mistake marking,  C<O<>>,
     =item text positioning, C<J<>>, C<H<>>,
     =item Emoji, C<E<>>,
-    =item contextual backlinks, C<W<>>
+    =item contextual backlinks, C<W<>>,
     =item advanced table format, C<=row>,C<=cell> blocks,
-    C<:header>, C<:rowspan>, C<:colspan> attributes,
+    C<:header>, C<:rowspan>, C<:colspan> attributes.
     
 =head3 Deprecated/removed:
     =item C<:margin> attribute,
@@ -70,7 +70,7 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
     =item C<P<>> - placement links,
     =item Declarator block,
     =item C<:formatted> attribute,
-    =item C<:like> attribute
+    =item C<:like> attribute.
 
 =end CHANGES
 
@@ -821,10 +821,10 @@ left margin. The implicit code block is then terminated by a blank line.
 For example:
 
 =begin code
-    This ordinary paragraph introduces a code block:
+  This ordinary paragraph introduces a code block:
 
-        $this = 1 * code('block');
-        $which.is_specified(:by<indenting>);
+    $this = 1 * code('block');
+    $which.is_specified(:by<indenting>);
 =end code
 
 Implicit code blocks may only be used within C<=pod>, C<=item>, C<=defn>,
