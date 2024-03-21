@@ -27,6 +27,9 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
 =begin CHANGES
 
 =head3 New:
+  =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
+  =item C<:folded> attribute,
+  =item C<:folded-levels> for C<=toc> block,
   =item Notification blocks, C<:notify> attribute for C<=nested> blocks
   =item C<:folded> attribute
   =item C<:folded-levels> for C<=toc> block
