@@ -22,22 +22,30 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
 =item Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
 =end AUTHORS
 
-=VERSION 1.0-beta2
+=VERSION 1.0-beta3
 
 =begin CHANGES
 
+=head2 1.0-beta3
+=head3 New:
+  =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
+  =item C<:folded> attribute,
+  =item C<:folded-levels> for C<=toc> block,
+  =item Refactor custom blocks and markup codes, C<M<>>.
+=head3 Deprecated/removed:
+  =item Contextual aliases
 =head2 1.0-beta2
 =head3 New:
-    =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>
-    =item C<:mime-type> attribute for C<=include> and C<=data> blocks
-    =item introduce С<data:> schema for use in =picture and C<=table>
-    =item render tables from CSV files, C<=table>
-    =item new markdown mode for parser
-    =item M<> - extends inline markup features
+    =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>,
+    =item C<:mime-type> attribute for C<=include> and C<=data> blocks,
+    =item introduce С<data:> schema for use in =picture and C<=table>,
+    =item render tables from CSV files, C<=table>,
+    =item new markdown mode for parser,
+    =item C<M<>> - extends inline markup features.
     
 =head3 Deprecated/removed:
-    =item C<=finish>
-    =item markers in comments
+    =item C<=finish>,
+    =item markers in comments.
 
 =head2 1.0-beta1
 =head3 New:
@@ -48,13 +56,13 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
     =item include block, C<=include>,
     =item inserting pictures, C<=picture>, C<P<>>,
     =item mathematical formulas, C<=formula>, C<F<>>,
-    =item Markdown support, C<=markdown>
+    =item Markdown support, C<=markdown>,
     =item mistake marking,  C<O<>>,
     =item text positioning, C<J<>>, C<H<>>,
     =item Emoji, C<E<>>,
-    =item contextual backlinks, C<W<>>
+    =item contextual backlinks, C<W<>>,
     =item advanced table format, C<=row>,C<=cell> blocks,
-    C<:header>, C<:rowspan>, C<:colspan> attributes,
+    C<:header>, C<:rowspan>, C<:colspan> attributes.
     
 =head3 Deprecated/removed:
     =item C<:margin> attribute,
@@ -64,7 +72,7 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
     =item C<P<>> - placement links,
     =item Declarator block,
     =item C<:formatted> attribute,
-    =item C<:like> attribute
+    =item C<:like> attribute.
 
 =end CHANGES
 
@@ -122,7 +130,7 @@ within a Podlite block is treated as "ambient" material. Typically this
 would be the source code of the program that the Podlite is documenting. 
 Podlite parsers still parse this text into the internal representation of the
 file, representing it as a "ambient" block. Renderers
-will I<usually> ignore such blocks, but see L<#Aliases>.
+will I<usually> ignore such blocks.
 This is the D<default mode|Default mode; parser modes> of the parser.
 
 All directives have a defined terminator and the Podlite parser always reverts to
@@ -134,24 +142,24 @@ treating all text between blocks as implicit paragraph Podlite, even if
 it's not inside an explicit block.
 
 To keep the parser in "pod" mode, enclose the desired Podlite region 
-in a C<pod> block:
+in a C<=pod> block:
 
 =begin code :allow<B>
-    B<=begin pod>
+  B<=begin pod>
 
-    =head1 A heading
+  =head1 A heading
 
-    This is Podlite too. Specifically, this is a simple C<para> block
+  This is Podlite too. Specifically, this is a simple C<para> block
 
-        $this = pod('also');  # Specifically, a code block
+      $this = pod('also');  # Specifically, a code block
 
-    B<=end pod>
+  B<=end pod>
 =end code
 
-The contents of files with the extensions '.podlite' and '.pod6' are 
+The contents of files with the extensions C<.podlite> and C<.pod6> are 
 implicitly wrapped in a C<=pod> directive.
 
-For '.md' and '.markdown' files, the parser operates in D<"Markdown" 
+For C<.md> and C<.markdown> files, the parser operates in D<"Markdown" 
 mode|Markdown mode; parser modes> for the entire file, treating all 
 text as markdown even if it is not inside an C<=markdown> block.
 
@@ -344,8 +352,8 @@ applied uniformly to any built-in block type. These include:
 =begin defn
 C<:caption>
 
-This option specifies that the block may be given an associated description or title using the
-C<:caption> option.
+This option specifies that the block may be given an associated description or
+title using the C<:caption> option.
 
 Usually, this description uses for build L<table of contents|#Table of contents>.
 
@@ -456,6 +464,57 @@ in the final rendered document.
 =end defn
 
 =begin defn
+C<:folded>
+
+This option specifies whether the block is foldable and, if specified,
+whether it should be collapsed or expanded by default. This feature is
+useful in managing the length of documents and focusing the reader's
+attention on certain sections as needed.
+
+A C<:!folded> or C<:folded(0)> expands the callout by default, and a 
+C<:folded> or C<:folded(1)> collapses it instead.
+
+=begin code :allow<B> 
+  =for table B<:folded> :caption('Culinary Techniques for Sustainability')
+    Sous-vide   Low energy consumption
+    ----------  -------------------------
+    Steaming    Preserves nutrients
+    Baking      Efficient for batch cooking
+=end code
+
+When applied to a block element, such as a heading, the attribute typically
+affects all headings with lower-level content, creating a hierarchical
+folding effect.
+
+For example:
+
+=begin code :allow<B>
+  =for B<head2 :folded>
+  Green Energy Overview 
+=end code
+
+=begin comment
+TODO: my be it may sense to add a C<:folded-caption> attribute to 
+define a custom title for the collapsed block.
+
+The C<:folded-caption> attribute allows for defining a custom title 
+for the collapsed block. If no caption is provided, rendering systems
+may automatically use the C<:caption> attribute. If the C<:caption> 
+attribute is not present, the first line or paragraph of the block 
+is used as the default title. For semantic blocks, the name of the
+block can be used as the default title.
+
+
+=begin code
+    =picture :folded(1) :folded-caption("Wind Turbine Fields")
+    Images/wind_turbines.jpg
+    Wind turbines stand tall against the sky, harnessing
+    the power of the wind to generate energy 
+=end code
+=end comment
+=end defn
+
+=begin defn
 C<:lang>
 
 This option used to L<provide information|#Assign programming language to code blocks> about the programming language
@@ -467,24 +526,27 @@ values for the C<:lang> attribute:
 
 =begin table :caption("Matching languages and lang attribute values")
 
-    Programming Language        Possible C<:lang> Values 
+    Programming language        Possible C<:lang> values 
 
+    C++                          cpp                    
+    CSS                          css                    
+    HTML                         html                   
+    Java                         java                   
+    JavaScript                   javascript             
     Python                       python                 
     Raku                         raku                   
-    JavaScript                   javascript             
-    Java                         java                   
-    C++                          cpp                    
-    HTML                         html                   
-    CSS                          css                    
 
 =end table
+
+If the language is not specified, the default language is used based 
+on the file extension or mime type of the current document.
 
 =end defn
 
 =begin defn
 C<:allow>
 
-This option expects a list of formatting codes that are to be recognized
+This option expects a list of markup codes that are to be recognized
 within any C<V<>> codes that appear in (or are implicitly applied to)
 the current block. The option is most often used on C<=code> blocks to
 allow mark-up within those otherwise verbatim blocks, though it can be
@@ -539,7 +601,7 @@ between Podlite block names and their corresponding Markdown elements.
 
     Podlite                                             Markdown                Describtion
     _______________________________________         ______________          _____________________________________
-    head1, head2, ...                                 #, ##, ...            Heading level 1,2...
+    C<=head1>, C<=head2>, ...                                 #, ##, ...            Heading level 1,2...
 
     C<=nested>                                          ">"                      blockquote
 
@@ -572,13 +634,13 @@ Podlite provides an unlimited number of levels of heading, specified by the
 C<=head>R<N> block marker. For example:
 
 =begin code
-    =head1 A Top Level Heading
+  =head1 A Top Level Heading
 
-      =head2 A Second Level Heading
+    =head2 A Second Level Heading
 
-        =head3 A third level heading
+      =head3 A third level heading
 
-                        =head86 A "Missed it by I<that> much!" heading
+            =head86 A "Missed it by I<that> much!" heading
 =end code
 
 While Podlite parsers are required to recognize and distinguish all levels
@@ -595,26 +657,26 @@ You can specify that a heading is numbered using the C<:numbered> option. For
 example:
 
 =begin code
-    =for head1 :numbered
-    The Problem
-
-    =for head1 :numbered
-    The Solution
-
-        =for head2 :numbered
-        Analysis
-
-            =for head3
-            Overview
-
-            =for head3
-            Details
-
-        =for head2 :numbered
-        Design
-
-    =for head1 :numbered
-    The Implementation
+  =for head1 :numbered
+  The Problem
+  
+  =for head1 :numbered
+  The Solution
+  
+      =for head2 :numbered
+      Analysis
+  
+          =for head3
+          Overview
+  
+          =for head3
+          Details
+  
+      =for head2 :numbered
+      Design
+  
+  =for head1 :numbered
+  The Implementation
 =end code
 
 which would produce:
@@ -643,17 +705,17 @@ It is usually better to preset a numbering scheme for each heading
 level, in a series of L<configuration blocks|#Block pre-configuration>:
 
 =begin code :allow<B Z>
-    B<=config head1 :numbered
-    Z<>=config head2 :numbered
-    Z<>=config head3 :!numbered>
-
-    =head1 The Problem
-    =head1 The Solution
-    =head2   Analysis
-    =head3     Overview
-    =head3     Details
-    =head2   Design
-    =head1 The Implementation
+  B<=config head1 :numbered
+  Z<>=config head2 :numbered
+  Z<>=config head3 :!numbered>
+  
+  =head1 The Problem
+  =head1 The Solution
+  =head2   Analysis
+  =head3     Overview
+  =head3     Details
+  =head2   Design
+  =head1 The Implementation
 =end code
 
 Alternatively, as a short-hand, if the first whitespace-delimited word
@@ -661,13 +723,13 @@ in a heading consists of a single literal C<#> character, the C<#> is
 removed and the heading is treated as if it had a C<:numbered> option:
 
 =begin code
-    =head1 # The Problem
-    =head1 # The Solution
-    =head2   # Analysis
-    =head3       Overview
-    =head3       Details
-    =head2   # Design
-    =head1 # The Implementation
+  =head1 # The Problem
+  =head1 # The Solution
+  =head2   # Analysis
+  =head3       Overview
+  =head3       Details
+  =head2   # Design
+  =head1 # The Implementation
 =end code
 
 Note that, even though renderers are not required to distinctly render
@@ -688,7 +750,7 @@ B<2.3.8.6.1.9. The Rescue of the Kobayashi Maru>
 
 Ordinary paragraph blocks consist of text that is to be formatted into
 a document at the current level of nesting, with whitespace
-squeezed, lines filled, and any special L<inline mark-up|#Formatting codes>
+squeezed, lines filled, and any special L<inline mark-up|#Markup codes>
 applied.
 
 Ordinary paragraphs consist of one or more consecutive lines of text,
@@ -697,22 +759,22 @@ each of which starts with a non-whitespace character at (virtual) column
 directive. For example:
 
 =begin code
-    =head1 This is a heading block
-
-    This is an ordinary paragraph.
-    Its text  will   be     squeezed     and
-    short lines filled. It is terminated by
-    the first blank line.
-
-    This is another ordinary paragraph.
-    Its     text    will  also be squeezed and
-    short lines filled. It is terminated by
-    the trailing directive on the next line.
-        =head2 This is another heading block
-
-        This is yet another ordinary paragraph,
-        at the first virtual column set by the
-        previous directive
+  =head1 This is a heading block
+  
+  This is an ordinary paragraph.
+  Its text  will   be     squeezed     and
+  short lines filled. It is terminated by
+  the first blank line.
+  
+  This is another ordinary paragraph.
+  Its     text    will  also be squeezed and
+  short lines filled. It is terminated by
+  the trailing directive on the next line.
+    =head2 This is another heading block
+  
+    This is yet another ordinary paragraph,
+    at the first virtual column set by the
+    previous directive
 =end code
 
 Within a C<=pod>, C<=item>, C<=defn>, C<=nested>, or
@@ -721,26 +783,26 @@ an explicit marker or delimiters, but there is also an explicit C<para>
 marker (which may be used anywhere):
 
 =begin code :allow<B>
-     B<=para>
-     This is an ordinary paragraph.
-     Its text  will   be     squeezed     and
-     short lines filled.
+  B<=para>
+  This is an ordinary paragraph.
+  Its text  will   be     squeezed     and
+  short lines filled.
 =end code
 
 and likewise the longer C<=for> and C<=begin>/C<=end> forms. For example:
 
 =begin code :allow<B>
-     B<=begin para>
-         This is an ordinary paragraph.
-         Its text  will   be     squeezed     and
-         short lines filled.
-
-         This is I<still> part of the same paragraph,
-         which continues until an...
-     B<=end para>
+  B<=begin para>
+    This is an ordinary paragraph.
+    Its text  will   be     squeezed     and
+    short lines filled.
+    
+    This is I<still> part of the same paragraph,
+    which continues until an...
+  B<=end para>
 =end code
 
-As the previous example implies, when any form of explicit C<para> block
+As the previous example implies, when any form of explicit C<=para> block
 is used, any whitespace at the start of each line is removed during rendering.
 In addition, within a delimited C<=begin para>/C<=end para> block, any
 blank lines are preserved.
@@ -749,7 +811,7 @@ blank lines are preserved.
 
 Code blocks are used to specify pre-formatted text (typically source
 code), which should be rendered without rejustification, without
-whitespace-squeezing, and without recognizing any inline formatting
+whitespace-squeezing, and without recognizing any inline markup
 codes. Code blocks also have an implicit L<nesting|#Nesting blocks>
 associated with them. Typically these blocks are used to show examples
 of code, mark-up, or other textual specifications, and are rendered
@@ -761,10 +823,10 @@ left margin. The implicit code block is then terminated by a blank line.
 For example:
 
 =begin code
-    This ordinary paragraph introduces a code block:
+  This ordinary paragraph introduces a code block:
 
-        $this = 1 * code('block');
-        $which.is_specified(:by<indenting>);
+    $this = 1 * code('block');
+    $which.is_specified(:by<indenting>);
 =end code
 
 Implicit code blocks may only be used within C<=pod>, C<=item>, C<=defn>,
@@ -774,17 +836,17 @@ There is also an explicit C<=code> block (which can be specified within
 I<any> other block type, not just C<=pod>, C<=item>, etc.):
 
 =begin code :allow<B>
-     The C<loud_update()> subroutine adds feedback:
+  The C<loud_update()> subroutine adds feedback:
 
-        B<=begin code>
+    B<=begin code>
 
-        sub loud_update ($who, $status) {
-            say "$who -> $status";
+    sub loud_update ($who, $status) {
+        say "$who -> $status";
 
-            silent_update($who, $status);
-        }
+        silent_update($who, $status);
+    }
 
-        B<=end code>
+    B<=end code>
 =end code
 
 As the previous example demonstrates, within an explicit C<=code> block
@@ -796,18 +858,18 @@ code). Explicit C<=code> blocks may also contain empty lines.
 
 =head4 Formatting within code blocks
 
-Although C<=code> blocks automatically disregard all L<formatting
-codes|#Formatting codes>, occasionally you may still need to specify
+Although C<=code> blocks automatically disregard all L<markup
+codes|#Markup codes>, occasionally you may still need to specify
 some formatting within a code block. For example, you may wish
 to emphasize a particular keyword in an example (using a C<B<>> code). Or
 you may want to indicate that part of the example is metasyntactic
 (using the C<R<>> code). Or you might need to insert a non-ASCII
 character (using the C<E<>> code).
 
-You can specify a list of formatting codes that should still be
+You can specify a list of markup codes that should still be
 recognized within a code block using the C<:allow> option. The value of
 the C<:allow> option must be a list of the (single-letter) names of one
-or more formatting codes. Those codes will then remain active inside the
+or more markup codes. Those codes will then remain active inside the
 code block. For example:
 
 =begin code
@@ -827,8 +889,8 @@ would be rendered:
 =end code
 
 Note that the use of the C<:allow> option also makes it possible
-for verbatim L<formatting codes|#Formatting codes> (such as C<C<>>
-and C<V<>>) to L<contain other codes as well|#Pre-configuring formatting codes>.
+for verbatim L<markup codes|#Markup codes> (such as C<C<>>
+and C<V<>>) to L<contain other codes as well|#Pre-configuring markup codes>.
 
 =head4 Assign programming language to code blocks
 
@@ -867,32 +929,32 @@ serifed for code, bold sans-serif for input, and regular sans-serif for
 output).
 
 Unlike C<=code> blocks, both C<=input> and C<=output> blocks honour any
-nested formatting codes. This is particularly useful since a sample of
+nested markup codes. This is particularly useful since a sample of
 input will often include prompts (which are, of course, output).
 Likewise a sample of output may contain the occasional interactive
-component. Podlite provides L<special formatting codes|#Example specifiers>
+component. Podlite provides L<special markup codes|#Example specifiers>
 (C<K<>> and C<T<>>) to indicate embedded input or output, so you can use
 the block type that indicates the overall purpose of the sample (i.e. is
 it demonstrating an input operation or an output sequence?) and then use
-the "contrasting" formatting code within the block.
+the "contrasting" markup code within the block.
 
 For example, to include a small amount of input in a sample of output
-you could use the C<K<>> formatting code:
+you could use the C<K<>> markup code:
 
 =begin code :allow<B>
-    =begin output
-        Name:    Baracus, B.A.
-        Rank:    Sgt
-        Serial:  1PTDF007
-
-        Do you want additional personnel details? B<K<y>>
-
-        Height:  180cm/5'11"
-        Weight:  104kg/230lb
-        Age:     49
-
-        Print? B<K<n>>
-    =end output
+  =begin output
+      Name:    Baracus, B.A.
+      Rank:    Sgt
+      Serial:  1PTDF007
+  
+      Do you want additional personnel details? B<K<y>>
+  
+      Height:  180cm/5'11"
+      Weight:  104kg/230lb
+      Age:     49
+  
+      Print? B<K<n>>
+  =end output
 =end code
 
 
@@ -903,15 +965,15 @@ special "container" directives or other delimiters are required to
 enclose the entire list. For example:
 
 =begin code
-     The seven suspects are:
-
-     =item  Happy
-     =item  Dopey
-     =item  Sleepy
-     =item  Bashful
-     =item  Sneezy
-     =item  Grumpy
-     =item  Keyser Soze
+  The seven suspects are:
+  
+  =item  Happy
+  =item  Dopey
+  =item  Sleepy
+  =item  Bashful
+  =item  Sneezy
+  =item  Grumpy
+  =item  Keyser Soze
 =end code
 
 List items have one implicit level of nesting:
@@ -933,15 +995,15 @@ C<=item1>, C<=item2>, C<=item3>, etc. blocks. Note that C<=item> is just
 an abbreviation for C<=item1>. For example:
 
 =begin code
-     =item1  Animal
-     =item2     Vertebrate
-     =item2     Invertebrate
-
-     =item1  Phase
-     =item2     Solid
-     =item2     Liquid
-     =item2     Gas
-     =item2     Chocolate
+  =item1  Animal
+  =item2     Vertebrate
+  =item2     Invertebrate
+  
+  =item1  Phase
+  =item2     Solid
+  =item2     Liquid
+  =item2     Gas
+  =item2     Chocolate
 =end code
 
 which would be rendered something like:
@@ -1357,7 +1419,6 @@ The preceding example could equally have been specified:
     B<=end nested>
 =end code
 
-
 =head3 Tables
 
 Simple tables can be specified in Podlite using a C<=table> block.
@@ -1403,7 +1464,7 @@ With header:
     Directive           Specifies
     _________           ____________________________________________________
     C<=begin>           Start of an explicitly terminated block
-    C<=config>          Lexical modifications to a block or formatting code
+    C<=config>          Lexical modifications to a block or markup code
     
  =end table
 =end code
@@ -1628,7 +1689,7 @@ For example:
 =end code
 
 
-=head3 Named blocks
+=head3 Custom blocks
 
 Blocks whose names contain at least one uppercase and one lowercase
 letter are assumed to be destined for specialized renderers or parser
@@ -1646,6 +1707,9 @@ or:
     =Image http://www.perlfoundation.org/images/perl_logo_32x104.png
 =end code
 
+Alongside the verbatim or placeholder content, the renderer could provide
+an unobtrusive yet informative error message, explaining that the Custom block
+could not be processed.
 
 Note that all block names consisting entirely of lowercase or entirely of
 uppercase letters are reserved. See L<#Semantic blocks>.
@@ -1697,7 +1761,7 @@ use the following syntax:
 
 Each C<=data> block can be given a C<:key> option, to name it. The contents
 of any C<=data> block with a key are addressable via
-the C<data> schema. For example:
+the C<data:> schema. For example:
 
 =begin code
   =begin data :key<employee_data> :mime-type<text/csv>
@@ -1943,9 +2007,33 @@ Note also that all L<semantic blocks|#Semantic
 blocks> are treated as equivalent to C<head1> headings, and the
 C<=item1>/C<=item> equivalence is preserved.
 
+The C<:folded-levels> attribute indicates which level of the TOC should
+be folded. 
+
+=begin code :allow<B>
+ =for toc :folded-levels[2,3] :caption('Table of contents')
+    head1, head2, item1
+=end code
+
+If the C<:folded-levels> attribute is provided with a set 
+of key-value pairs, it indicates the folding state of each 
+specified level. 
+
+For example: 
+
+=begin code :allow<B>
+  =for toc B« :folded-levels< 2=>1, 4 => 1, 3=>0 > »
+    head1, head2, head3, item1, item2
+=end code
+
+The value C<0> for to level C<3> indicates that this level should 
+remain unfolded. Levels C<2> and C<4> are folded.
+
+This allows for a highly customized folding configuration within the TOC.
+
 The TOC is inserted at the location of the C<=toc> block.
 
-To enable the autogenerated TOC, controlled and maintained by render, set the C<:toc>
+To enable the autogenerated TOC, controlled and maintained by render, set the C<:toc>
 document attribute for C<=pod> block. In this case, the specific configuration 
 and outcome of the TOC are influenced by the settings of the concrete render implementation.
 
@@ -1960,11 +2048,11 @@ structure intact.
 The C<=include> block is followed by an L<"Selector"|#Selectors> that specifies the 
 content to be included.
 
-In this example, the content of the file "chapter01.pod6" located in the 
-"./includes" directory is included:
+In this example, the content of the file C<chapter01.pod6> located in the 
+C<./includes> directory is included:
 
 =begin code 
- =include file:./includes/chapter01.pod6
+=include file:./includes/chapter01.pod6
 =end code
 
 A wildcard L<"Selector"|#Selectors> serves this purpose, enabling inclusion 
@@ -1977,7 +2065,7 @@ of content from all the Markdown files:
 It's possible to include blocks from the same document being worked on.
 This feature proves valuable when reusing parts of existing content.
 
-For instance, a semantic block "VERSION" can be included as demonstrated:
+For instance, a semantic block C<=VERSION> can be included as demonstrated:
 
 =begin code :allow<B>
 B<=include VERSION>
@@ -2140,13 +2228,11 @@ This block allows to seamlessly combine Podlite's structured blocks with
 the flexibility of Markdown.
 
 
-=head2 Formatting codes
+=head2 Markup codes
 
-Formatting codes provide a way to add inline mark-up to a piece of text
-within the contents of (most types of) Podlite block. Formatting codes are
-themselves a type of block, and may nest other formatting codes.
-other type of block (most often, other formatting codes). In particular,
-you can nest comment blocks in the middle of a formatting code:
+Markup codes enable inline markup within the text of (most) Pod block types.
+They are a form of block that can contain only other markup codes. Specifically,
+markup codes can nest:
 
 =begin code :allow<B V>
     V<B><I shall say this loudly
@@ -2154,9 +2240,9 @@ you can nest comment blocks in the middle of a formatting code:
     and with emphasis.>
 =end code
 
-All Podlite formatting codes consist of a single capital letter followed
+All Podlite markup codes consist of a single capital letter followed
 immediately by a set of angle brackets. The brackets contain the text or
-data to which the formatting code applies. You can use a set of single
+data to which the markup code applies. You can use a set of single
 angles (C«<...>»), a set of double angles (C<«...»>), or multiple
 single-angles (C«<<<...>>>»).
 
@@ -2191,39 +2277,39 @@ or delimiters with more consecutive angles than your text contains:
     The Perl 5 heredoc syntax was: CB«<<<» <<END_MARKER B«>>>»
 =end code
 
-A formatting code ends at the matching closing angle bracket(s), or at
-the end of the enclosing block or formatting code in which the opening
+A markup code ends at the matching closing angle bracket(s), or at
+the end of the enclosing block or markup code in which the opening
 angle bracket was specified, whichever comes first (this includes paragraph
 and abbreviated blocks, ending with blank a line). Podlite parsers are
-required to issue a warning whenever a formatting code is terminated by
+required to issue a warning whenever a markup code is terminated by
 the end of an outer block rather than by its own delimiter (unless the
 user explicitly disables the warning).
 
 
 =head3 Significance indicators
 
-Podlite provides three formatting codes that flag their contents with
+Podlite provides three markup codes that flag their contents with
 increasing levels of significance:
 
 =item
-The C<U<>> formatting code specifies that the contained text is
+The C<U<>> markup code specifies that the contained text is
 B<unusual> or distinctive; that it is of I<minor significance>. Typically
 such content would be rendered in an underlined style.
 
 =item
-The C<I<>> formatting code specifies that the contained text is
+The C<I<>> markup code specifies that the contained text is
 B<important>; that it is of I<major significance>. Such content would
 typically be rendered in italics or in C< <em>...</em> > tags
 
 =item
-The C<B<>> formatting code specifies that the contained text is the
+The C<B<>> markup code specifies that the contained text is the
 B<basis> or focus of the surrounding text; that it is of I<fundamental
 significance>. Such content would typically be rendered in a bold style or
 in C< <strong>...</strong> > tags.
 
 =head3 Mistake marking
 
-It possible strikethrough words using the code C<O<>, where 'O' stands
+It possible strikethrough words using the code C<O<>>, where 'O' stands
 for "Overstrike." This is a way to indicate that certain words are a
 mistake and should not be included in the document.
 
@@ -2232,34 +2318,34 @@ mistake and should not be included in the document.
 
 =head3 Text positioning
 
-Podlite provides two formatting codes that allow positioning characters or words.
+Podlite provides two markup codes that allow positioning characters or words.
 
 =begin item
-To create subscript text, you can use the C<J<>> formatting code, where 'J' represents 
+To create subscript text, you can use the C<J<>> markup code, where 'J' represents 
 "Junior text." Subscript positions one or more characters slightly below the normal
 line of type.
 
  HJ<2>O
 
-This code renders as "H<sub>2</sub>O," which signifies that the '2' is positioned 
-slightly below the baseline, as is often seen in chemical formulas like H₂O (water).
+This code renders as C<H<sub>2</sub>O>, which signifies that the '2' is positioned 
+slightly below the baseline, as is often seen in chemical formulas like C<H₂O> (water).
 =end item
 
 =begin item
-To create superscript text, it possible to use the C<H<>> formatting code, where 'H'
+To create superscript text, it possible to use the C<H<>> markup code, where 'H'
 stands for "High text." Superscript positions one or more characters slightly
 above the normal line of type
 
  XH<2>
 
-This code renders as "X<sup>2</sup>," indicating that the '2' is positioned 
-slightly above the baseline. This is commonly used for mathematical exponents, as in X².
+This code renders as C<X<sup>2</sup>>, indicating that the C<'2'> is positioned 
+slightly above the baseline. This is commonly used for mathematical exponents, as in C<X²>.
 =end item
     
 
 =head3 Definitions
 
-The C<D<>> formatting code indicates that the contained text is a
+The C<D<>> markup code indicates that the contained text is a
 B<definition>, introducing a term that the adjacent text
 elucidates. It is the inline equivalent of a C<=defn> block.
 For example:
@@ -2274,7 +2360,7 @@ A definition may be given synonyms, which are specified after a vertical bar
 and separated by semicolons:
 
 =begin code :allow<B>
-    A B<D<formatting code|formatting codes;formatters>> provides a way
+    A B<D<markup code|markup codes;formatters>> provides a way
     to add inline mark-up to a piece of text.
 =end code
 
@@ -2285,11 +2371,11 @@ term (or any of its specified synonyms) within a hypertext.
 
 =head3 Example specifiers
 
-Podlite provides formatting codes for specifying inline examples of input,
+Podlite provides markup codes for specifying inline examples of input,
 output, code, and metasyntax:
 
 =begin item
-The C<T<>> formatting code specifies that the contained text is
+The C<T<>> markup code specifies that the contained text is
 B<terminal output>; that is: something that a program might print out.
 Such content would typically be rendered in a T<fixed-width font> or with
 C< <samp>...</samp> > tags. The contents of a C<T<>> code are always
@@ -2299,25 +2385,25 @@ C<=output> block.
 =end item
 
 =begin item
-The C<K<>> formatting code specifies that the contained text is
+The C<K<>> markup code specifies that the contained text is
 B<keyboard input>; that is: something that a user might type in. Such
 content would typically be rendered in a K<fixed-width font> (preferably a
-different font from that used for the C<T<>> formatting code) or with
+different font from that used for the C<T<>> markup code) or with
 C< <kbd>...</kbd> > tags. The contents of a C<K<>> code are always
 L<space-preserved| #Space-preserving text>. The C<K<>> code is the
 inline equivalent of the C<=input> block.
 =end item
 
 =begin item
-The C<C<>> formatting code specifies that the contained text is B<code>;
+The C<C<>> markup code specifies that the contained text is B<code>;
 that is, something that might appear in a program or specification. Such
 content would typically be rendered in a C<fixed-width font> (preferably
-a different font from that used for the C<T<>> or C<K<>> formatting
+a different font from that used for the C<T<>> or C<K<>> markup
 codes) or with C< <code>...</code> > tags. The contents of a C<C<>> code
 are L<space-preserved| #Space-preserving text> and L<verbatim| #Verbatim text>.
 The C<C<>> code is the inline equivalent of the C<=code> block.
 
-To include other formatting codes in a C<C<>> code, you can lexically
+To include other markup codes in a C<C<>> code, you can lexically
 L<reconfigure|#Block pre-configuration> it:
 
 =begin code :allow<B>
@@ -2334,7 +2420,7 @@ at the top of the document
 =end item
 
 =begin item
-The C<R<>> formatting code specifies that the contained text is a
+The C<R<>> markup code specifies that the contained text is a
 B<replaceable item>, a placeholder, or a metasyntactic variable. It is
 used to indicate a component of a syntax or specification that should
 eventually be replaced by an actual value. For example:
@@ -2363,31 +2449,31 @@ respective fonts should be used.
 
 =head3 Verbatim text
 
-The C<V<>> formatting code treats its entire contents as being B<verbatim>,
-disregarding every apparent formatting code within it. For example:
+The C<V<>> markup code treats its entire contents as being B<verbatim>,
+disregarding every apparent markup code within it. For example:
 
-    The B<V< V<> >> formatting code disarms other codes
+    The B<V< V<> >> markup code disarms other codes
     such as V< I<>, C<>, B<>, and M<> >.
 
 Note, however that the C<V<>> code only changes the way its
 contents are parsed, I<not> the way they are rendered. That is, the
 contents are still wrapped and formatted like plain text, and the
-effects of any formatting codes surrounding the C<V<>> code
+effects of any markup codes surrounding the C<V<>> code
 are still applied to its contents. For example the previous example
 is rendered:
 
 =nested
-The B<V< V<> >> formatting code disarms other codes
+The B<V< V<> >> markup code disarms other codes
 such as V< I<>, C<>, B<>, and M<> >.
 
-You can prespecify formatting codes that remain active within
+You can prespecify markup codes that remain active within
 a C<V<>> code, using the L<C<:allow>|#Formatting within code blocks>
 option.
 
 
 =head3 Inline comments
 
-The C<Z<>> formatting code indicates that its contents constitute a
+The C<Z<>> markup code indicates that its contents constitute a
 B<zero-width comment>, which should not be rendered by any renderer.
 For example:
 
@@ -2404,7 +2490,7 @@ would otherwise be considered mark-up:
 =end code
 
 That technique still works, but it's now easier to accomplish the same goal
-using a verbatim formatting code:
+using a verbatim markup code:
 
 =begin code :allow<B>
   In certain scenarios, the B«V<V<Z<>>>» code is used to break up text that 
@@ -2419,7 +2505,7 @@ verbatim, which often eliminates the need for the C<V<>> as well:
     that would otherwise be considered mark-up.
 =end code
 
-The C<Z<>> formatting code is the inline equivalent of a
+The C<Z<>> markup code is the inline equivalent of a
 L<C<=comment> block|#Comments>.
 
 =head3 Links
@@ -2448,7 +2534,7 @@ A standard web URL. For example:
 
 =begin code :allow<B>
     This module needs the LAME library
-    (available from LZ<><B<http://www.mp3dev.org/mp3/>>)
+    (available from L<B<http://www.mp3dev.org/mp3/>>)
 =end code
 
 If the link does not start with C<//> it is treated as being relative to
@@ -2508,13 +2594,54 @@ A link to the system manpages. For example:
 =begin defn
 C<doc:>
 
-A link to some other documentation, typically a module or part of the
-core documentation.
+A link to other documents by utilizing semantic blocks 
+such as C<=TITLE> or C<=NAME> as anchor points for these links.
+
 For example:
 
 =begin code :allow<B>
-    You may wish to use L<B<doc:Data::Dumper>> to
-    view the results. See also: L<B<doc:perldata>>.
+  B<=NAME Dumper>
+  
+  You may wish to use L<B<doc:Dumper>> to
+  view the results.
+=end code
+
+Moreover, the C<doc:> scheme allows the use of an C<:id> attribute within
+the C<=TITLE> or C<=NAME> blocks to create unique identifiers for document
+linking. This ensures precision in navigation, as each identifier
+corresponds to a specific part of the document set. An example would be:
+
+=begin code :allow<B>
+    =for TITLE :id<Specification>
+    The Specification of Podlite
+    
+    ...
+    
+    Read the L<spec|doc:Specification>.
+    
+    ...
+=end code
+
+When Podlite processes a link, it can automatically use the document's title
+from the C<=TITLE> or C<=NAME> blocks as the display text for the hyperlink if no
+explicit text is provided. For example:
+
+=begin code :allow<B>
+
+   =for TITLE :id<Specification>
+       The Specification of Podlite
+
+   =para
+   Please read "B<L<doc:Specification>>".
+
+=end code
+
+... will be rendered as:
+
+=begin code :allow<B>
+
+ Please read "B<The Specification of Podlite>".
+
 =end code
 
 =end defn
@@ -2833,18 +2960,16 @@ An example of how this code might be used is :
 =for code :allow<B>
     B<M<> This text is highlighted in yellowB<|Marker: yellow>>.
 
-In this example, the text s "This text is highlighted in yellow"> is subject
-to special handling specified by the C<Marker:> scheme and  C<yellow>, indicating 
+In this example, the text C<"This text is highlighted in yellow"> is subject
+to special handling specified by the C<Marker:> scheme and C<yellow>, indicating 
 that the textshould be highlighted in yellow.
-
 
 If the C<SCHEME:> is unrecognized, the content text (CONTENT-TEXT) should be
 rendered as ordinary text. This ensures that documents remain readable even 
 if specific processing instructions cannot be executed.
 
 This feature enhances the flexibility and capability of Podlite documents,
-enabling custom formatting and behavior that goes beyond standard markup features.
-
+enabling custom markup and behavior that goes beyond standard markup features.
 
 =head2 Block pre-configuration
 
@@ -2853,13 +2978,14 @@ information that is applied to every block of a particular type.
 
 =begin code
 
-    =config code     :lang<python> :allow<B>
-    =config head1    :numbered
+  =config code     :lang<python> :allow<B>
+  =config head1    :numbered
+  =config head2    :folded
     
 =end code
 
 Here, two configurations are outlined. The first one sets 
-the language for code blocks to C<python> and allows bold formatting
+the language for code blocks to C<python> and allows bold markup.
 The second establishes that all level 1 headings will be numbered.
 
 The general syntax for configuration directives is:
@@ -2877,26 +3003,26 @@ block or file in which it is specified.
 Note that, if a particular block later explicitly specifies a
 configuration option with the same key, that option overrides the
 pre-configured option. For example, given the code blocks configurations in the
-previous example, to specify another langiage for code block:
+previous example, to specify another language for code block:
 
 =begin code
     =for code :lang<javascript>
     print(JSON.stringify([1,2]]));
 =end code
 
-=head3 Pre-configuring formatting codes
+=head3 Pre-configuring markup codes
 
-You can also lexically preconfigure a L<formatting code|#Formatting codes>,
+You can also lexically preconfigure a L<markup code|#Markup codes>,
 by naming it with a pair of angles as a suffix. For example:
 
 =begin code :allow<B>
-    =comment  Always allow E<> codes in any (implicit or explicit) V<> code...
-    B<=config V<>  :allow<E>>
-    =comment  All inline code allows I<>
-    B<=config C<>  :allow<I>>
+  =comment  Always allow E<> codes in any (implicit or explicit) V<> code...
+  B«=config V<>  :allow<E>»
+  =comment  All inline code allows I<>
+  B«=config C<>  :allow<I>»
 =end code
 
-Note that, even though the formatting code is named using single-angles,
+Note that, even though the markup code is named using single-angles,
 the preconfiguration applies regardless of the actual delimiters used on
 subsequent instances of the code.
 
@@ -2906,15 +3032,12 @@ The C<=alias> directive provides a way to define lexically scoped
 synonyms for longer Podlite sequences, (meta)object declarators from the
 code, or even entire chunks of ambient source. These synonyms can then
 be inserted into subsequent Podlite using the
-L<C<A<> formatting code>|#Alias placements>.
+L<C<A<> markup code>|#Alias placements>.
 
 Note that C<=alias> is a fundamental Podlite directive, like C<=begin> or
 C<=for>; there are no equivalent paragraph or delimited forms.
 
-There are two forms of C<=alias> directive: macro aliases and contextual
-aliases. Both forms are lexically scoped to the surrounding Podlite block.
-
-=head3 Macro aliases
+Macro aliases are lexically scoped to the surrounding Podlite block.
 
 The simplest form of alias takes two arguments. The first is an
 identifier (which is usually specified in uppercase, though this is
@@ -2923,7 +3046,7 @@ lines of replacement text.
 
 This creates a lexically scoped Podlite macro that can be invoked during
 document generation by placing the identifier (i.e. the first argument
-of the alias) in an C<A<>> formatting code. This formatting code is then
+of the alias) in an C<A<>> markup code. This markup code is then
 replaced by the text returned by new macro.
 
 The replacement text returned by the alias macro begins at the first
@@ -2973,101 +3096,76 @@ text ever has to be changed, it need only be modified in a single place:
     =alias TERMS_URLS  L<http://www.c11.com/generic_conditions>
 =end code
 
+=head2 Notification blocks
 
-=head3 Contextual aliases
+These blocks, often referred to as admonitions, callouts, or alerts,
+serve to draw the reader's attention to different types of content, 
+such as tips, warnings, or important notes. 
 
-If the C<=alias> directive is specified with only a single argument
-(that is, with only its identifier), a D<contextual alias> is created. In
-this form, the C<=alias> directive must be followed immediately (on the
-next non-blank line) by ambient code.
+To create specially formatted blocks to highlight information in Podlite 
+the =nested block and :notice attribute are utilized.
 
-The single argument is then used as the name of the alias being created,
-and some portion of the following code is used as the value returned by the
-alias macro.
-
-Note that the code block following the C<=alias> line is still treated
-as real code by the Podlite parser, but its contents are I<also> used to
-create the replacement macro of the alias. This allows the developer to
-reproduce chunks of actual source code directly in the documentation,
-without having to copy it.
-
-If the code following the one-argument C<=alias> directive begins with a
-sequence of one or more repetitions of any opening bracket character,
-the replacement macro returns a string containing everything from the
-end of that opening sequence to just before the corresponding closing
-bracket sequence. For example:
-
-=begin code
-
-    # This is actual code...
-
-    sub hash_function ($key)
-    =alias HASHCODE
-    {
-        my $hash = 0;
-        for $key.split("") -> $char {
-            $hash = $hash*33 + $char.ord;
-        }
-        return $hash;
-    }
-
-    =begin pod
-    An ancient (but fast) hashing algorithm is used:
-
-        =begin code :allow<A>
-        A<HASHCODE>
-        =end code
-
-    =end pod
-=end code
-
-This would produce:
-
-=begin nested
-An ancient (but fast) hashing algorithm is used:
-
-    my $hash = 0;
-    for $key.split("") -> $char {
-        $hash *= 33;
-        $hash += $char.ord;
-    }
-    return $hash;
-
-=end nested
-
-Alternatively, if the C<=alias> directive is I<not> followed by an
-opening bracket, it must be followed by a declarator (such as C<my>,
-C<class>, C<sub>, etc.) The declared object then becomes the (read-only)
-return value of the alias. For example:
+For example:
 
 =begin code :allow<B>
- B<=alias CLASSNAME>
- class Database::Handle {
-     B<=alias ATTR>
-     has IO $!handle;
- 
-     B<=alias OPEN>
-     my Bool method open ($filename?) {...}
- 
-     B<=alias DEFNAME>
-     constant Str DEFAULT_FILENAME = 'db.log';
- 
-     =for para
-         Note that the B<A<OPEN.name>> method of class B<A<CLASSNAME>>
-         stores the resulting low-level database handle
-         in its private B<A<ATTR.name>> attribute. By default,
-         handles are opened to the file "B<A<DEFNAME>>".
- 
- }
+    B<=begin nested> B<:notify<tip>>
+    Remember to always use oven mitts when handling hot bakeware
+    to prevent burns.
+    B<=end nested>
 =end code
 
-This would produce:
+Below is a table that outlines the different types of notification blocks
+along with a brief description of each type.
 
-=nested
-Note that the C<open> method of class C<Database::Handle> stores the
-resulting low-level database handle in its private C<$!handle>
-attribute. By default, handles are opened to the file "C<db.log>".
+=begin table :caption<"Types of Notification blocks">
+    
+    Type          Description
+    ----------    ------------------------------------------------------
+    note          Provides additional information and context without
+                  interrupting the flow of the main content
+                  
+    tip           Offers advice for doing things better or more easily
+    
+    important     Signifies that the information is crucial for 
+                  understanding or success
+    
+    warning       Indicates urgent information that requires immediate 
+                  attention to avoid potential problems
+    
+    caution       Advises readers about potential negative outcomes or 
+                  risks associated with certain actions
 
+=end table
+
+=begin comment
+TODO:
+custom (e.g. `faq`, etc.)???       Allows for specifying the specific context or content.
+
+    =begin nested :caption<"Foldable FAQ: Question 1"> :notice<faq> :folded
+    This is how you make content foldable for a cleaner look.
+    =end nested
+
+=end comment
+
+By default, the title of the notification block is its type identifier in title case.
+It is possible to customize the title of the block and control the visibility 
+of the information using the C<:caption> and C<:folded> options.
+
+=begin code :allow<I B Z> 
+  =begin nested B<:caption<"Astronaut's Reminder">> :notify<important> B<:folded>
+    Space missions require meticulous planning and adherence to safety protocols.
+    Neglecting these can lead to mission failure or, worse, endanger lives.
+  =end nested
+=end code
+
+It is possible to create title-only callouts by omitting the body.
+
+=begin code 
+  =for nested :notify<important> :folded :caption<"Title-only callout">
+=end code
+
+Notification blocks are displayed with distinctive colors and 
+icons that indicate the significance of the content.
 
 =begin SUMMARY
 
@@ -3077,7 +3175,7 @@ attribute. By default, handles are opened to the file "C<db.log>".
     Directive           Specifies
     _________           ____________________________________________________
     C<=begin>           Start of an explicitly terminated block
-    C<=config>          Lexical modifications to a block or formatting code
+    C<=config>          Lexical modifications to a block or markup code
     C<=end>             Explicit termination of a C<=begin> block
     C<=for>             Start of an implicitly (blank-line) terminated block
     C<=alias>           Define a Podlite macro
@@ -3113,7 +3211,7 @@ attribute. By default, handles are opened to the file "C<db.log>".
 
 =end table
 
-=head2 Formatting codes
+=head2 Inline markup codes
 =config C<> :allow<R V>
 =begin table :nested
 
@@ -3140,7 +3238,7 @@ attribute. By default, handles are opened to the file "C<db.log>".
     C<S<...>>             Space characters to be preserved
     C<T<...>>             Terminal output (typically rendered fixed-width)
     C<U<...>>             Unusual (typically rendered with underlining)
-    C<V<V><...>>          Verbatim (internal formatting codes ignored)
+    C<V<V><...>>          Verbatim (internal markup codes ignored)
     C<W<...|...>>         Contextual backlinks
     C<Y<>>                reserved
     C<X<...|..,..;...>>   Index entry (C<X<R<display text>|R<entry>,R<subentry>;...>>)
