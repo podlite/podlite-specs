@@ -31,9 +31,7 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
   =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
   =item C<:folded> attribute,
   =item C<:folded-levels> for C<=toc> block,
-  =item Notification blocks, C<:notify> attribute for C<=nested> blocks
-  =item C<:folded> attribute
-  =item C<:folded-levels> for C<=toc> block
+  =item Refactor custom blocks and markup codes, C<M<>>.
 =head3 Deprecated/removed:
   =item Contextual aliases
 =head2 1.0-beta2
