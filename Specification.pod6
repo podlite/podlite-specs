@@ -2533,16 +2533,16 @@ C<http:> and C<https:>
 A standard web URL. For example:
 
 =begin code :allow<B>
-    This module needs the LAME library
-    (available from L<B<http://www.mp3dev.org/mp3/>>)
+  This module needs the LAME library
+  (available from L<B<http://www.mp3dev.org/mp3/>>)
 =end code
 
 If the link does not start with C<//> it is treated as being relative to
 the location of the current document:
 
 =begin code :allow<B>
-    See also: L<B<http:tutorial/faq.html>> and
-    L<B<http:../examples/index.html>>
+  See also: L<B<http:tutorial/faq.html>> and
+  L<B<http:../examples/index.html>>
 =end code
 
 =end defn
@@ -2553,8 +2553,8 @@ C<file:>
 A filename on the local system. For example:
 
 =begin code :allow<B>
-    Next, edit the global config file (that is, either
-    L<B<file:/usr/local/lib/.configrc>> or L<B<file:~/.configrc>>).
+  Next, edit the global config file (that is, either
+  L<B<file:/usr/local/lib/.configrc>> or L<B<file:~/.configrc>>).
 =end code
 
 Filenames that don't begin with a C</> or a C<~> are relative
