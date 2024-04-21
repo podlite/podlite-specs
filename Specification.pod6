@@ -5,14 +5,13 @@ This file is deliberately specified in Podlite format
 
 =TITLE Podlite - a lightweight markup language
 
-=begin nested :notify<warning> :caption('This document is still being worked on!')
-
-It's not finished yet, but it's available for everyone to see 
-and comment on. This way, it can get better with everyone's input.
+=begin nested :notify<warning> :caption('Work on the next release continues!')
 
 If you have any ideas to make it better, or if you have any questions,
 you're welcome to suggest changes or start a conversation on 
-our L<GitHub page|https://github.com/podlite/podlite-specs>.
+our L<GitHub page|https://github.com/podlite/podlite-specs/discussions>.
+
+Looking forward to working on the next release with your valuable input.
 =end nested
 
 =toc head1, head2, head3
@@ -25,7 +24,7 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
 =VERSION 1.0
 
 =begin CHANGES
-=head2 1.0
+=head2 v1.0
 =head3 New:
     =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
     =item C<:folded> attribute,
@@ -1673,7 +1672,7 @@ For example:
   =for table :caption('Basic cake recipe ingredients')
   B<data:recipe_ingredients>
 
-  =begin data :key<recipe_ingredients> :mime-type<text/csv>
+  =begin data B<:key<recipe_ingredients>> :mime-type<text/csv>
     ingredient,quantity,unit
     flour,2,cups
     sugar,1,cups
@@ -1778,19 +1777,19 @@ Each C<=data> block can be given a C<:key> option, to name it. The contents
 of any C<=data> block with a key are addressable via
 the C<data:> schema. For example:
 
-=begin code
-  =begin data :key<employee_data> :mime-type<text/csv>
+=begin code :allow<B>
+  =begin data B<:key<employee_data>> :mime-type<text/csv>
     id,name,position,department
     1,John Doe,Manager,Marketing
     2,Jane Smith,Developer,Engineering
     3,Bob Brown,Designer,Product
   =end data
 
-  =table data:employee_data
+  =table B<data:employee_data>
 
 =end code
 
-Each =data block can include several attributes to provide additional information
+Each C<=data> block can include several attributes to provide additional information
 about the contained data:
 
 =begin defn
