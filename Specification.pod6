@@ -1695,9 +1695,10 @@ For example:
 =end code
 
 
-=head3 Custom blocks
+=for head3 :id<Custom blocks>
+Named or modular custom blocks
 
-Blocks whose names contain at least one uppercase and one lowercase
+D<Blocks|Named block> whose names contain at least one uppercase and one lowercase
 letter are assumed to be destined for specialized renderers or parser
 plug-ins. For example:
 
@@ -1713,12 +1714,30 @@ or:
   =Image http://www.perlfoundation.org/images/perl_logo_32x104.png
 =end code
 
+=begin nested :notify<note>
+Named or modular blocks are defined within separate modules 
+and integrated into the core system through a defined interface or API.
+
+The interface or API for external modules depends on the implementation. 
+=end nested
+
+Ideally, each named block should have a corresponding handler responsible
+for its rendering and processing.
+
+In the absence of a handler for named block, the implementation should 
+allow the content to degrade gracefully, ensuring that the core message
+or functionality remains accessible even if some advanced features cannot
+be rendered. As result, that blocks my be displayed as verbatim or
+placeholder content or even not rendered at all.
+
 Alongside the verbatim or placeholder content, the renderer could provide
-an unobtrusive yet informative error message, explaining that the Custom block
+an unobtrusive yet informative error message, explaining that the named block
 could not be processed.
 
 Note that all block names consisting entirely of lowercase or entirely of
 uppercase letters are reserved. See L<#Semantic blocks>.
+
+To check custom markup codes, refer to L<#Custom markup codes>. 
 
 
 =head3 Podlite comments
