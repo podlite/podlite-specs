@@ -181,7 +181,7 @@ configuration information for the block. This information is used in
 different ways by different types of blocks, but is always specified using
 any of:
 
-=for table :nested
+=for table :nested :caption("Configuration syntax options") :id<configuration_syntax>
  Value is...       Specify with...       Or with...       Or with...
  ===============   ===================   ==============   ======================
  Boolean (true)    C«:key»               C«:key(1)»       C«key => 1»
@@ -1982,7 +1982,7 @@ C<=SYNOPSIS> block of the preceding example might be rendered like so:
 =begin nested
 B<3.E<nbsp;nbsp>I<Synopsis>>
 
-=begin code
+=begin code :lang<raku>
     use Raku::Magic::Parser;
 
     my $rep = Raku::Magic::Parser.parse($fh, :all_pod);
