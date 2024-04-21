@@ -1939,7 +1939,7 @@ The use of these special blocks is not required; you can still just write:
 
 =begin code
     =head1 SYNOPSIS
-    =begin code
+    =begin code :lang<raku>
         use Magic::Parser
 
         my Magic::Parser $parser .= new();
@@ -2069,7 +2069,7 @@ A wildcard L<"Selector"|#Selectors> serves this purpose, enabling inclusion
 of content from all the Markdown files:
 
 =begin code
-=include file:./includes/*.md
+  =include file:./includes/*.md
 =end code
 
 It's possible to include blocks from the same document being worked on.
@@ -2205,7 +2205,8 @@ Podlite includes built-in support for Markdown, making it easy to include Markdo
 content within Podlite documents. This is achieved using the C<=markdown> block.
 
 =begin code :allow<B>
-  =begin markdown
+  B<=begin markdown>
+
   ## Markdown Example
 
   You can use all the standard Markdown syntax within this block. For example:
@@ -2234,7 +2235,7 @@ content within Podlite documents. This is achieved using the C<=markdown> block.
   
     > This is a blockquote.
 
-  =end markdown
+  B<=end markdown>
 =end code
 
 This block allows to seamlessly combine Podlite's structured blocks with
