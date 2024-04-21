@@ -167,6 +167,7 @@ Any other file extension puts the parser in default mode. The L<C<=include>
 block|#Include block > has a mechanism to override this behavior by using 
 the C<:mime-type> attribute for the included files.
 
+
 =head3 Delimited blocks
 
 Delimited blocks are bounded by C<=begin> and C<=end> markers, both of
@@ -314,6 +315,7 @@ For example:
 Note that abbreviated blocks cannot specify configuration information. If
 configuration is required, use a C<=for> or C<=begin>/C<=end> instead.
 
+
 =head3 Block equivalence
 
 The underlying documentation model treats all block
@@ -326,23 +328,24 @@ three forms equally.
 For example, although L<#Headings> shows only:
 
 =begin code
-     =head1 Top Level Heading
+  =head1 Top Level Heading
 =end code
 
 this automatically implies that you could also write that block as:
 
 =begin code
-     =for head1
-     Top Level Heading
+  =for head1
+  Top Level Heading
 =end code
 
 or:
 
 =begin code
-     =begin head1
-     Top Level Heading
-     =end head1
+  =begin head1
+  Top Level Heading
+  =end head1
 =end code
+
 
 =head3 Standard configuration options
 
@@ -1827,7 +1830,7 @@ edited.
 =end defn
 
 =begin defn
-C<encoding>
+C<:encoding>
 
 This option specifies the encoding method used to store the data.
 For non-text data, such as images in the PNG format, 
@@ -1838,15 +1841,15 @@ Example of storing images in C<=data> blocks:
 
 =begin code :allow<B>
 
-    =begin data :key<Logo> :filename<Logo.png> :mime-type<image/png>
-    = :access-time<2022-01-01T00:00:00Z>  :modify-time<2022-01-02T10:00:00Z>
-    = :encoding<base64>
-    iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAS0lEQVR4AWPOPfjpvWZSW4db
-    ZLk+kwTHP24HUQYGfi4WTiZVAcYfDtIMDCJc/38xK6TWth37wcrw7cufF8yeeWUGrL8Z33Ey
-    /t0HAMBnF2nt5sNRAAAAAElFTkSuQmCC
-    =end data
+  =begin B<data> B<:key<Logo>> :filename<Logo.png> :mime-type<image/png>
+  = :access-time<2022-01-01T00:00:00Z>  :modify-time<2022-01-02T10:00:00Z>
+  = :encoding<base64>
+  iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAS0lEQVR4AWPOPfjpvWZSW4db
+  ZLk+kwTHP24HUQYGfi4WTiZVAcYfDtIMDCJc/38xK6TWth37wcrw7cufF8yeeWUGrL8Z33Ey
+  /t0HAMBnF2nt5sNRAAAAAElFTkSuQmCC
+  =end data
 
-    =picture data:Logo
+  =picture B<data:Logo>
 
 =end code
 
@@ -2017,7 +2020,7 @@ The C<:folded-levels> attribute indicates which level of the TOC should
 be folded. 
 
 =begin code :allow<B>
- =for toc :folded-levels[2,3] :caption('Table of contents')
+ =for toc B<:folded-levels[2,3]> :caption('Table of contents')
     head1, head2, item1
 =end code
 
