@@ -51,8 +51,10 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
     =item contextual backlinks, C<W<>>,
     =item advanced table format, C<=row>,C<=cell> blocks,
     C<:header>, C<:rowspan>, C<:colspan> attributes.
-    
 =head3 Deprecated/removed:
+    =item Contextual aliases,
+    =item C<=finish>,
+    =item markers in comments,
     =item C<:margin> attribute,
     =item C<=encoding> directive,
     =item C<P<toc:>> due to C<=toc> block,
@@ -61,7 +63,6 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
     =item Declarator block,
     =item C<:formatted> attribute,
     =item C<:like> attribute.
-
 =end CHANGES
 
 =head1 Podlite
