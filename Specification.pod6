@@ -2954,38 +2954,42 @@ E<dagger> Plants grow without soil, using mineral nutrient solutions.
 =end nested
 
 
-=head3 Module-defined handler for extends markup features
+=for head3 :id('Custom markup codes')
+Module-defined handler for extends markup features
 
 The C<M<>> code in Podlite extends the language's capabilities by allowing users 
 to specify additional processing instructions within their documents. 
-This is achieved by combining content text with a custom scheme specifier, 
-followed by extra content that is passed verbatim to a handler function.
+This is achieved by combining content text with a custom plug-in specifier, 
+followed by optional configuration information that is passed to a handler function.
 
 The structure of the C<M<>> markup code as follows: 
 
-    M< CONTENT-TEXT|SCHEME: VERBATIM_EXTRA_CONTENT>
+    M< CONTENT-TEXT| R<MODULE_NAME> R<OPTIONAL CONFIG INFO>>
 
-This syntax includes an optional CONTENT-TEXT section, followed by a
- scheme specifier (SCHEME:) and then the VERBATIM_EXTRA_CONTENT. 
-The scheme specifier should follow the same rules as for L<Named blocks|#Named blocks>.
-The scheme specifier allows the verbatim extra content (VERBATIM_EXTRA_CONTENT),
-which may include additional attributes or instructions for the markup code handler.
+This syntax includes C<CONTENT-TEXT> section, followed by a
+name specifier C<MODULE_NAME> and then the C<OPTIONAL CONFIG INFO>
+(see L<"Configuration syntax options"|#configuration_syntax>).
+The name specifier should follow the same rules as for 
+L<named blocks|#Custom blocks>.
+
+The C<M<>> formatting code is the inline equivalent of a
+L<named block|#Custom blocks>.
 
 An example of how this code might be used is :
 
 =for code :allow<B>
-    B<M<> This text is highlighted in yellowB<|Marker: yellow>>.
+    B«M<» This text is highlighted in yellow B«|Marker :color('yellow') >».
 
 In this example, the text C<"This text is highlighted in yellow"> is subject
-to special handling specified by the C<Marker:> scheme and C<yellow>, indicating 
-that the textshould be highlighted in yellow.
+to special handling specified by the C<Marker> module and
+C<:color('yellow')>, indicating that the text should be highlighted in yellow.
 
-If the C<SCHEME:> is unrecognized, the content text (CONTENT-TEXT) should be
+If the C<MODULE_NAME> is unrecognized, the content text C<CONTENT-TEXT> should be
 rendered as ordinary text. This ensures that documents remain readable even 
-if specific processing instructions cannot be executed.
+if specific processing instructions cannot be executed. The renderer could provide
+an unobtrusive yet informative error message, explaining that the custom 
+markup block could not be processed.
 
-This feature enhances the flexibility and capability of Podlite documents,
-enabling custom markup and behavior that goes beyond standard markup features.
 
 =head2 Block pre-configuration
 
