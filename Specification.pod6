@@ -22,33 +22,21 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
 =item Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
 =end AUTHORS
 
-=VERSION 1.0-beta3
+=VERSION 1.0
 
 =begin CHANGES
-
-=head2 1.0-beta3
+=head2 1.0
 =head3 New:
-  =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
-  =item C<:folded> attribute,
-  =item C<:folded-levels> for C<=toc> block,
-  =item Refactor custom blocks and markup codes, C<M<>>.
-=head3 Deprecated/removed:
-  =item Contextual aliases
-=head2 1.0-beta2
-=head3 New:
+    =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
+    =item C<:folded> attribute,
+    =item C<:folded-levels> for C<=toc> block,
+    =item Refactor Named custom blocks and markup custom codes, C<M<>>,
     =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>,
     =item C<:mime-type> attribute for C<=include> and C<=data> blocks,
     =item introduce C<data:> schema for use in =picture and C<=table>,
     =item render tables from CSV files, C<=table>,
     =item new markdown mode for parser,
-    =item C<M<>> - extends inline markup features.
-    
-=head3 Deprecated/removed:
-    =item C<=finish>,
-    =item markers in comments.
-
-=head2 1.0-beta1
-=head3 New:
+    =item C<M<>> - extends inline markup features,
     =item add C<:id>, C<:caption>, C<:lang> attributes,
     =item task lists, C<=item> and C<:checked> attribute,
     =item intro Selectors,
