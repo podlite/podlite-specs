@@ -628,6 +628,7 @@ in L<include block|#Include block>.
 
 Podlite offers notations for specifying a wide range of standard block types...
 
+
 =head3 Headings
 
 Podlite provides an unlimited number of levels of heading, specified by the
@@ -1706,7 +1707,7 @@ plug-ins. For example:
 or:
 
 =begin code
-    =Image http://www.perlfoundation.org/images/perl_logo_32x104.png
+  =Image http://www.perlfoundation.org/images/perl_logo_32x104.png
 =end code
 
 Alongside the verbatim or placeholder content, the renderer could provide
@@ -2700,21 +2701,21 @@ document, add the name of that section after the main link, separated by
 a C<#>. For example:
 
 =begin code :allow<B>
-    Also see: L<man:bash(1)B<#Compound Commands>>,
-    L<doc:perlsynB<#For Loops>>, and
-    L<http://dev.perl.org/perl6/syn/S04.htmlB<#The_for_statement>>
+  Also see: L<man:bash(1)B<#Compound Commands>>,
+  L<doc:perlsynB<#For Loops>>, and
+  L<http://dev.perl.org/perl6/syn/S04.htmlB<#The_for_statement>>
 =end code
 
 To refer to a section of the current document, omit the external address:
 
 =begin code :allow<B>
-    This mechanism is described under L<doc:B<#Special Features>> below.
+  This mechanism is described under L<doc:B<#Special Features>> below.
 =end code
 
 The scheme name may also be omitted in that case:
 
 =begin code :allow<B>
-    This mechanism is described under L<B<#Special Features>> below.
+  This mechanism is described under L<B<#Special Features>> below.
 =end code
 
 Podlite include the possibility of assigning a unique identifier to a block.
@@ -2723,12 +2724,12 @@ the C<:id> attribute. Later, these identifiers are utilized for adressing blocks
 and creating links.
 
 =begin code :allow<B>
-    =for head1 :id<intro>
-    Introduction
-    =for para B<:id<id1>>
-    This is an introductory paragraph.
-
-    For more information, see L<here|B<#intro>> and L<here|B<#id1>>
+  =for head1 :id<intro>
+  Introduction
+  =for para B<:id<id1>>
+  This is an introductory paragraph.
+  
+  For more information, see L<here|B<#intro>> and L<here|B<#id1>>
 =end code
 
 In this example, the link reference to the header block identified by "intro"
@@ -2887,9 +2888,9 @@ You can specify an index entry in which the indexed text and the index
 entry are different, by separating the two with a vertical bar:
 
 =begin code :allow<B>
-    An B<X<array|arrays>> is an ordered list of scalars indexed by number,
-    starting with 0. A B<X<hash|hashes>> is an unordered collection of
-    scalar values indexed by their associated string key.
+  An B<X<array|arrays>> is an ordered list of scalars indexed by number,
+  starting with 0. A B<X<hash|hashes>> is an unordered collection of
+  scalar values indexed by their associated string key.
 =end code
 
 In the two-part form, the index entry comes after the bar and is
@@ -2899,26 +2900,26 @@ You can specify hierarchical index entries by separating indexing levels
 with commas:
 
 =begin code :allow<B>
-    An X<array|B<arrays, definition of>> is an ordered list of scalars
-    indexed by number, starting with 0. A X<hash|B<hashes, definition of>>
-    is an unordered collection of scalar values indexed by their
-    associated string key.
+  An X<array|B<arrays, definition of>> is an ordered list of scalars
+  indexed by number, starting with 0. A X<hash|B<hashes, definition of>>
+  is an unordered collection of scalar values indexed by their
+  associated string key.
 =end code
 
 You can specify two or more entries for a single indexed text, by separating
 the entries with semicolons:
 
 =begin code :allow<B>
-    A X<hash|B<hashes, definition of; associative arrays>>
-    is an unordered collection of scalar values indexed by their
-    associated string key.
+  A X<hash|B<hashes, definition of; associative arrays>>
+  is an unordered collection of scalar values indexed by their
+  associated string key.
 =end code
 
 The indexed text can be empty, creating a "zero-width" index entry:
 
 =begin code :allow<B>
-    B<X<|puns, deliberate>>This is called the "Orcish Manoeuvre"
-    because you "OR" the "cache".
+  B<X<|puns, deliberate>>This is called the "Orcish Manoeuvre"
+  because you "OR" the "cache".
 =end code
 
 
