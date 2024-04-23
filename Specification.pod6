@@ -5,14 +5,13 @@ This file is deliberately specified in Podlite format
 
 =TITLE Podlite - a lightweight markup language
 
-=begin nested :notify<warning> :caption('This document is still being worked on!')
-
-It's not finished yet, but it's available for everyone to see 
-and comment on. This way, it can get better with everyone's input.
+=begin nested :notify<warning> :caption('Work on the next release continues!')
 
 If you have any ideas to make it better, or if you have any questions,
 you're welcome to suggest changes or start a conversation on 
-our L<GitHub page|https://github.com/podlite/podlite-specs>.
+our L<GitHub page|https://github.com/podlite/podlite-specs/discussions>.
+
+Looking forward to working on the next release with your valuable input.
 =end nested
 
 =toc head1, head2, head3
@@ -22,33 +21,21 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
 =item Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
 =end AUTHORS
 
-=VERSION 1.0-beta3
+=VERSION 1.0
 
 =begin CHANGES
-
-=head2 1.0-beta3
+=head2 v1.0
 =head3 New:
-  =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
-  =item C<:folded> attribute,
-  =item C<:folded-levels> for C<=toc> block,
-  =item Refactor custom blocks and markup codes, C<M<>>.
-=head3 Deprecated/removed:
-  =item Contextual aliases
-=head2 1.0-beta2
-=head3 New:
+    =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
+    =item C<:folded> attribute,
+    =item C<:folded-levels> for C<=toc> block,
+    =item Refactor Named custom blocks and markup custom codes, C<M<>>,
     =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>,
     =item C<:mime-type> attribute for C<=include> and C<=data> blocks,
-    =item introduce С<data:> schema for use in =picture and C<=table>,
+    =item introduce C<data:> schema for use in C<=picture> and C<=table>,
     =item render tables from CSV files, C<=table>,
     =item new markdown mode for parser,
-    =item C<M<>> - extends inline markup features.
-    
-=head3 Deprecated/removed:
-    =item C<=finish>,
-    =item markers in comments.
-
-=head2 1.0-beta1
-=head3 New:
+    =item C<M<>> - extends inline markup features,
     =item add C<:id>, C<:caption>, C<:lang> attributes,
     =item task lists, C<=item> and C<:checked> attribute,
     =item intro Selectors,
@@ -63,8 +50,10 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
     =item contextual backlinks, C<W<>>,
     =item advanced table format, C<=row>,C<=cell> blocks,
     C<:header>, C<:rowspan>, C<:colspan> attributes.
-    
 =head3 Deprecated/removed:
+    =item Contextual aliases,
+    =item C<=finish>,
+    =item markers in comments,
     =item C<:margin> attribute,
     =item C<=encoding> directive,
     =item C<P<toc:>> due to C<=toc> block,
@@ -73,7 +62,6 @@ our L<GitHub page|https://github.com/podlite/podlite-specs>.
     =item Declarator block,
     =item C<:formatted> attribute,
     =item C<:like> attribute.
-
 =end CHANGES
 
 =head1 Podlite
@@ -167,6 +155,7 @@ Any other file extension puts the parser in default mode. The L<C<=include>
 block|#Include block > has a mechanism to override this behavior by using 
 the C<:mime-type> attribute for the included files.
 
+
 =head3 Delimited blocks
 
 Delimited blocks are bounded by C<=begin> and C<=end> markers, both of
@@ -180,7 +169,7 @@ configuration information for the block. This information is used in
 different ways by different types of blocks, but is always specified using
 any of:
 
-=for table :nested
+=for table :nested :caption("Configuration syntax options") :id<configuration_syntax>
  Value is...       Specify with...       Or with...       Or with...
  ===============   ===================   ==============   ======================
  Boolean (true)    C«:key»               C«:key(1)»       C«key => 1»
@@ -314,6 +303,7 @@ For example:
 Note that abbreviated blocks cannot specify configuration information. If
 configuration is required, use a C<=for> or C<=begin>/C<=end> instead.
 
+
 =head3 Block equivalence
 
 The underlying documentation model treats all block
@@ -326,23 +316,24 @@ three forms equally.
 For example, although L<#Headings> shows only:
 
 =begin code
-     =head1 Top Level Heading
+  =head1 Top Level Heading
 =end code
 
 this automatically implies that you could also write that block as:
 
 =begin code
-     =for head1
-     Top Level Heading
+  =for head1
+  Top Level Heading
 =end code
 
 or:
 
 =begin code
-     =begin head1
-     Top Level Heading
-     =end head1
+  =begin head1
+  Top Level Heading
+  =end head1
 =end code
+
 
 =head3 Standard configuration options
 
@@ -628,6 +619,7 @@ in L<include block|#Include block>.
 
 Podlite offers notations for specifying a wide range of standard block types...
 
+
 =head3 Headings
 
 Podlite provides an unlimited number of levels of heading, specified by the
@@ -806,6 +798,7 @@ As the previous example implies, when any form of explicit C<=para> block
 is used, any whitespace at the start of each line is removed during rendering.
 In addition, within a delimited C<=begin para>/C<=end para> block, any
 blank lines are preserved.
+
 
 =head3 Code blocks
 
@@ -1419,6 +1412,7 @@ The preceding example could equally have been specified:
     B<=end nested>
 =end code
 
+
 =head3 Tables
 
 Simple tables can be specified in Podlite using a C<=table> block.
@@ -1678,7 +1672,7 @@ For example:
   =for table :caption('Basic cake recipe ingredients')
   B<data:recipe_ingredients>
 
-  =begin data :key<recipe_ingredients> :mime-type<text/csv>
+  =begin data B<:key<recipe_ingredients>> :mime-type<text/csv>
     ingredient,quantity,unit
     flour,2,cups
     sugar,1,cups
@@ -1689,9 +1683,10 @@ For example:
 =end code
 
 
-=head3 Custom blocks
+=for head3 :id<Custom blocks>
+Named or modular custom blocks
 
-Blocks whose names contain at least one uppercase and one lowercase
+D<Blocks|Named block> whose names contain at least one uppercase and one lowercase
 letter are assumed to be destined for specialized renderers or parser
 plug-ins. For example:
 
@@ -1704,15 +1699,33 @@ plug-ins. For example:
 or:
 
 =begin code
-    =Image http://www.perlfoundation.org/images/perl_logo_32x104.png
+  =Image http://www.perlfoundation.org/images/perl_logo_32x104.png
 =end code
 
+=begin nested :notify<note>
+Named or modular blocks are defined within separate modules 
+and integrated into the core system through a defined interface or API.
+
+The interface or API for external modules depends on the implementation. 
+=end nested
+
+Ideally, each named block should have a corresponding handler responsible
+for its rendering and processing.
+
+In the absence of a handler for named block, the implementation should 
+allow the content to degrade gracefully, ensuring that the core message
+or functionality remains accessible even if some advanced features cannot
+be rendered. As result, that blocks my be displayed as verbatim or
+placeholder content or even not rendered at all.
+
 Alongside the verbatim or placeholder content, the renderer could provide
-an unobtrusive yet informative error message, explaining that the Custom block
+an unobtrusive yet informative error message, explaining that the named block
 could not be processed.
 
 Note that all block names consisting entirely of lowercase or entirely of
 uppercase letters are reserved. See L<#Semantic blocks>.
+
+To check custom markup codes, refer to L<#Custom markup codes>. 
 
 
 =head3 Podlite comments
@@ -1731,16 +1744,17 @@ Comments are useful for meta-documentation (documenting the documentation):
 and for temporarily removing parts of a document:
 
 =begin code :allow<B>
-    =item # Retreat to remote Himalayan monastery
+  =item # Retreat to remote Himalayan monastery
 
-    =item # Learn the hidden mysteries of space and time
+  =item # Learn the hidden mysteries of space and time
 
-    =item # Achieve enlightenment
+  =item # Achieve enlightenment
 
-    B<=begin comment>
-    =item # Prophet!
-    B<=end comment>
+  B<=begin comment>
+  =item # Prophet!
+  B<=end comment>
 =end code
+
 
 =head3 Data blocks
 
@@ -1763,19 +1777,19 @@ Each C<=data> block can be given a C<:key> option, to name it. The contents
 of any C<=data> block with a key are addressable via
 the C<data:> schema. For example:
 
-=begin code
-  =begin data :key<employee_data> :mime-type<text/csv>
+=begin code :allow<B>
+  =begin data B<:key<employee_data>> :mime-type<text/csv>
     id,name,position,department
     1,John Doe,Manager,Marketing
     2,Jane Smith,Developer,Engineering
     3,Bob Brown,Designer,Product
   =end data
 
-  =table data:employee_data
+  =table B<data:employee_data>
 
 =end code
 
-Each =data block can include several attributes to provide additional information
+Each C<=data> block can include several attributes to provide additional information
 about the contained data:
 
 =begin defn
@@ -1823,7 +1837,7 @@ edited.
 =end defn
 
 =begin defn
-C<encoding>
+C<:encoding>
 
 This option specifies the encoding method used to store the data.
 For non-text data, such as images in the PNG format, 
@@ -1834,15 +1848,15 @@ Example of storing images in C<=data> blocks:
 
 =begin code :allow<B>
 
-    =begin data :key<Logo> :filename<Logo.png> :mime-type<image/png>
-    = :access-time<2022-01-01T00:00:00Z>  :modify-time<2022-01-02T10:00:00Z>
-    = :encoding<base64>
-    iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAS0lEQVR4AWPOPfjpvWZSW4db
-    ZLk+kwTHP24HUQYGfi4WTiZVAcYfDtIMDCJc/38xK6TWth37wcrw7cufF8yeeWUGrL8Z33Ey
-    /t0HAMBnF2nt5sNRAAAAAElFTkSuQmCC
-    =end data
+  =begin B<data> B<:key<Logo>> :filename<Logo.png> :mime-type<image/png>
+  = :access-time<2022-01-01T00:00:00Z>  :modify-time<2022-01-02T10:00:00Z>
+  = :encoding<base64>
+  iVBORw0KGgoAAAANSUhEUgAAAAMAAAAFCAYAAACAcVaiAAAAS0lEQVR4AWPOPfjpvWZSW4db
+  ZLk+kwTHP24HUQYGfi4WTiZVAcYfDtIMDCJc/38xK6TWth37wcrw7cufF8yeeWUGrL8Z33Ey
+  /t0HAMBnF2nt5sNRAAAAAElFTkSuQmCC
+  =end data
 
-    =picture data:Logo
+  =picture B<data:Logo>
 
 =end code
 
@@ -1861,6 +1875,7 @@ Note that in Podlite, it is possible to specify C<=data> blocks
 I<after> the point in the source where their contents will be used.
 
 C<=data> blocks are never rendered by the standard Podlite renderers.
+
 
 =head3 Semantic blocks
 
@@ -1931,7 +1946,7 @@ The use of these special blocks is not required; you can still just write:
 
 =begin code
     =head1 SYNOPSIS
-    =begin code
+    =begin code :lang<raku>
         use Magic::Parser
 
         my Magic::Parser $parser .= new();
@@ -1955,12 +1970,13 @@ C<=SYNOPSIS> block of the preceding example might be rendered like so:
 =begin nested
 B<3.E<nbsp;nbsp>I<Synopsis>>
 
-=begin code
+=begin code :lang<raku>
     use Raku::Magic::Parser;
 
     my $rep = Raku::Magic::Parser.parse($fh, :all_pod);
 =end code
 =end nested
+
 
 =head3 Table of contents
 
@@ -2011,7 +2027,7 @@ The C<:folded-levels> attribute indicates which level of the TOC should
 be folded. 
 
 =begin code :allow<B>
- =for toc :folded-levels[2,3] :caption('Table of contents')
+ =for toc B<:folded-levels[2,3]> :caption('Table of contents')
     head1, head2, item1
 =end code
 
@@ -2037,6 +2053,7 @@ To enable the autogenerated TOC, controlled and maintained by render, set the C<
 document attribute for C<=pod> block. In this case, the specific configuration 
 and outcome of the TOC are influenced by the settings of the concrete render implementation.
 
+
 =head3 Include block
 
 The C<=include> block is a powerful tool that allows to reuse specific
@@ -2059,7 +2076,7 @@ A wildcard L<"Selector"|#Selectors> serves this purpose, enabling inclusion
 of content from all the Markdown files:
 
 =begin code
-=include file:./includes/*.md
+  =include file:./includes/*.md
 =end code
 
 It's possible to include blocks from the same document being worked on.
@@ -2099,6 +2116,7 @@ It's crucial to think about security concerns, as adding content from external
 sources could potentially create vulnerabilities such as injecting harmful code
 or malicious material. Tools responsible for displaying and handling the content
 should be able to provide a warning in such situations.
+
 
 =head3 Inserting pictures
  
@@ -2159,6 +2177,7 @@ Alternatively, you can define the image caption using the C<:caption> attribute.
  diag01.png
 =end code
 
+
 =head3 Mathematical formulas
 
 To include mathematical formulas, use a C<=formula> block with an inline version
@@ -2186,13 +2205,15 @@ It possible to define the formule caption using the C<:caption> attribute.
   x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 =end code
 
+
 =head3 Markdown support
 
 Podlite includes built-in support for Markdown, making it easy to include Markdown
 content within Podlite documents. This is achieved using the C<=markdown> block.
 
 =begin code :allow<B>
-  =begin markdown
+  B<=begin markdown>
+
   ## Markdown Example
 
   You can use all the standard Markdown syntax within this block. For example:
@@ -2221,7 +2242,7 @@ content within Podlite documents. This is achieved using the C<=markdown> block.
   
     > This is a blockquote.
 
-  =end markdown
+  B<=end markdown>
 =end code
 
 This block allows to seamlessly combine Podlite's structured blocks with
@@ -2230,7 +2251,7 @@ the flexibility of Markdown.
 
 =head2 Markup codes
 
-Markup codes enable inline markup within the text of (most) Pod block types.
+Markup codes enable inline markup within the text of (most) Podlite block types.
 They are a form of block that can contain only other markup codes. Specifically,
 markup codes can nest:
 
@@ -2306,6 +2327,7 @@ The C<B<>> markup code specifies that the contained text is the
 B<basis> or focus of the surrounding text; that it is of I<fundamental
 significance>. Such content would typically be rendered in a bold style or
 in C< <strong>...</strong> > tags.
+
 
 =head3 Mistake marking
 
@@ -2426,7 +2448,7 @@ used to indicate a component of a syntax or specification that should
 eventually be replaced by an actual value. For example:
 
 =begin code :allow<B>
-    The basic C<ln> command is: C<ln> B<R<source_file> R<target_file>>
+  The basic C<ln> command is: C<ln> B<R<source_file> R<target_file>>
 =end code
 
 or:
@@ -2501,12 +2523,13 @@ Moreover, the C<C<>> code automatically treats its contents as being
 verbatim, which often eliminates the need for the C<V<>> as well:
 
 =begin code :allow<B>
-    In Perl 5 POD, the B«V<C<Z<>>>» code was widely used to break up text
-    that would otherwise be considered mark-up.
+  In certain scenarios, the B«V<C<Z<>>>» code was widely used to break up text
+  that would otherwise be considered mark-up.
 =end code
 
 The C<Z<>> markup code is the inline equivalent of a
 L<C<=comment> block|#Comments>.
+
 
 =head3 Links
 
@@ -2533,16 +2556,16 @@ C<http:> and C<https:>
 A standard web URL. For example:
 
 =begin code :allow<B>
-    This module needs the LAME library
-    (available from L<B<http://www.mp3dev.org/mp3/>>)
+  This module needs the LAME library
+  (available from L<B<http://www.mp3dev.org/mp3/>>)
 =end code
 
 If the link does not start with C<//> it is treated as being relative to
 the location of the current document:
 
 =begin code :allow<B>
-    See also: L<B<http:tutorial/faq.html>> and
-    L<B<http:../examples/index.html>>
+  See also: L<B<http:tutorial/faq.html>> and
+  L<B<http:../examples/index.html>>
 =end code
 
 =end defn
@@ -2553,8 +2576,8 @@ C<file:>
 A filename on the local system. For example:
 
 =begin code :allow<B>
-    Next, edit the global config file (that is, either
-    L<B<file:/usr/local/lib/.configrc>> or L<B<file:~/.configrc>>).
+  Next, edit the global config file (that is, either
+  L<B<file:/usr/local/lib/.configrc>> or L<B<file:~/.configrc>>).
 =end code
 
 Filenames that don't begin with a C</> or a C<~> are relative
@@ -2574,7 +2597,7 @@ An email address. Typically, activating this type of link invokes a mailer.
 For example:
 
 =begin code :allow<B>
-    Please forward bug reports to L<B<mailto:devnull@rt.cpan.org>>
+  Please forward bug reports to L<B<mailto:devnull@rt.cpan.org>>
 =end code
 
 =end defn
@@ -2585,8 +2608,8 @@ C<man:>
 A link to the system manpages. For example:
 
 =begin code :allow<B>
-    This module implements the standard
-    Unix L<B<man:find(1)>> facilities.
+  This module implements the standard
+  Unix L<B<man:find(1)>> facilities.
 =end code
 
 =end defn
@@ -2653,12 +2676,12 @@ A link to the L<block-form|#Definition lists> or L<inline|#Definitions>
 definition of the specified term within the current document. For example:
 
 =begin code :allow<B>
-    He was highly prone to B<D<lexiphania>>: an unfortunate proclivity
-    for employing grandiloquisms (for example, words such as "proclivity",
-    "grandiloquism", and indeed "lexiphania").
+  He was highly prone to B<D<lexiphania>>: an unfortunate proclivity
+  for employing grandiloquisms (for example, words such as "proclivity",
+  "grandiloquism", and indeed "lexiphania").
 
-    B<=defn glossoligation>
-    Restraint of the tongue (voluntary or otherwise)
+  B<=defn glossoligation>
+  Restraint of the tongue (voluntary or otherwise)
 =end code
 
 and later, to link back to the definition
@@ -2678,8 +2701,8 @@ The International Standard Book Number or International Standard
 Serial Number for a publication. For example:
 
 =begin code :allow<B>
-    The Perl Journal was a registered
-    serial publication (L<B<issn:1087-903X>>)
+  The Perl Journal was a registered
+  serial publication (L<B<issn:1087-903X>>)
 =end code
 
 =end defn
@@ -2689,21 +2712,21 @@ document, add the name of that section after the main link, separated by
 a C<#>. For example:
 
 =begin code :allow<B>
-    Also see: L<man:bash(1)B<#Compound Commands>>,
-    L<doc:perlsynB<#For Loops>>, and
-    L<http://dev.perl.org/perl6/syn/S04.htmlB<#The_for_statement>>
+  Also see: L<man:bash(1)B<#Compound Commands>>,
+  L<doc:perlsynB<#For Loops>>, and
+  L<http://dev.perl.org/perl6/syn/S04.htmlB<#The_for_statement>>
 =end code
 
 To refer to a section of the current document, omit the external address:
 
 =begin code :allow<B>
-    This mechanism is described under L<doc:B<#Special Features>> below.
+  This mechanism is described under L<doc:B<#Special Features>> below.
 =end code
 
 The scheme name may also be omitted in that case:
 
 =begin code :allow<B>
-    This mechanism is described under L<B<#Special Features>> below.
+  This mechanism is described under L<B<#Special Features>> below.
 =end code
 
 Podlite include the possibility of assigning a unique identifier to a block.
@@ -2712,12 +2735,12 @@ the C<:id> attribute. Later, these identifiers are utilized for adressing blocks
 and creating links.
 
 =begin code :allow<B>
-    =for head1 :id<intro>
-    Introduction
-    =for para B<:id<id1>>
-    This is an introductory paragraph.
-
-    For more information, see L<here|B<#intro>> and L<here|B<#id1>>
+  =for head1 :id<intro>
+  Introduction
+  =for para B<:id<id1>>
+  This is an introductory paragraph.
+  
+  For more information, see L<here|B<#intro>> and L<here|B<#id1>>
 =end code
 
 In this example, the link reference to the header block identified by "intro"
@@ -2730,13 +2753,14 @@ vertical bar. Whitespace is not significant on either side of the bar.
 For example:
 
 =begin code :allow<B>
-    This module needs the L<B<LAME library|>http://www.mp3dev.org/mp3/>.
+  This module needs the L<B<LAME library|>http://www.mp3dev.org/mp3/>.
 
-    You could also write the code
-    L<B<in Latin |> doc:Lingua::Romana::Perligata>
+  You could also write the code
+  L<B<in Latin |> doc:Lingua::Romana::Perligata>
 
-    His L<B<lexiphanic|>defn:lexiphania>> tendencies were, alas, incurable.
+  His L<B<lexiphanic|>defn:lexiphania>> tendencies were, alas, incurable.
 =end code
+
 
 =head3 Contextual backlinks
 
@@ -2750,13 +2774,13 @@ of the referenced material.
 For example:
 
 =begin code :allow<B>
- This text can reveal the meaning of B<W<glossoligation|defn:glossoligation>>
+  This text can reveal the meaning of B<W<glossoligation|defn:glossoligation>>
 =end code
 
 or:
 
 =begin code :allow<B>
- We discuss here about B<W<doc:perldata>>.
+  We discuss here about B<W<doc:perldata>>.
 =end code
 
 Contextual backlinks on the destination page can be displayed in various ways.
@@ -2771,6 +2795,7 @@ all available link schemes, including C<https:> and C<doc:>, to link to external
 Contextual backlinks might be visually distinguished from
 standard links through color coding.
 
+
 =head3 Alias placements
 
 The C<A<>> code is replaced by the contents of the named alias or object
@@ -2778,14 +2803,13 @@ specified within its delimiters.
 For example:
 
 =begin code
-    =alias PROGNAME    Earl Irradiatem Eventually
-    =alias VENDOR      4D Kingdoms
-    =alias TERMS_URL   L<http://www.4dk.com/eie>
+  =alias PROGNAME    Earl Irradiatem Eventually
+  =alias VENDOR      4D Kingdoms
+  =alias TERMS_URL   L<http://www.4dk.com/eie>
 
-    The use of A<PROGNAME> is subject to the terms and conditions
-    laid out by A<VENDOR>, as specified at A<TERMS_URL>.
+  The use of A<PROGNAME> is subject to the terms and conditions
+  laid out by A<VENDOR>, as specified at A<TERMS_URL>.
 =end code
-
 
 See L<#Aliases> for further details of the aliasing macro mechanism.
 
@@ -2875,9 +2899,9 @@ You can specify an index entry in which the indexed text and the index
 entry are different, by separating the two with a vertical bar:
 
 =begin code :allow<B>
-    An B<X<array|arrays>> is an ordered list of scalars indexed by number,
-    starting with 0. A B<X<hash|hashes>> is an unordered collection of
-    scalar values indexed by their associated string key.
+  An B<X<array|arrays>> is an ordered list of scalars indexed by number,
+  starting with 0. A B<X<hash|hashes>> is an unordered collection of
+  scalar values indexed by their associated string key.
 =end code
 
 In the two-part form, the index entry comes after the bar and is
@@ -2887,26 +2911,26 @@ You can specify hierarchical index entries by separating indexing levels
 with commas:
 
 =begin code :allow<B>
-    An X<array|B<arrays, definition of>> is an ordered list of scalars
-    indexed by number, starting with 0. A X<hash|B<hashes, definition of>>
-    is an unordered collection of scalar values indexed by their
-    associated string key.
+  An X<array|B<arrays, definition of>> is an ordered list of scalars
+  indexed by number, starting with 0. A X<hash|B<hashes, definition of>>
+  is an unordered collection of scalar values indexed by their
+  associated string key.
 =end code
 
 You can specify two or more entries for a single indexed text, by separating
 the entries with semicolons:
 
 =begin code :allow<B>
-    A X<hash|B<hashes, definition of; associative arrays>>
-    is an unordered collection of scalar values indexed by their
-    associated string key.
+  A X<hash|B<hashes, definition of; associative arrays>>
+  is an unordered collection of scalar values indexed by their
+  associated string key.
 =end code
 
 The indexed text can be empty, creating a "zero-width" index entry:
 
 =begin code :allow<B>
-    B<X<|puns, deliberate>>This is called the "Orcish Manoeuvre"
-    because you "OR" the "cache".
+  B<X<|puns, deliberate>>This is called the "Orcish Manoeuvre"
+  because you "OR" the "cache".
 =end code
 
 
@@ -2938,38 +2962,42 @@ E<dagger> Plants grow without soil, using mineral nutrient solutions.
 =end nested
 
 
-=head3 Module-defined handler for extends markup features
+=for head3 :id('Custom markup codes')
+Module-defined handler for extends markup features
 
 The C<M<>> code in Podlite extends the language's capabilities by allowing users 
 to specify additional processing instructions within their documents. 
-This is achieved by combining content text with a custom scheme specifier, 
-followed by extra content that is passed verbatim to a handler function.
+This is achieved by combining content text with a custom plug-in specifier, 
+followed by optional configuration information that is passed to a handler function.
 
 The structure of the C<M<>> markup code as follows: 
 
-    M< CONTENT-TEXT|SCHEME: VERBATIM_EXTRA_CONTENT>
+    M< CONTENT-TEXT| R<MODULE_NAME> R<OPTIONAL CONFIG INFO>>
 
-This syntax includes an optional CONTENT-TEXT section, followed by a
- scheme specifier (SCHEME:) and then the VERBATIM_EXTRA_CONTENT. 
-The scheme specifier should follow the same rules as for L<Named blocks|#Named blocks>.
-The scheme specifier allows the verbatim extra content (VERBATIM_EXTRA_CONTENT),
-which may include additional attributes or instructions for the markup code handler.
+This syntax includes C<CONTENT-TEXT> section, followed by a
+name specifier C<MODULE_NAME> and then the C<OPTIONAL CONFIG INFO>
+(see L<"Configuration syntax options"|#configuration_syntax>).
+The name specifier should follow the same rules as for 
+L<named blocks|#Custom blocks>.
+
+The C<M<>> formatting code is the inline equivalent of a
+L<named block|#Custom blocks>.
 
 An example of how this code might be used is :
 
 =for code :allow<B>
-    B<M<> This text is highlighted in yellowB<|Marker: yellow>>.
+    B«M<» This text is highlighted in yellow B«|Marker :color('yellow') >».
 
 In this example, the text C<"This text is highlighted in yellow"> is subject
-to special handling specified by the C<Marker:> scheme and C<yellow>, indicating 
-that the textshould be highlighted in yellow.
+to special handling specified by the C<Marker> module and
+C<:color('yellow')>, indicating that the text should be highlighted in yellow.
 
-If the C<SCHEME:> is unrecognized, the content text (CONTENT-TEXT) should be
+If the C<MODULE_NAME> is unrecognized, the content text C<CONTENT-TEXT> should be
 rendered as ordinary text. This ensures that documents remain readable even 
-if specific processing instructions cannot be executed.
+if specific processing instructions cannot be executed. The renderer could provide
+an unobtrusive yet informative error message, explaining that the custom 
+markup block could not be processed.
 
-This feature enhances the flexibility and capability of Podlite documents,
-enabling custom markup and behavior that goes beyond standard markup features.
 
 =head2 Block pre-configuration
 
@@ -3006,9 +3034,10 @@ pre-configured option. For example, given the code blocks configurations in the
 previous example, to specify another language for code block:
 
 =begin code
-    =for code :lang<javascript>
-    print(JSON.stringify([1,2]]));
+  =for code :lang<javascript>
+  print(JSON.stringify([1,2]]));
 =end code
+
 
 =head3 Pre-configuring markup codes
 
@@ -3025,6 +3054,7 @@ by naming it with a pair of angles as a suffix. For example:
 Note that, even though the markup code is named using single-angles,
 the preconfiguration applies regardless of the actual delimiters used on
 subsequent instances of the code.
+
 
 =head2 Aliases
 
@@ -3096,6 +3126,7 @@ text ever has to be changed, it need only be modified in a single place:
     =alias TERMS_URLS  L<http://www.c11.com/generic_conditions>
 =end code
 
+
 =head2 Notification blocks
 
 These blocks, often referred to as admonitions, callouts, or alerts,
@@ -3103,7 +3134,7 @@ serve to draw the reader's attention to different types of content,
 such as tips, warnings, or important notes. 
 
 To create specially formatted blocks to highlight information in Podlite 
-the =nested block and :notice attribute are utilized.
+the C<=nested> block and C<:notice> attribute are utilized.
 
 For example:
 
@@ -3238,7 +3269,7 @@ icons that indicate the significance of the content.
     C<S<...>>             Space characters to be preserved
     C<T<...>>             Terminal output (typically rendered fixed-width)
     C<U<...>>             Unusual (typically rendered with underlining)
-    C<V<V><...>>          Verbatim (internal markup codes ignored)
+    C«V<V><...>»          Verbatim (internal markup codes ignored)
     C<W<...|...>>         Contextual backlinks
     C<Y<>>                reserved
     C<X<...|..,..;...>>   Index entry (C<X<R<display text>|R<entry>,R<subentry>;...>>)

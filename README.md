@@ -19,6 +19,13 @@ Its flexibility makes it an ideal tool for creating documentation, blogs, educat
 
 Podlite aims to provide users with a means for creativity and expressing ideas in a structured form, while ensuring ease of use and high flexibility in content creation.
 
+Supported file extensions:
+
+| Processor mode    | Extensions
+| ------------------| -----------
+| `Pod` mode        | `.podlite`, `.pod6` (supported through history)
+|                   | `*.*` - processes files under supported MIME types and/or extracts Podlite markup
+| `Markdown` mode   | `.md`, `.markdown`
 
 [The specification](https://github.com/podlite/podlite-specs/blob/main/Specification.pod6) for the Podlite markup language is written using Podlite markup itself.
 
