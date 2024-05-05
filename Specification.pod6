@@ -486,12 +486,12 @@ For example:
 TODO: my be it may sense to add a C<:folded-caption> attribute to 
 define a custom title for the collapsed block.
 
-The C<:folded-caption> attribute allows for defining a custom title 
+The C<:folded-caption> attribute enables the definition of a custom title
 for the collapsed block. If no caption is provided, rendering systems
-may automatically use the C<:caption> attribute. If the C<:caption> 
-attribute is not present, the first line or paragraph of the block 
-is used as the default title. For semantic blocks, the name of the
-block can be used as the default title.
+may automatically use the C<:caption> attribute. In the absence of 
+the C<:caption> attribute, the first line or paragraph of the block
+serves as the default title. For semantic blocks, the name of the block
+may be used as the default title.
 
 
 =begin code
@@ -506,9 +506,10 @@ block can be used as the default title.
 =begin defn
 C<:lang>
 
-This option used to L<provide information|#Assign programming language to code blocks> about the programming language
-used in a specific code block. This helps in ensuring that the code is 
-displayed and interpreted correctly by rendering engines or syntax highlighters.
+This option used to L<provide information|#Assign programming language to 
+code blocks> about the programming language used in a specific code block.
+This helps in ensuring that the code is displayed and interpreted correctly
+by rendering engines or syntax highlighters.
 
 Here's a table that lists a few programming languages along with their possible 
 values for the C<:lang> attribute:
@@ -2054,10 +2055,10 @@ and outcome of the TOC are influenced by the settings of the concrete render imp
 
 =head3 Include block
 
-The C<=include> block is a powerful tool that allows to reuse specific
+The C<=include> block is a powerful tool that allows the reuse of specific
 parts of documents within project sources. This is particularly handy
-when dealing with complex documents that require to include certain 
-sections from different files while keeping the overall context and 
+when dealing with complex documents that require including certain
+sections from different files while keeping the overall context and
 structure intact.
 
 The C<=include> block is followed by an L<"Selector"|#Selectors> that specifies the 
