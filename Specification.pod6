@@ -376,7 +376,7 @@ Occasionally it is desirable to nest content by more than one level:
     =begin para :nested
     =begin para :nested
     =begin para :nested
-    "We're going deep, deep, I<deep> undercover!"
+    "We're going deep, deep, deep undercover!"
     =end para
     =end para
     =end para
@@ -387,7 +387,7 @@ value:
 
 =begin code :allow<B>
     =begin para B<:nested(3)>
-    "We're going deep, deep, I<deep> undercover!"
+    "We're going deep, deep, deep undercover!"
     =end para
 =end code
 
@@ -865,7 +865,7 @@ or more markup codes. Those codes will then remain active inside the
 code block. For example:
 
 =begin code
-  =begin code :allow< B R >
+  =begin code :allow<B R>
   sub demo {
       B<say> 'Hello R<name>';
   }
@@ -874,7 +874,7 @@ code block. For example:
 
 would be rendered:
 
-=begin code :allow< B R >
+=begin code :allow<B R>
   sub demo {
       B<say> 'Hello R<name>';
   }
@@ -2505,6 +2505,7 @@ For example:
 
 In certain scenarios, the C<Z<>> code is used to break up text that 
 would otherwise be considered mark-up:
+
 =begin code :allow<B>
   In certain scenarios, the ZB<Z<>><> code is used to break up text that 
   would otherwise be considered mark-up.
