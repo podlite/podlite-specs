@@ -2681,7 +2681,7 @@ definition of the specified term within the current document. For example:
   Restraint of the tongue (voluntary or otherwise)
 =end code
 
-and later, to link back to the definition
+and later, to link back to the definition:
 
 =begin code :allow<B>
 To treat his chronic L<B<defn:lexiphania>> the doctor prescribed an
@@ -3077,11 +3077,11 @@ of the alias) in an C<A<>> markup code. This markup code is then
 replaced by the text returned by new macro.
 
 The replacement text returned by the alias macro begins at the first
-non-whitespace character after the alias's identifier, and continues to
-the end of the line. You can extend the replacement text over multiple
-lines by starting the following line(s) with an C<=> (at the same level
+non-whitespace character after the alias's identifier and continues to
+the end of the line. The replacement text can extend over multiple
+lines by starting each following line with an C<=> (at the same level
 of indentation as the C<=alias> directive itself) followed by at least
-one whitespace. Each addition line of replacement text uses the original
+one whitespace. Each additional line uses the original
 line's (virtual) left margin, as specified by the indentation of the
 replacement text on the C<=alias> line.
 
@@ -3101,7 +3101,7 @@ For example:
 
 =end code
 
-would produce:
+This would produce:
 
 =begin para :nested
     The use of Earl Irradiatem Evermore is subject to the terms and
@@ -3176,8 +3176,8 @@ custom (e.g. `faq`, etc.)???       Allows for specifying the specific context or
 =end comment
 
 By default, the title of the notification block is its type identifier in title case.
-It is possible to customize the title of the block and control the visibility 
-of the information using the C<:caption> and C<:folded> options.
+The title of the block and visibility of the information can be customized
+using the C<:caption> and C<:folded> options.
 
 =begin code :allow<I B Z> 
   =begin nested B<:caption<"Astronaut's Reminder">> :notify<important> B<:folded>
@@ -3186,7 +3186,7 @@ of the information using the C<:caption> and C<:folded> options.
   =end nested
 =end code
 
-It is possible to create title-only callouts by omitting the body.
+Title-only callouts can be created by omitting the body.
 
 =begin code 
   =for nested :notify<important> :folded :caption<"Title-only callout">
