@@ -343,18 +343,16 @@ applied uniformly to any built-in block type. These include:
 =begin defn
 C<:caption>
 
-This option specifies that the block may be given an associated description or
-title using the C<:caption> option.
-
-Usually, this description uses for build L<table of contents|#Table of contents>.
+This option assigns a title to the given block, which is typically used to create
+a L<table of contents|#Table of contents>.
 
 =end defn
 
 =begin defn
 C<:id>
 
-This option allows to explicitly define identificator for blocks and use 
-those IDs for linking, rather than relying on it content (see L<#Links>).
+This option enables the explicit definition of identifiers for blocks and use those 
+IDs for linking purposes (see L<#Links>).
 
 =end defn
 
@@ -378,7 +376,7 @@ Occasionally it is desirable to nest content by more than one level:
     =begin para :nested
     =begin para :nested
     =begin para :nested
-    "We're going deep, deep, I<deep> undercover!"
+    "We're going deep, deep, deep undercover!"
     =end para
     =end para
     =end para
@@ -389,7 +387,7 @@ value:
 
 =begin code :allow<B>
     =begin para B<:nested(3)>
-    "We're going deep, deep, I<deep> undercover!"
+    "We're going deep, deep, deep undercover!"
     =end para
 =end code
 
@@ -438,13 +436,13 @@ Note that numbering is never explicit; it is always implied by context.
 C<:checked>
 
 This attribute indicates that a checkbox should be added to that block. 
-It possible to apply a C<:checked> attributes to any block.
+It is possible to apply a C<:checked> attributes to any block.
 The most common use of this option is to create L<task lists|#Task lists>.
 
-For unchecked checkbox the C<:!checked> is used.
+For an unchecked checkbox the C<:!checked> is used.
 
 The task list item marker (checkbox) is added to the output. 
-In an HTML output, this would be represented as an 
+In HTML output, this would be represented as an 
  C<<input type="checkbox">> element.
 
 The specification does not define how these checkboxes are interacted with.
@@ -488,12 +486,12 @@ For example:
 TODO: my be it may sense to add a C<:folded-caption> attribute to 
 define a custom title for the collapsed block.
 
-The C<:folded-caption> attribute allows for defining a custom title 
+The C<:folded-caption> attribute enables the definition of a custom title
 for the collapsed block. If no caption is provided, rendering systems
-may automatically use the C<:caption> attribute. If the C<:caption> 
-attribute is not present, the first line or paragraph of the block 
-is used as the default title. For semantic blocks, the name of the
-block can be used as the default title.
+may automatically use the C<:caption> attribute. In the absence of 
+the C<:caption> attribute, the first line or paragraph of the block
+serves as the default title. For semantic blocks, the name of the block
+may be used as the default title.
 
 
 =begin code
@@ -508,9 +506,10 @@ block can be used as the default title.
 =begin defn
 C<:lang>
 
-This option used to L<provide information|#Assign programming language to code blocks> about the programming language
-used in a specific code block. This helps in ensuring that the code is 
-displayed and interpreted correctly by rendering engines or syntax highlighters.
+This option is used to L<provide information|#Assign programming language to 
+code blocks> about the programming language used in a specific code block.
+This helps ensure that the code is displayed and interpreted correctly
+by rendering engines or syntax highlighters.
 
 Here's a table that lists a few programming languages along with their possible 
 values for the C<:lang> attribute:
@@ -518,7 +517,7 @@ values for the C<:lang> attribute:
 =begin table :caption("Matching languages and lang attribute values")
 
     Programming language        Possible C<:lang> values 
-
+    --------------------        -------------------------
     C++                          cpp                    
     CSS                          css                    
     HTML                         html                   
@@ -866,7 +865,7 @@ or more markup codes. Those codes will then remain active inside the
 code block. For example:
 
 =begin code
-  =begin code :allow< B R >
+  =begin code :allow<B R>
   sub demo {
       B<say> 'Hello R<name>';
   }
@@ -875,7 +874,7 @@ code block. For example:
 
 would be rendered:
 
-=begin code :allow< B R >
+=begin code :allow<B R>
   sub demo {
       B<say> 'Hello R<name>';
   }
@@ -1796,7 +1795,7 @@ about the contained data:
 C<:filename>
 
 This option specifies the original file name of the embedded data, which 
-can be used to hint at the type of data contained if the C<:mime/type> is not 
+can be used to hint at the type of data contained if the C<:mime-type> is not 
 explicitly provided.
 =end defn
 
@@ -1804,9 +1803,9 @@ explicitly provided.
 C<:mime-type>
 
 This option indicates the MIME type of the data, such as C<image/png> for PNG images,
-which helps in determining how the data should be interpretered and processed.
+which helps determine how the data should be interpreted and processed.
 
-Here is a list of few well-known mime types and their corresponding file extensions:
+Here is a list of common MIME types and their corresponding file extensions:
 
 =table
     MIME Type                      | File Extension
@@ -1831,7 +1830,7 @@ Here is a list of few well-known mime types and their corresponding file extensi
 =begin defn
 C<:access-time> and C<:modify-time>
 
-This attributes record time for when the data was last accessed or
+These attributes record the times when the data was last accessed or
 edited.
 
 =end defn
@@ -1840,7 +1839,7 @@ edited.
 C<:encoding>
 
 This option specifies the encoding method used to store the data.
-For non-text data, such as images in the PNG format, 
+For non-text data, such as images in PNG format, 
 the encoding method C<base64> is used.
 =end defn
 
@@ -1880,8 +1879,7 @@ C<=data> blocks are never rendered by the standard Podlite renderers.
 =head3 Semantic blocks
 
 All uppercase block typenames are reserved for specifying standard
-documentation, publishing, source components, or meta-information of a
-compunit it needs to be able to be selected for loading.
+documentation, publishing, or source components.
 
 Standard semantic blocks include:
 
@@ -1889,9 +1887,6 @@ Standard semantic blocks include:
     =NAME
     =AUTHOR
     =VERSION
-    =CREATED
-    =EMULATES
-    =EXCLUDES
     =SYNOPSIS
     =DESCRIPTION
     =USAGE
@@ -1923,7 +1918,7 @@ Standard semantic blocks include:
 The plural forms of each of these keywords are also reserved, and are
 aliases for the singular forms.
 
-Most of these blocks would typically be used in their full delimited forms:
+Most of these blocks are typically used in their full delimited forms:
 
 =begin code
     =begin SYNOPSIS
@@ -1980,11 +1975,11 @@ B<3.E<nbsp;nbsp>I<Synopsis>>
 
 =head3 Table of contents
 
-The C<=toc> block is used to make an autogenerated table of contents (TOC)
+The C<=toc> block creates an autogenerated table of contents (TOC)
 in a document. The TOC is an index of section titles within the document, 
 and its structure is determined by the document's organization. 
 
-The first non-blank line of C<=toc> content is treated as a L<selector|#Selectors>
+The first non-blank line of C<=toc> content is treated as a L<selector|#Selectors>.
 
 For example:
 
@@ -1992,15 +1987,15 @@ For example:
  =toc head1, head2, head3, item1, item2, table
 =end code
 
-or
+or:
 
 =begin code
   =toc  head1, head2, head3 
 =end code
 
-The TOC is, by default, displayed without a caption.
-However, the value assigned to the C<:caption> 
-attribute of the C<=toc> block is used to generate a caption for the TOC.
+The TOC displays without a caption by default.
+However, a caption can be specified using the C<:caption> 
+attribute of the C<=toc> block.
 
 For example:
 
@@ -2009,21 +2004,20 @@ For example:
   head1, head2, head3 
 =end code
 
-To build the entries in the TOC, the content of the C<:caption> attribute
-within the block is used. If this attribute does not exist, then the text
-presentation of the block's content is utilized as the TOC entry.
+The TOC entries are built using the C<:caption> attribute content
+within the block. If this attribute is not present, the text
+presentation of the block's content serves as the TOC entry.
 
 The depth of the generated TOC is determined by the L<"Selector"|#Selectors> argument.
-The selector processed, and headers or filtered blocks that 
-allow levels are used to build the TOC levels. If a block does not have an 
+The selector is processed, and headers or filtered blocks that 
+allow levels are used to build the TOC levels. If a block lacks an 
 associated level, it is rendered at a level one higher than the previous 
 block with a level in the TOC.
 
-Note also that all L<semantic blocks|#Semantic
-blocks> are treated as equivalent to C<head1> headings, and the
-C<=item1>/C<=item> equivalence is preserved.
+Note that all L<semantic blocks|#Semantic blocks> are treated as equivalent 
+to C<head1> headings, and the C<=item1>/C<=item> equivalence is preserved.
 
-The C<:folded-levels> attribute indicates which level of the TOC should
+The C<:folded-levels> attribute indicates which levels of the TOC should
 be folded. 
 
 =begin code :allow<B>
@@ -2042,27 +2036,26 @@ For example:
     head1, head2, head3, item1, item2
 =end code
 
-The value C<0> for to level C<3> indicates that this level should 
+The value C<0> for level C<3> indicates that this level should 
 remain unfolded. Levels C<2> and C<4> are folded.
 
-This allows for a highly customized folding configuration within the TOC.
+This configuration enables customized folding within the TOC.
 
 The TOC is inserted at the location of the C<=toc> block.
 
-To enable the autogenerated TOC, controlled and maintained by render, set the C<:toc>
-document attribute for C<=pod> block. In this case, the specific configuration 
-and outcome of the TOC are influenced by the settings of the concrete render implementation.
+To enable the autogenerated TOC controlled by the renderer, set the C<:toc>
+document attribute for the C<=pod> block. In this case, the specific configuration 
+and outcome of the TOC are determined by the renderer implementation.
 
 
 =head3 Include block
 
-The C<=include> block is a powerful tool that allows to reuse specific
-parts of documents within project sources. This is particularly handy
-when dealing with complex documents that require to include certain 
-sections from different files while keeping the overall context and 
-structure intact.
+The C<=include> block enables reuse of specific parts of documents within 
+project sources. This feature is particularly useful for complex documents 
+that require including sections from different files while maintaining the 
+overall context and structure.
 
-The C<=include> block is followed by an L<"Selector"|#Selectors> that specifies the 
+The C<=include> block is followed by a L<"Selector"|#Selectors> that specifies the 
 content to be included.
 
 In this example, the content of the file C<chapter01.pod6> located in the 
@@ -2072,14 +2065,14 @@ C<./includes> directory is included:
 =include file:./includes/chapter01.pod6
 =end code
 
-A wildcard L<"Selector"|#Selectors> serves this purpose, enabling inclusion 
+A wildcard L<"Selector"|#Selectors> enables inclusion 
 of content from all the Markdown files:
 
 =begin code
   =include file:./includes/*.md
 =end code
 
-It's possible to include blocks from the same document being worked on.
+It is possible to include blocks from the same document.
 This feature proves valuable when reusing parts of existing content.
 
 For instance, a semantic block C<=VERSION> can be included as demonstrated:
@@ -2096,12 +2089,12 @@ or, equivalently:
 =VERSION 1.0.0
 =end code
 
-Podlite detects type of the included file by its extension.
+Podlite detects the type of the included file by its extension.
 For example, if the included file has a C<.md> extension, 
 it is treated as a Markdown file.
 
-To override the type of the included file by extension, you can use the C<:mime-type>
-attribute. This attribute allows you to specify the MIME type of the included file.
+To override the type of the included file, use the C<:mime-type>
+attribute. This attribute specifies the MIME type of the included file.
 For example:
 
 =begin code
@@ -2112,10 +2105,10 @@ For example:
 The C<:mime-type> attribute is particularly useful when including files with 
 extensions that do not match their actual MIME type.
 
-It's crucial to think about security concerns, as adding content from external
+Security considerations are crucial, as adding content from external
 sources could potentially create vulnerabilities such as injecting harmful code
 or malicious material. Tools responsible for displaying and handling the content
-should be able to provide a warning in such situations.
+should provide warnings in such situations.
 
 
 =head3 Inserting pictures
@@ -2130,12 +2123,12 @@ represented as C<P<alternative text|source of the image>>:
 =end code
 
 The first non-blank line of content within the C<=picture> block specifies the
-source of the image and the remaining content is treated as caption.
+source of the image, and the remaining content is treated as caption.
 
 This source can be either local or remote, and it can be
-indicated using different schemas: C<https:> for remote images, C<file:> for
-local ones, or C<data> for L<embedded images|#Data blocks> in to the document.
-If no schema is provided, it defaults to C<file:>.
+specified using different schemas: C<https:> for remote images, C<file:> for
+local ones, or C<data:> for L<embedded images|#Data blocks> in the document.
+If no schema is provided, C<file:> is used as default.
 
 =begin code :allow<B>
  =picture https://example.com/image.jpg
@@ -2153,7 +2146,7 @@ Following the source line, it possible to include an image caption.
  floats weightlessly above the Earth.
 =end code
 
-in delimited form of C<=picture> it possible to include as match texts as needed:
+In the delimited form of C<=picture>, multiple text blocks can be included:
 
 =begin code 
  =begin picture
@@ -2167,10 +2160,10 @@ in delimited form of C<=picture> it possible to include as match texts as needed
  =end picture
 =end code
 
-It possible to use all inline markup codes that are 
-supported by L<ordinary paragraph blocks|#Ordinary paragraph blocks>.
+All inline markup codes supported by L<ordinary paragraph blocks|#Ordinary paragraph blocks>
+can be used within picture captions.
 
-Alternatively, you can define the image caption using the C<:caption> attribute.
+A caption can also be defined using the C<:caption> attribute:
 
 =begin code :allow<B>
  =for picture B<:caption<diagram>>
@@ -2198,7 +2191,7 @@ a commonly used format for writing mathematical equations.
 
 =end code
 
-It possible to define the formule caption using the C<:caption> attribute.
+The formula caption can be defined using the C<:caption> attribute:
 
 =begin code :allow<B>
   =formula B< :caption<Quadratic Formula> >
@@ -2263,9 +2256,9 @@ markup codes can nest:
 
 All Podlite markup codes consist of a single capital letter followed
 immediately by a set of angle brackets. The brackets contain the text or
-data to which the markup code applies. You can use a set of single
+data to which the markup code applies. A set of single
 angles (C«<...>»), a set of double angles (C<«...»>), or multiple
-single-angles (C«<<<...>>>»).
+single-angles (C«<<<...>>>») can be used.
 
 Within angle delimiters, you cannot use sequences of the same angle
 characters that are longer than the delimiters:
@@ -2278,20 +2271,20 @@ characters that are longer than the delimiters:
     The Perl 5 heredoc syntax was: C< B«<<»END_MARKER >
 =end code
 
-You I<can> use sequences of angles that are the same length as
-the delimiters, but they must be balanced. For example:
+Sequences of angles that are the same length as
+the delimiters I<can> be used, but they must be balanced. For example:
 
     C<  $foo<bar>   >
     C<< $foo<<bar>> >>
 
-If you need an unbalanced angle, either use different delimiters:
+If an unbalanced angle is needed, either use different delimiters:
 
 =begin code :allow<B>
     CB<«>$foo < $barB<»>
     The Perl 5 heredoc syntax was: CB<«> <<END_MARKER B<»>
 =end code
 
-or delimiters with more consecutive angles than your text contains:
+or delimiters with more consecutive angles than the text contains:
 
 =begin code :allow<B>
     CB«<<»$foo < $barB«>>»
@@ -2331,8 +2324,8 @@ in C< <strong>...</strong> > tags.
 
 =head3 Mistake marking
 
-It possible strikethrough words using the code C<O<>>, where 'O' stands
-for "Overstrike." This is a way to indicate that certain words are a
+The code C<O<>> can be used for strikethrough text, where 'O' stands
+for "Overstrike." This indicates that certain words are a
 mistake and should not be included in the document.
 
  O<The sky is green.> Our planet's sky is usually blue.
@@ -2340,10 +2333,10 @@ mistake and should not be included in the document.
 
 =head3 Text positioning
 
-Podlite provides two markup codes that allow positioning characters or words.
+Podlite provides two markup codes for positioning characters or words.
 
 =begin item
-To create subscript text, you can use the C<J<>> markup code, where 'J' represents 
+To create subscript text, use the C<J<>> markup code, where 'J' represents 
 "Junior text." Subscript positions one or more characters slightly below the normal
 line of type.
 
@@ -2425,8 +2418,8 @@ codes) or with C< <code>...</code> > tags. The contents of a C<C<>> code
 are L<space-preserved| #Space-preserving text> and L<verbatim| #Verbatim text>.
 The C<C<>> code is the inline equivalent of the C<=code> block.
 
-To include other markup codes in a C<C<>> code, you can lexically
-L<reconfigure|#Block pre-configuration> it:
+To include other markup codes in a C<C<>> code, the code can be lexically
+L<reconfigured|#Block pre-configuration>:
 
 =begin code :allow<B>
   =begin para
@@ -2437,13 +2430,13 @@ L<reconfigure|#Block pre-configuration> it:
   =end para
 =end code
 
-To enable entities in I<every> C<C<...>> put a C<=config C<> :allow<E>>
-at the top of the document
+To enable entities in I<every> C<C<...>>, place a C<=config C<> :allow<E>>
+at the top of the document.
 =end item
 
 =begin item
 The C<R<>> markup code specifies that the contained text is a
-B<replaceable item>, a placeholder, or a metasyntactic variable. It is
+B<replaceable item>, placeholder, or metasyntactic variable. It is
 used to indicate a component of a syntax or specification that should
 eventually be replaced by an actual value. For example:
 
@@ -2477,11 +2470,11 @@ disregarding every apparent markup code within it. For example:
     The B<V< V<> >> markup code disarms other codes
     such as V< I<>, C<>, B<>, and M<> >.
 
-Note, however that the C<V<>> code only changes the way its
+Note that the C<V<>> code only changes the way its
 contents are parsed, I<not> the way they are rendered. That is, the
 contents are still wrapped and formatted like plain text, and the
 effects of any markup codes surrounding the C<V<>> code
-are still applied to its contents. For example the previous example
+are still applied to its contents. For example, the previous example
 is rendered:
 
 =nested
@@ -2506,6 +2499,7 @@ For example:
 
 In certain scenarios, the C<Z<>> code is used to break up text that 
 would otherwise be considered mark-up:
+
 =begin code :allow<B>
   In certain scenarios, the ZB<Z<>><> code is used to break up text that 
   would otherwise be considered mark-up.
@@ -2545,7 +2539,7 @@ any link specification.
 Usually, in schemes where an internal address makes sense, it will be
 separated from the preceding external address by a C<#>, unless the
 particular addressing scheme requires some other syntax. When new
-addressing schemes are created specifically for Podlite it is strongly
+addressing schemes are created specifically for Podlite, it is strongly
 recommended that C<#> be used to mark the start of internal addresses.
 
 Standard schemes include:
@@ -2684,7 +2678,7 @@ definition of the specified term within the current document. For example:
   Restraint of the tongue (voluntary or otherwise)
 =end code
 
-and later, to link back to the definition
+and later, to link back to the definition:
 
 =begin code :allow<B>
 To treat his chronic L<B<defn:lexiphania>> the doctor prescribed an
@@ -2729,9 +2723,9 @@ The scheme name may also be omitted in that case:
   This mechanism is described under L<B<#Special Features>> below.
 =end code
 
-Podlite include the possibility of assigning a unique identifier to a block.
+Podlite includes the possibility of assigning a unique identifier to a block.
 These identifiers can be explicitly assigned to any blocks using 
-the C<:id> attribute. Later, these identifiers are utilized for adressing blocks
+the C<:id> attribute. Later, these identifiers are utilized for addressing blocks
 and creating links.
 
 =begin code :allow<B>
@@ -2895,8 +2889,8 @@ of the code are both formatted into the document and used as the
     values indexed by their associated string key.
 =end code
 
-You can specify an index entry in which the indexed text and the index
-entry are different, by separating the two with a vertical bar:
+An index entry where the indexed text and the index entry differ can be specified
+by separating the two with a vertical bar:
 
 =begin code :allow<B>
   An B<X<array|arrays>> is an ordered list of scalars indexed by number,
@@ -2907,7 +2901,7 @@ entry are different, by separating the two with a vertical bar:
 In the two-part form, the index entry comes after the bar and is
 case-sensitive.
 
-You can specify hierarchical index entries by separating indexing levels
+Hierarchical index entries can be specified by separating indexing levels
 with commas:
 
 =begin code :allow<B>
@@ -2917,7 +2911,7 @@ with commas:
   associated string key.
 =end code
 
-You can specify two or more entries for a single indexed text, by separating
+Multiple entries for a single indexed text can be specified by separating
 the entries with semicolons:
 
 =begin code :allow<B>
@@ -2944,10 +2938,10 @@ For example:
   using mineral nutrient solutions.>>, a necessity for long-term missions.
 =end code
 
-Renderers may render such annotations in a variety of ways: as
-footnotes, as endnotes, as sidebars, as pop-ups, as tooltips, as
-expandable tags, etc. They are never, however, rendered as unmarked
-inline text. So the previous example might be rendered as:
+Renderers may present such annotations in various ways: as
+footnotes, endnotes, sidebars, pop-ups, tooltips, or
+expandable tags. They are never rendered as unmarked
+inline text. The previous example might be rendered as:
 
 =nested
 Space stations feature hydroponic gardens E<dagger>, a necessity for 
@@ -3080,11 +3074,11 @@ of the alias) in an C<A<>> markup code. This markup code is then
 replaced by the text returned by new macro.
 
 The replacement text returned by the alias macro begins at the first
-non-whitespace character after the alias's identifier, and continues to
-the end of the line. You can extend the replacement text over multiple
-lines by starting the following line(s) with an C<=> (at the same level
+non-whitespace character after the alias's identifier and continues to
+the end of the line. The replacement text can extend over multiple
+lines by starting each following line with an C<=> (at the same level
 of indentation as the C<=alias> directive itself) followed by at least
-one whitespace. Each addition line of replacement text uses the original
+one whitespace. Each additional line uses the original
 line's (virtual) left margin, as specified by the indentation of the
 replacement text on the C<=alias> line.
 
@@ -3104,7 +3098,7 @@ For example:
 
 =end code
 
-would produce:
+This would produce:
 
 =begin para :nested
     The use of Earl Irradiatem Evermore is subject to the terms and
@@ -3116,9 +3110,9 @@ would produce:
 
 =end para
 
-The advantage of using aliases is, obviously, that the same alias can be
-reused in multiple places in the documentation. Then, if the replacement
-text ever has to be changed, it need only be modified in a single place:
+The advantage of using aliases is that the same alias can be
+reused in multiple places in the documentation. If the replacement
+text needs to be changed, it requires modification in only a single place:
 
 =begin code
     =alias PROGNAME    Count Krunchem Constantly
@@ -3130,11 +3124,11 @@ text ever has to be changed, it need only be modified in a single place:
 =head2 Notification blocks
 
 These blocks, often referred to as admonitions, callouts, or alerts,
-serve to draw the reader's attention to different types of content, 
+serve to draw attention to different types of content, 
 such as tips, warnings, or important notes. 
 
-To create specially formatted blocks to highlight information in Podlite 
-the C<=nested> block and C<:notice> attribute are utilized.
+To create specially formatted blocks highlighting information in Podlite,
+the C<=nested> block and C<:notice> attribute are used.
 
 For example:
 
@@ -3145,7 +3139,7 @@ For example:
     B<=end nested>
 =end code
 
-Below is a table that outlines the different types of notification blocks
+Below is a table outlining the different types of notification blocks
 along with a brief description of each type.
 
 =begin table :caption<"Types of Notification blocks">
@@ -3179,8 +3173,8 @@ custom (e.g. `faq`, etc.)???       Allows for specifying the specific context or
 =end comment
 
 By default, the title of the notification block is its type identifier in title case.
-It is possible to customize the title of the block and control the visibility 
-of the information using the C<:caption> and C<:folded> options.
+The title of the block and visibility of the information can be customized
+using the C<:caption> and C<:folded> options.
 
 =begin code :allow<I B Z> 
   =begin nested B<:caption<"Astronaut's Reminder">> :notify<important> B<:folded>
@@ -3189,7 +3183,7 @@ of the information using the C<:caption> and C<:folded> options.
   =end nested
 =end code
 
-It is possible to create title-only callouts by omitting the body.
+Title-only callouts can be created by omitting the body.
 
 =begin code 
   =for nested :notify<important> :folded :caption<"Title-only callout">
@@ -3226,15 +3220,15 @@ icons that indicate the significance of the content.
     C<=input>           Pre-formatted sample input
     C<=item>            First-level list item
     C<=item>R<N>        I<N>th-level list item
-    C<=nested>          Nest block contents within the current context
+    C<=nested>          Nested block contents within the current context
     C<=output>          Pre-formatted sample output
     C<=para>            Ordinary paragraph
     C<=pod>             No "ambient" blocks inside
     C<=table>           Simple rectangular table
     C<=data>            Data section
     C<=toc>             Autogenerated table of contents 
-    C<=include>         Include other blocks, documents
-    C<=picture>         Inserting pictures
+    C<=include>         Include other blocks or documents
+    C<=picture>         Insert pictures
     C<=formula>         Mathematical formulas
     C<=markdown>        Markdown support
     C<=>R<RESERVED>     Semantic blocks (C<=SYNOPSIS>, C<=BUGS>, etc.)
@@ -3254,7 +3248,7 @@ icons that indicate the significance of the content.
     C<D<...|...;...>>     Definition (C<D<R<defined term>|R<synonym>;R<synonym>;...>>)
     C<E<...;...>>         Entity names or numeric codepoints (C<E<R<entity1>;R<entity2>;...>>), emoji
     C<F<...>>             Mathematical formula
-    C<G<...>>             reserved
+    C<G<...>>             Reserved
     C<H<...>>             Superscript
     C<I<...>>             Important (typically rendered in italics)
     C<J<...>>             Subscript
@@ -3271,8 +3265,8 @@ icons that indicate the significance of the content.
     C<U<...>>             Unusual (typically rendered with underlining)
     C«V<V><...>»          Verbatim (internal markup codes ignored)
     C<W<...|...>>         Contextual backlinks
-    C<Y<>>                reserved
     C<X<...|..,..;...>>   Index entry (C<X<R<display text>|R<entry>,R<subentry>;...>>)
+    C<Y<>>                Reserved
     C<Z<...>>             Zero-width comment (contents never rendered)
 
 =end table
