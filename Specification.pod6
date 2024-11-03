@@ -506,9 +506,9 @@ may be used as the default title.
 =begin defn
 C<:lang>
 
-This option used to L<provide information|#Assign programming language to 
+This option is used to L<provide information|#Assign programming language to 
 code blocks> about the programming language used in a specific code block.
-This helps in ensuring that the code is displayed and interpreted correctly
+This helps ensure that the code is displayed and interpreted correctly
 by rendering engines or syntax highlighters.
 
 Here's a table that lists a few programming languages along with their possible 
@@ -517,7 +517,7 @@ values for the C<:lang> attribute:
 =begin table :caption("Matching languages and lang attribute values")
 
     Programming language        Possible C<:lang> values 
-
+    --------------------        -------------------------
     C++                          cpp                    
     CSS                          css                    
     HTML                         html                   
@@ -2274,8 +2274,8 @@ characters that are longer than the delimiters:
     The Perl 5 heredoc syntax was: C< B«<<»END_MARKER >
 =end code
 
-You I<can> use sequences of angles that are the same length as
-the delimiters, but they must be balanced. For example:
+Sequences of angles that are the same length as
+the delimiters I<can> be used, but they must be balanced. For example:
 
     C<  $foo<bar>   >
     C<< $foo<<bar>> >>
@@ -2287,7 +2287,7 @@ If an unbalanced angle is needed, either use different delimiters:
     The Perl 5 heredoc syntax was: CB<«> <<END_MARKER B<»>
 =end code
 
-or delimiters with more consecutive angles than your text contains:
+or delimiters with more consecutive angles than the text contains:
 
 =begin code :allow<B>
     CB«<<»$foo < $barB«>>»
@@ -2327,8 +2327,8 @@ in C< <strong>...</strong> > tags.
 
 =head3 Mistake marking
 
-It possible strikethrough words using the code C<O<>>, where 'O' stands
-for "Overstrike." This is a way to indicate that certain words are a
+The code C<O<>> can be used for strikethrough text, where 'O' stands
+for "Overstrike." This indicates that certain words are a
 mistake and should not be included in the document.
 
  O<The sky is green.> Our planet's sky is usually blue.
@@ -2473,11 +2473,11 @@ disregarding every apparent markup code within it. For example:
     The B<V< V<> >> markup code disarms other codes
     such as V< I<>, C<>, B<>, and M<> >.
 
-Note, however that the C<V<>> code only changes the way its
+Note that the C<V<>> code only changes the way its
 contents are parsed, I<not> the way they are rendered. That is, the
 contents are still wrapped and formatted like plain text, and the
 effects of any markup codes surrounding the C<V<>> code
-are still applied to its contents. For example the previous example
+are still applied to its contents. For example, the previous example
 is rendered:
 
 =nested
@@ -3113,9 +3113,9 @@ This would produce:
 
 =end para
 
-The advantage of using aliases is, obviously, that the same alias can be
-reused in multiple places in the documentation. Then, if the replacement
-text ever has to be changed, it need only be modified in a single place:
+The advantage of using aliases is that the same alias can be
+reused in multiple places in the documentation. If the replacement
+text needs to be changed, it requires modification in only a single place:
 
 =begin code
     =alias PROGNAME    Count Krunchem Constantly
