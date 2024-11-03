@@ -436,7 +436,7 @@ Note that numbering is never explicit; it is always implied by context.
 C<:checked>
 
 This attribute indicates that a checkbox should be added to that block. 
-It possible to apply a C<:checked> attributes to any block.
+It is possible to apply a C<:checked> attributes to any block.
 The most common use of this option is to create L<task lists|#Task lists>.
 
 For an unchecked checkbox the C<:!checked> is used.
@@ -1839,7 +1839,7 @@ edited.
 C<:encoding>
 
 This option specifies the encoding method used to store the data.
-For non-text data, such as images in the PNG format, 
+For non-text data, such as images in PNG format, 
 the encoding method C<base64> is used.
 =end defn
 
@@ -1887,9 +1887,6 @@ Standard semantic blocks include:
     =NAME
     =AUTHOR
     =VERSION
-    =CREATED
-    =EMULATES
-    =EXCLUDES
     =SYNOPSIS
     =DESCRIPTION
     =USAGE
@@ -1921,7 +1918,7 @@ Standard semantic blocks include:
 The plural forms of each of these keywords are also reserved, and are
 aliases for the singular forms.
 
-Most of these blocks would typically be used in their full delimited forms:
+Most of these blocks are typically used in their full delimited forms:
 
 =begin code
     =begin SYNOPSIS
@@ -2336,10 +2333,10 @@ mistake and should not be included in the document.
 
 =head3 Text positioning
 
-Podlite provides two markup codes that allow positioning characters or words.
+Podlite provides two markup codes for positioning characters or words.
 
 =begin item
-To create subscript text, you can use the C<J<>> markup code, where 'J' represents 
+To create subscript text, use the C<J<>> markup code, where 'J' represents 
 "Junior text." Subscript positions one or more characters slightly below the normal
 line of type.
 
@@ -2542,7 +2539,7 @@ any link specification.
 Usually, in schemes where an internal address makes sense, it will be
 separated from the preceding external address by a C<#>, unless the
 particular addressing scheme requires some other syntax. When new
-addressing schemes are created specifically for Podlite it is strongly
+addressing schemes are created specifically for Podlite, it is strongly
 recommended that C<#> be used to mark the start of internal addresses.
 
 Standard schemes include:
@@ -2726,9 +2723,9 @@ The scheme name may also be omitted in that case:
   This mechanism is described under L<B<#Special Features>> below.
 =end code
 
-Podlite include the possibility of assigning a unique identifier to a block.
+Podlite includes the possibility of assigning a unique identifier to a block.
 These identifiers can be explicitly assigned to any blocks using 
-the C<:id> attribute. Later, these identifiers are utilized for adressing blocks
+the C<:id> attribute. Later, these identifiers are utilized for addressing blocks
 and creating links.
 
 =begin code :allow<B>
