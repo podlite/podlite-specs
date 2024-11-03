@@ -2421,8 +2421,8 @@ codes) or with C< <code>...</code> > tags. The contents of a C<C<>> code
 are L<space-preserved| #Space-preserving text> and L<verbatim| #Verbatim text>.
 The C<C<>> code is the inline equivalent of the C<=code> block.
 
-To include other markup codes in a C<C<>> code, you can lexically
-L<reconfigure|#Block pre-configuration> it:
+To include other markup codes in a C<C<>> code, the code can be lexically
+L<reconfigured|#Block pre-configuration>:
 
 =begin code :allow<B>
   =begin para
@@ -2433,13 +2433,13 @@ L<reconfigure|#Block pre-configuration> it:
   =end para
 =end code
 
-To enable entities in I<every> C<C<...>> put a C<=config C<> :allow<E>>
-at the top of the document
+To enable entities in I<every> C<C<...>>, place a C<=config C<> :allow<E>>
+at the top of the document.
 =end item
 
 =begin item
 The C<R<>> markup code specifies that the contained text is a
-B<replaceable item>, a placeholder, or a metasyntactic variable. It is
+B<replaceable item>, placeholder, or metasyntactic variable. It is
 used to indicate a component of a syntax or specification that should
 eventually be replaced by an actual value. For example:
 
@@ -3127,11 +3127,11 @@ text ever has to be changed, it need only be modified in a single place:
 =head2 Notification blocks
 
 These blocks, often referred to as admonitions, callouts, or alerts,
-serve to draw the reader's attention to different types of content, 
+serve to draw attention to different types of content, 
 such as tips, warnings, or important notes. 
 
-To create specially formatted blocks to highlight information in Podlite 
-the C<=nested> block and C<:notice> attribute are utilized.
+To create specially formatted blocks highlighting information in Podlite,
+the C<=nested> block and C<:notice> attribute are used.
 
 For example:
 
@@ -3142,7 +3142,7 @@ For example:
     B<=end nested>
 =end code
 
-Below is a table that outlines the different types of notification blocks
+Below is a table outlining the different types of notification blocks
 along with a brief description of each type.
 
 =begin table :caption<"Types of Notification blocks">
