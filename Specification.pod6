@@ -169,14 +169,14 @@ configuration information for the block. This information is used in
 different ways by different types of blocks, but is always specified using
 any of:
 
-=for table :nested :caption("Configuration syntax options") :id<configuration_syntax>
- Value is...       Specify with...       Or with...       Or with...
- ===============   ===================   ==============   ======================
- Boolean (true)    C«:key»               C«:key(1)»       C«key => 1»
- Boolean (false)   C«:!key»              C«:key(0)»       C«key => 0»
- String            C«:key<str>»          C«:key('str')»   C«key => 'str'»
- List              C«:key<1 2 3>»        C«:key[1,2,3]»   C«key => [1,2,3]»
- Hash              C«:key{a=>1, b=>2}»                    C«key => {a=>1, b=>2}»
+=for table :nested :caption("Block configuration syntax") :id<configuration_syntax>
+ Value is...       Specify with...       Or with...
+ ===============   ===================   ==============
+ Boolean (true)    C«:key»               C«:key(1)»
+ Boolean (false)   C«:!key»              C«:key(0)»
+ String            C«:key<str>»          C«:key('str')»
+ List              C«:key<1 2 3>»        C«:key[1,2,3]»
+ Hash              C«:key{a=>1, b=>2}»
 
 All option keys and values must, of course, be constants since Podlite is a
 specification language, not a programming language. Specifically, option
@@ -580,6 +580,7 @@ For example:
 
     file:/docs/**/*.md | head1                      search headers with first level for all ".md" files 
                                                     within the "docs" directory and its subdirectories.
+
 =end table
 
 Please note that while the Selector blocks provide a way to query and filter specific elements 
@@ -1731,8 +1732,7 @@ To check custom markup codes, refer to L<#Custom markup codes>.
 
 D<Podlite comments|Podlite comment> refers to Podlite blocks that should not
 be displayed by any renderer. However, they are still may be part of the
-internal Podlite representation. However, they can still be part of internal
-Podlite representation.
+internal Podlite representation.
 
 Comments are useful for meta-documentation (documenting the documentation):
 
@@ -1863,7 +1863,7 @@ In the example above, we have a C<=data> block with C<:id> C<Logo> that stores
 the base64-encoded image data. We also specify the filename, mime type,
 access time, and edit time as attributes of the C<=data> block.
 
-The image can then be referenced using the `=picture` block with the scheme
+The image can then be referenced using the C<=picture> block with the scheme
 C<data:> and the block name C<Logo>.
 
 
@@ -2097,8 +2097,8 @@ To override the type of the included file, use the C<:mime-type>
 attribute. This attribute specifies the MIME type of the included file.
 For example:
 
-=begin code
-  =for include :mime-type('text/podlite')
+=begin code :allow<B>
+  =for include B<:mime-type('text/podlite')>
   file:./includes/text.txt 
 =end code
 
