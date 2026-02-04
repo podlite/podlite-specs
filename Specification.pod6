@@ -2244,6 +2244,89 @@ This block allows to seamlessly combine Podlite's structured blocks with
 the flexibility of Markdown.
 
 
+=head4 Fenced code block attributes
+
+Within markdown content, fenced code blocks may include Podlite configuration
+attributes following the language identifier. The language identifier on the
+opening fence line maps directly to the C<:lang> attribute of the native
+C<=code> block.
+
+=begin code :allow<B>
+  B<```python>
+  def hello():
+      print("Hello")
+  B<```>
+=end code
+
+This fenced code block is semantically equivalent to:
+
+=begin code :allow<B>
+  B<=begin code :lang<python>>
+  def hello():
+      print("Hello")
+  B<=end code>
+=end code
+
+Both backtick (C<```>) and tilde (C<~~~>) fence delimiters are supported.
+The two forms are semantically identical.
+
+Extended attributes may be specified after the language identifier using
+standard Podlite configuration syntax:
+
+=begin code :allow<B>
+  B<```python :line-numbers :highlight<2,5-7> :caption<Example>>
+  def fibonacci(n):
+      if n <= 1:
+          return n
+      return fibonacci(n-1) + fibonacci(n-2)
+  B<```>
+=end code
+
+This is equivalent to:
+
+=begin code :allow<B>
+  B<=begin code :lang<python> :line-numbers :highlight<2,5-7> :caption<Example>>
+  def fibonacci(n):
+      if n <= 1:
+          return n
+      return fibonacci(n-1) + fibonacci(n-2)
+  B<=end code>
+=end code
+
+All attributes defined for C<=code> blocks in this specification are available
+on fenced code blocks. The complete attribute syntax is described in the
+L<Block Configuration|#Block Configuration> section.
+
+Implementation of extended attributes beyond the language identifier is optional.
+Parsers not supporting extended attributes parse the language identifier and
+either ignore trailing content or emit a warning, continuing processing in
+accordance with the graceful degradation principle.
+
+=begin table :caption('Fence to code block attribute equivalence')
+Markdown fence          Podlite equivalent
+==============          ==================
+C<```python>               C«=code :lang<python>»
+C<```javascript>           C«=code :lang<javascript>»
+C<```>                     C«=code»
+C<~~~rust>                 C«=code :lang<rust>»
+=end table
+
+Common attribute patterns found in various markdown implementations may be
+mapped to Podlite notation as follows:
+
+=begin table :caption<Common markdown attributes to Podlite notation>
+Function            Common pattern          Podlite equivalent
+========            ==============          ==================
+Line numbers        C<showLineNumbers>         C«:line-numbers»
+Line numbers        C<.numberLines>            C«:line-numbers»
+Start line          C<startFrom="N">           C«:start-line<N>»
+Highlight           C<{1,3-5}>                 C«:highlight<1,3-5>»
+Title               C<title="text">            C«:caption<text>»
+Element ID          C<#identifier>             C«:id<identifier>»
+CSS class           C<.classname>              C«:class<classname>»
+=end table
+
+
 =head2 Markup codes
 
 Markup codes enable inline markup within the text of (most) Podlite block types.
