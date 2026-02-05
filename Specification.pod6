@@ -2875,6 +2875,94 @@ Contextual backlinks might be visually distinguished from
 standard links through color coding.
 
 
+=head3 Link configuration attributes
+
+The C<L<>> and C<W<>> formatting codes may be extended with optional
+configuration attributes following the link specification. These attributes
+are specified using the standard Podlite configuration syntax.
+
+The general form is:
+
+=begin code :allow<B>
+  L<[text|]linkspec B<[:attr1 :attr2<value> ...]>>
+  W<[text|]linkspec B<[:attr1 :attr2<value> ...]>>
+=end code
+
+The configuration portion begins at the first whitespace character that
+is immediately followed by a colon (C<:>). The substring preceding this
+boundary constitutes the link specification. This boundary rule is
+unambiguous because URL schemes begin with a letter character, not a colon,
+and standard URLs do not contain space-colon sequences.
+
+For example:
+
+=begin code :allow<B>
+  L<https://example.com B<:new>>
+=end code
+
+In this example, the boundary occurs at the space before C<:new>.
+
+The following attributes are defined:
+
+=begin table :caption<Link Configuration Attributes>
+  Attribute     Type              Semantics
+  ==========|=================|=============================================
+  :new        Boolean           Resource is opened in a new navigation context
+  :title      String            Advisory information about the resource
+  :lang       String            Primary language of the linked resource
+  :download   Boolean/String    Resource is downloaded; string suggests filename
+=end table
+
+For example:
+
+=begin code :allow<B>
+  L<API Reference|https://api.example.com B<:new :title('Official documentation')>>
+
+  L<Download SDK|https://example.com/sdk.tar.gz B<:download<sdk-v2.tar.gz>>>
+
+  L<French Guide|https://example.fr/guide B<:lang<fr>>>
+
+  W<related term|defn:glossary B<:title('See definition')>>
+=end code
+
+When the same attribute is specified both in C<=config L<>> and in an
+inline C<L<>> instance, the inline value takes precedence:
+
+=begin code :allow<B>
+  =config L<> :new
+
+  =comment inherits :new
+  L<External|https://example.com>
+
+  =comment overrides to false
+  L<Internal|file:local.html B<:!new>>
+=end code
+
+Link specifications containing literal spaces are required to be quoted.
+The C<file:> scheme commonly requires this treatment:
+
+=begin code :allow<B>
+  =comment correct
+  L<file:B<'>my document.txtB<'> :download>
+=end code
+
+Colons within URLs (such as port numbers or path parameters) are not
+preceded by whitespace and therefore do not trigger attribute parsing:
+
+=begin code :allow<B>
+  =comment  :8080 is port
+  L<http://localhost:8080/api :new>
+  
+  =comment  :id is path
+  L<https://api.example.com/users/:id :title('User profile')>
+=end code
+
+Parsers that do not implement this extension treat the entire content
+of C<L<>> as a link specification. The link remains functional; only
+metadata is lost. Renderers that encounter unknown attributes are
+required to ignore them without error.
+
+
 =head3 Alias placements
 
 The C<A<>> code is replaced by the contents of the named alias or object
