@@ -24,12 +24,15 @@ Looking forward to working on the next release with your valuable input.
 =VERSION 1.0
 
 =begin CHANGES
+
+=head2 Unreleased
+
 =head2 v1.0
-=head3 New:
+
+=head3 Added:
     =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
     =item C<:folded> attribute,
     =item C<:folded-levels> for C<=toc> block,
-    =item Refactor Named custom blocks and markup custom codes, C<M<>>,
     =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>,
     =item C<:mime-type> attribute for C<=include> and C<=data> blocks,
     =item introduce C<data:> schema for use in C<=picture> and C<=table>,
@@ -44,13 +47,17 @@ Looking forward to working on the next release with your valuable input.
     =item inserting pictures, C<=picture>, C<P<>>,
     =item mathematical formulas, C<=formula>, C<F<>>,
     =item Markdown support, C<=markdown>,
-    =item mistake marking,  C<O<>>,
+    =item mistake marking, C<O<>>,
     =item text positioning, C<J<>>, C<H<>>,
     =item Emoji, C<E<>>,
     =item contextual backlinks, C<W<>>,
-    =item advanced table format, C<=row>,C<=cell> blocks,
+    =item advanced table format, C<=row>, C<=cell> blocks,
     C<:header>, C<:rowspan>, C<:colspan> attributes.
-=head3 Deprecated/removed:
+
+=head3 Changed:
+    =item refactor Named custom blocks and markup custom codes, C<M<>>.
+
+=head3 Removed:
     =item Contextual aliases,
     =item C<=finish>,
     =item markers in comments,
@@ -62,6 +69,7 @@ Looking forward to working on the next release with your valuable input.
     =item Declarator block,
     =item C<:formatted> attribute,
     =item C<:like> attribute.
+
 =end CHANGES
 
 =head1 Podlite
