@@ -24,6 +24,11 @@ Looking forward to working on the next release with your valuable input.
 =VERSION 1.0
 
 =begin CHANGES
+
+=head2 Unreleased
+=head3 Added:
+    =item error recovery rules for C<=table> block,
+
 =head2 v1.0
 =head3 New:
     =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
@@ -1682,6 +1687,32 @@ For example:
   =end data
 =end code
 
+Cell spanning attributes and nested block content within cells are
+semantic properties of the table document model and are preserved
+in the document tree.
+
+=head4 Error Recovery
+
+The column separator type is determined per line. If visible separators
+(C<|> or C<+>) are present, they are used; otherwise, sequences of two
+or more consecutive whitespace characters serve as separators. Mixed
+separator types across lines produce a warning; the table is not
+rejected.
+
+The expected cell count is established from the header row or, in its
+absence, the row with the most cells. Rows with fewer cells are padded
+with empty cells; rows with excess cells are truncated. In both cases,
+a warning is issued.
+
+For C<=row>/C<=cell> tables, separator recovery does not apply, but
+mismatched cell counts produce a warning.
+
+For tables sourced from C<file:> or C<data:> references, three levels
+of error are defined. If the source cannot be resolved, an error is
+issued and the table is rendered as an empty block. If the source
+cannot be interpreted as CSV, the content is rendered as a C<=code>
+block. If the CSV contains rows with unequal field counts, parsing
+proceeds with padding for missing fields, and a warning is issued.
 
 =for head3 :id<Custom blocks>
 Named or modular custom blocks
