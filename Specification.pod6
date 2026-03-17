@@ -1517,7 +1517,7 @@ or with multi-line headers I<and> multi-line data:
 
 =head4 Advanced Table Format
 
-Tables may construct using C<=row> and C<=cell> blocks.
+Tables may be constructed using C<=row> and C<=cell> blocks.
 The C<=row> blocks represent individual rows within the table.
 
 The C<=cell> blocks exist within rows and contain the actual content of the table.
@@ -1589,9 +1589,9 @@ This attribute determines how many rows a cell should span vertically.
 Cells with C<:rowspan> can cover multiple rows in a table, creating a vertical merge effect.
 =end defn
 
-These example demonstrate how C<:colspan> and C<:rowspan> attributes can be used
-to create tables with merged cells, which is especially useful for complex
-data structures.
+The following examples demonstrate how C<:colspan> and C<:rowspan> attributes
+are used to create tables with merged cells, which is particularly useful
+for complex data structures.
 
 =begin code
     =begin table
@@ -1618,7 +1618,7 @@ data structures.
 =end code
 
 
-It draw somethink like this: 
+The resulting table is rendered as follows:
 
     ---------------------------------------------------------------
     |         Item and Quantity        |     Description          |
@@ -2880,7 +2880,7 @@ standard links through color coding.
 
 =head3 Link configuration attributes
 
-The C<L<>> and C<W<>> formatting codes may be extended with optional
+The C<L<>> and C<W<>> markup codes may be extended with optional
 configuration attributes following the link specification. These attributes
 are specified using the standard Podlite configuration syntax.
 
@@ -3150,7 +3150,7 @@ name specifier C<MODULE_NAME> and then the C<OPTIONAL CONFIG INFO>
 The name specifier should follow the same rules as for 
 L<named blocks|#Custom blocks>.
 
-The C<M<>> formatting code is the inline equivalent of a
+The C<M<>> markup code is the inline equivalent of a
 L<named block|#Custom blocks>.
 
 An example of how this code might be used is :
@@ -3416,7 +3416,7 @@ icons that indicate the significance of the content.
 =config C<> :allow<R V>
 =begin table :nested
 
-    Formatting code       Specifies
+    Markup code           Specifies
     ___________________   ___________________________________________________
     C<A<...>>             Replaced by contents of specified macro/object
     C<B<...>>             Basis/focus of sentence (typically rendered bold)
