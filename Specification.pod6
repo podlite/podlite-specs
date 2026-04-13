@@ -1869,7 +1869,7 @@ Example of storing images in C<=data> blocks:
 
 =end code
 
-In the example above, we have a C<=data> block with C<:id> C<Logo> that stores
+In the example above, we have a C<=data> block with C<:key> C<Logo> that stores
 the base64-encoded image data. We also specify the filename, mime type,
 access time, and edit time as attributes of the C<=data> block.
 
