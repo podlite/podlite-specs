@@ -31,6 +31,9 @@ Looking forward to working on the next release with your valuable input.
     =item C<=boundary> directive for marking structural section boundaries, C<:caption> attribute,
     =item C<G<>> markup code (Guarded) and C<:masked> block attribute for content masking,
 
+=head3 Changed:
+    =item refined C<:folded> definition.
+
 =head2 v1.0
 
 =head3 Added:
@@ -469,15 +472,13 @@ in the final rendered document.
 =begin defn
 C<:folded>
 
-This option specifies whether the block is foldable and, if specified,
-whether it should be collapsed or expanded by default. This feature is
-useful in managing the length of documents and focusing the reader's
-attention on certain sections as needed.
+This option specifies that the block content is not presented
+immediately but is available on demand. The attribute controls the
+initial state: C<:folded> or C<:folded(1)> indicates the content is
+concealed by default; C<:!folded> or C<:folded(0)> indicates it is
+revealed by default.
 
-A C<:!folded> or C<:folded(0)> expands the callout by default, and a 
-C<:folded> or C<:folded(1)> collapses it instead.
-
-=begin code :allow<B> 
+=begin code :allow<B>
   =for table B<:folded> :caption('Culinary Techniques for Sustainability')
     Sous-vide   Low energy consumption
     ----------  -------------------------
@@ -485,36 +486,18 @@ C<:folded> or C<:folded(1)> collapses it instead.
     Baking      Efficient for batch cooking
 =end code
 
-When applied to a block element, such as a heading, the attribute typically
-affects all headings with lower-level content, creating a hierarchical
-folding effect.
-
-For example:
+When applied to a heading block, the attribute governs the heading
+and all associated lower-level content, forming a hierarchical
+structure.
 
 =begin code :allow<B>
   =for B<head2 :folded>
-  Green Energy Overview 
+  Green Energy Overview
 =end code
 
-=begin comment
-TODO: my be it may sense to add a C<:folded-caption> attribute to 
-define a custom title for the collapsed block.
+In non-interactive contexts, the distinction may be expressed through
+visual means such as sidebar placement or reduced emphasis.
 
-The C<:folded-caption> attribute enables the definition of a custom title
-for the collapsed block. If no caption is provided, rendering systems
-may automatically use the C<:caption> attribute. In the absence of 
-the C<:caption> attribute, the first line or paragraph of the block
-serves as the default title. For semantic blocks, the name of the block
-may be used as the default title.
-
-
-=begin code
-    =picture :folded(1) :folded-caption("Wind Turbine Fields")
-    Images/wind_turbines.jpg
-    Wind turbines stand tall against the sky, harnessing
-    the power of the wind to generate energy 
-=end code
-=end comment
 =end defn
 
 =begin defn
