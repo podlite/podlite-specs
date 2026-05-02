@@ -29,6 +29,7 @@ Looking forward to working on the next release with your valuable input.
 =head3 Added:
     =item error recovery rules for C<=table> block,
     =item C<=boundary> directive for marking structural section boundaries, C<:caption> attribute,
+    =item C<G<>> markup code (Guarded) and C<:masked> block attribute for content masking,
 
 =head2 v1.0
 
@@ -2693,6 +2694,54 @@ The C<Z<>> markup code is the inline equivalent of a
 L<C<=comment> block|#Comments>.
 
 
+=head3 Content masking
+
+The C<G<>> markup code marks an inline text fragment as guarded, and the
+C<:masked> attribute marks an entire block as guarded. The original
+content is preserved in the document model; only the rendered output is
+concealed. This provides presentation-layer concealment for sensitive
+content (API tokens, credentials, personally identifiable information,
+age-restricted material). It complements other security layers such as
+source file access controls and authenticated build pipelines.
+
+=begin code :allow<B R>
+The password is B<G<>R<hunter2>B<>> and must not be exposed.
+
+=for R<BLOCKTYPE> B<:masked>
+=end code
+
+The mask character is determined by the renderer; the recommended default
+is U+2588 (█ FULL BLOCK). Whitespace structure is preserved in the masked
+output.
+
+Two render modes are defined:
+
+=item Production mode (default): guarded content is concealed
+=item Draft mode: guarded content is rendered visibly for editing and review
+
+Selection between modes is implementation-defined (renderer-controlled
+through command-line, environment, or interactive interface).
+
+When C<G<>> appears within a block marked C<:masked>, both the inline and
+surrounding content are concealed; the masking operation is idempotent.
+
+The C<G<>> code is not processed inside code blocks by default. To enable
+masking in code blocks, the C<:allow<G>> attribute is required on the
+C<=code> block (see L<C<:allow>|#Formatting within code blocks>).
+
+=begin code :allow<B>
+=begin code :lang<python> B<:allow<G>>
+api_key = "G<sk-12345>"
+=end code
+=end code
+
+Masking is presentation-layer concealment. Original content remains
+accessible in source files, document model, programmatic queries, and
+version control. For protections requiring cryptographic security or
+access control, complementary mechanisms (file permissions, encryption,
+authenticated access) are required.
+
+
 =head3 Links
 
 The C<L<>> code is used to specify all kinds of links, filenames, citations,
@@ -3505,7 +3554,7 @@ icons that indicate the significance of the content.
     C<D<...|...;...>>     Definition (C<D<R<defined term>|R<synonym>;R<synonym>;...>>)
     C<E<...;...>>         Entity names or numeric codepoints (C<E<R<entity1>;R<entity2>;...>>), emoji
     C<F<...>>             Mathematical formula
-    C<G<...>>             Reserved
+    C<G<...>>             Guard inline content (concealed in published output)
     C<H<...>>             Superscript
     C<I<...>>             Important (typically rendered in italics)
     C<J<...>>             Subscript
