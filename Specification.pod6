@@ -28,6 +28,7 @@ Looking forward to working on the next release with your valuable input.
 =head2 Unreleased
 =head3 Added:
     =item error recovery rules for C<=table> block,
+    =item C<=boundary> directive for marking structural section boundaries, C<:caption> attribute,
 
 =head2 v1.0
 
@@ -2152,6 +2153,49 @@ or malicious material. Tools responsible for displaying and handling the content
 should provide warnings in such situations.
 
 
+=head3 Section boundaries
+
+The C<=boundary> directive marks a structural transition between major
+document sections such as chapters, parts, or topics. The boundary
+represents a structural division in the content model rather than a
+presentation effect.
+
+The directive supports the three standard block forms and accepts an
+optional C<:caption> attribute that describes the transition:
+
+=begin code :allow<B R>
+B<=boundary>
+
+B<=for boundary> :caption<R<BOUNDARY_DESCRIPTION>>
+
+B<=begin boundary> :caption<R<BOUNDARY_DESCRIPTION>>
+B<=end boundary>
+=end code
+
+Boundaries are placed between blocks at the document structure level,
+not within them, and appear at the same structural level as the blocks
+they separate:
+
+=begin code :allow<B>
+=head1 Chapter One
+Content of chapter one.
+
+B<=boundary>
+
+=head1 Chapter Two
+Content of chapter two.
+=end code
+
+Rendering is format-specific. Renderers choose appropriate
+representation for the output format and may ignore the directive when
+boundaries are not supported. Common renderings include page breaks in
+paginated formats, thematic breaks or section dividers in web formats,
+and form feed characters or separator lines in plain text. The
+C<:caption> attribute is descriptive metadata; renderers may display it
+as running header or footer text, include it in navigation, or omit it
+entirely.
+
+
 =head3 Inserting pictures
  
 Podlite allows to include images using a C<=picture> block with an inline version
@@ -3417,6 +3461,7 @@ icons that indicate the significance of the content.
     C<=for>             Start of an implicitly (blank-line) terminated block
     C<=alias>           Define a Podlite macro
     C<=include>         Include content from other sources
+    C<=boundary>        Marker for a structural section boundary
 
 =end table
 
