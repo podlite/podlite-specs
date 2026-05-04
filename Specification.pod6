@@ -31,6 +31,7 @@ Looking forward to working on the next release with your valuable input.
     =item C<=boundary> directive for marking structural section boundaries, C<:caption> attribute,
     =item C<G<>> markup code (Guarded) and C<:masked> block attribute for content masking,
     =item C<=set> directive for per-block attribute assignment with multiline values and inline markup support (#19),
+    =item Extended C<:mime-type> attribute syntax to accept MIME parameters per RFC 6838, with C<header=present|absent> recognised for CSV/TSV header indication per RFC 4180 §3 (#24),
 
 =head3 Changed:
     =item refined C<:folded> definition.
@@ -1828,6 +1829,23 @@ C<:mime-type>
 
 This option indicates the MIME type of the data, such as C<image/png> for PNG images,
 which helps determine how the data should be interpreted and processed.
+
+The C<header> MIME parameter (per RFC 4180 §3) is recognised on
+C<:mime-type> for CSV and TSV content. It accepts C<present> or
+C<absent>, with default C<absent>. When C<header=present>, the
+renderer treats the first row as column labels in C<=table data:X>:
+
+=begin code :allow<B>
+  =begin data :key<planets> B<:mime-type<'text/csv; header=present'>>
+    name,radius_km,moons
+    Mercury,2440,0
+    Venus,6052,0
+    Earth,6371,1
+    Mars,3390,2
+  =end data
+
+  =table data:planets :caption('Inner planets')
+=end code
 
 Here is a list of common MIME types and their corresponding file extensions:
 
