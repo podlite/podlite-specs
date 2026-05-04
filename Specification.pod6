@@ -30,6 +30,7 @@ Looking forward to working on the next release with your valuable input.
     =item error recovery rules for C<=table> block,
     =item C<=boundary> directive for marking structural section boundaries, C<:caption> attribute,
     =item C<G<>> markup code (Guarded) and C<:masked> block attribute for content masking,
+    =item C<=set> directive for per-block attribute assignment with multiline values and inline markup support (#19),
 
 =head3 Changed:
     =item refined C<:folded> definition.
@@ -2136,6 +2137,11 @@ sources could potentially create vulnerabilities such as injecting harmful code
 or malicious material. Tools responsible for displaying and handling the content
 should provide warnings in such situations.
 
+C<=set> directives accumulated before C<=include> apply to the first
+block of the resolved included content (resolution-time targeting).
+The C<=include> directive itself does not receive C<=set> attributes.
+Full discipline: L<Block attribute assignment with =set|#Block attribute assignment with =set>.
+
 
 =head3 Section boundaries
 
@@ -2718,11 +2724,12 @@ api_key = "G<sk-12345>"
 =end code
 =end code
 
-Masking is presentation-layer concealment. Original content remains
-accessible in source files, document model, programmatic queries, and
-version control. For protections requiring cryptographic security or
-access control, complementary mechanisms (file permissions, encryption,
-authenticated access) are required.
+The C<G<>> code marks content for concealment at render time but
+does not protect it. The original text remains in plain form in
+source files, document model, version control, and any consumer
+that does not invoke the renderer. For cryptographic security or
+access control, complementary mechanisms (file permissions,
+encryption, authenticated access) are required.
 
 
 =head3 Links
@@ -3336,6 +3343,99 @@ by naming it with a pair of angles as a suffix. For example:
 Note that, even though the markup code is named using single-angles,
 the preconfiguration applies regardless of the actual delimiters used on
 subsequent instances of the code.
+
+For per-block attribute assignment that targets a single block instance
+rather than setting type-wide defaults, see L<Block attribute assignment
+with =set|#Block attribute assignment with =set>.
+
+
+=head2 Block attribute assignment with =set
+
+The C<=set> directive assigns attribute values to the next block in
+the same lexical scope. Like C<=config>, it sets attributes for a
+block; unlike C<=config>, it targets a single block instance rather
+than all blocks of a type. Attribute values may include multiline
+content with inline markup codes.
+
+The directive has two syntax variants. Configuration syntax uses
+standard delimited attribute values, for example:
+
+=begin code :allow<B>
+B<=set> :caption('Product comparison') :id<table-1>
+B<=set> :lang<en> :numbered
+
+=begin table
+...
+=end table
+=end code
+
+Alias syntax permits multiline values with inline markup codes, for
+example:
+
+=begin code :allow<B>
+B<=set> :caption Selected B<chemical> elements with their
+B<=   >          L<atomic numbers|#elements> and symbols
+
+=begin table
+Element     Symbol    Atomic Number
+=========   ======    =============
+Hydrogen    H         1
+Carbon      C         6
+Oxygen      O         8
+=end table
+=end code
+
+Continuation lines (C<=> followed by whitespace) extend multiline
+alias values until the next non-continuation directive or a blank
+line, and join into the final value before markup processing. Both
+syntax variants may be mixed across continuation lines, as in the
+following example combining configuration-syntax continuation
+(C<=    :folded<true>>) with alias-syntax continuation:
+
+=begin code :allow<B>
+B<=set> :id<special-table>
+B<=   > :folded<true>
+B<=set> :caption Product B<Performance> Metrics
+B<=   >          with detailed analysis
+
+=begin table
+...
+=end table
+=end code
+
+The table receives all three attributes (C<:id>, C<:folded>, C<:caption>).
+
+C<=set> assignments override C<=config> defaults but yield to explicit
+attributes on the block declaration. When multiple C<=set> directives
+assign the same attribute key, the last assignment wins, regardless
+of syntax variant.
+
+Directives (C<=set>, C<=config>, C<=alias>, C<=include>, C<=boundary>)
+and C<=comment> blocks are transparent to C<=set> targeting and do not
+consume the assignment. For example:
+
+=begin code :allow<B>
+B<=set> :caption Renewable energy sources
+=config table :width<100%>
+=alias COMPANY Acme Corp
+=comment Approved
+=begin table
+Source      Type
+=========   ==========
+Solar       photovoltaic
+Wind        turbine
+=end table
+=end code
+
+The C<=table> block receives the C<:caption> attribute despite the
+intervening directives and C<=comment>.
+
+For C<=include>, attributes apply to the first block of the resolved
+included content. C<=set> directives inside an included file are
+lexically scoped to that file and do not leak to the parent file.
+
+If no block follows before the end of the containing block or file,
+parsers issue a warning that the C<=set> directive has no target.
 
 
 =head2 Aliases
