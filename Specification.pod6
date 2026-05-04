@@ -5,15 +5,6 @@ This file is deliberately specified in Podlite format
 
 =TITLE Podlite - a lightweight markup language
 
-=begin nested :notify<warning> :caption('Work on the next release continues!')
-
-If you have any ideas to make it better, or if you have any questions,
-you're welcome to suggest changes or start a conversation on 
-our L<GitHub page|https://github.com/podlite/podlite-specs/discussions>.
-
-Looking forward to working on the next release with your valuable input.
-=end nested
-
 =toc head1, head2, head3
 
 =begin AUTHORS
@@ -21,22 +12,31 @@ Looking forward to working on the next release with your valuable input.
 =item Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
 =end AUTHORS
 
-=VERSION 1.0
+=VERSION 2.0
 
 =begin CHANGES
 
-=head2 Unreleased
+=head2 v2.0
+
 =head3 Added:
-    =item error recovery rules for C<=table> block,
-    =item C<=boundary> directive for marking structural section boundaries, C<:caption> attribute,
+    =item Attributes on Markdown fenced code blocks,
+    =item Per-link configuration attributes for C<L<>> markup code,
+    =item Error recovery rules for C<=table> block,
+    =item C<=boundary> directive for marking structural section boundaries,
     =item C<G<>> markup code (Guarded) and C<:masked> block attribute for content masking,
-    =item C<=set> directive for per-block attribute assignment with multiline values and inline markup support (#19),
-    =item Extended C<:mime-type> attribute syntax to accept MIME parameters per RFC 6838, with C<header=present|absent> recognised for CSV/TSV header indication per RFC 4180 §3 (#24),
+    =item C<=set> directive for per-block attribute assignment with multiline values and inline markup support,
+    =item Extended C<:mime-type> attribute syntax to accept MIME parameters per RFC 6838, with C<header=present|absent> recognised for CSV/TSV header indication per RFC 4180 §3.
 
 =head3 Changed:
-    =item refined C<:folded> definition.
+    =item Reclassified C<=include> as directive,
+    =item Refined C<:folded> definition,
+    =item Fixed attribute name inconsistencies in examples.
 
-=head2 v1.0
+=head3 Removed:
+    =item Outdated string attribute syntax formats.
+
+=for head2 :folded
+v1.0
 
 =head3 Added:
     =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
@@ -2737,9 +2737,9 @@ masking in code blocks, the C<:allow<G>> attribute is required on the
 C<=code> block (see L<C<:allow>|#Formatting within code blocks>).
 
 =begin code :allow<B>
-=begin code :lang<python> B<:allow<G>>
+Z<>=begin code :lang<python> B<:allow<G>>
 api_key = "G<sk-12345>"
-=end code
+Z<>=end code
 =end code
 
 The C<G<>> code marks content for concealment at render time but
