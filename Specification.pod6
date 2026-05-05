@@ -2093,9 +2093,8 @@ and outcome of the TOC are determined by the renderer implementation.
 =head3 Include directive
 
 The C<=include> directive enables reuse of specific parts of documents within
-project sources. This directive is particularly useful for complex documents
-that require including sections from different files while maintaining the
-overall context and structure.
+project sources. It is useful for complex documents that combine sections
+from different files while maintaining overall context and structure.
 
 The C<=include> construct is classified as a directive, consistent with
 C<=config> and C<=alias>. As a directive, C<=include> references external
@@ -2140,20 +2139,17 @@ For example, if the included file has a C<.md> extension,
 it is treated as a Markdown file.
 
 To override the type of the included file, the C<:mime-type> attribute
-is placed on the directive line after the source URI. This attribute
-specifies the MIME type of the included file. For example:
+is placed on the directive line after the source URI. For example:
 
 =begin code :allow<B>
 =include file:./includes/text.txt B<:mime-type('text/podlite')>
 =end code
 
-The C<:mime-type> attribute is particularly useful when including files with
-extensions that do not match their actual MIME type.
+The C<:mime-type> attribute lets the parser handle files whose extension
+does not match their actual type.
 
-Security considerations are crucial, as adding content from external
-sources could potentially create vulnerabilities such as injecting harmful code
-or malicious material. Tools responsible for displaying and handling the content
-should provide warnings in such situations.
+External content can introduce vulnerabilities such as code injection.
+Tools displaying included content should provide warnings.
 
 C<=set> directives accumulated before C<=include> apply to the first
 block of the resolved included content (resolution-time targeting).
@@ -2696,10 +2692,12 @@ L<C<=comment> block|#Comments>.
 
 =head3 Content masking
 
-The C<G<>> markup code marks an inline text fragment as guarded, and the
-C<:masked> attribute marks an entire block as guarded. The original
+The C<G<>> markup code marks an inline text fragment, and the
+C<:masked> attribute marks an entire block, as guarded. The original
 content is preserved in the document model; only the rendered output is
-concealed. This provides presentation-layer concealment for sensitive
+concealed.
+
+The mechanism provides presentation-layer concealment for sensitive
 content (API tokens, credentials, personally identifiable information,
 age-restricted material). It complements other security layers such as
 source file access controls and authenticated build pipelines.
@@ -3398,9 +3396,10 @@ Oxygen      O         8
 
 Continuation lines (C<=> followed by whitespace) extend multiline
 alias values until the next non-continuation directive or a blank
-line, and join into the final value before markup processing. Both
-syntax variants may be mixed across continuation lines, as in the
-following example combining configuration-syntax continuation
+line. Lines join into the final value before markup processing.
+
+Both syntax variants may be mixed across continuation lines, as in
+the following example combining configuration-syntax continuation
 (C<=    :folded<true>>) with alias-syntax continuation:
 
 =begin code :allow<B>
