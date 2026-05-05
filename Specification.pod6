@@ -2164,25 +2164,21 @@ Full discipline: L<Block attribute assignment with =set|#Block attribute assignm
 =head3 Section boundaries
 
 The C<=boundary> directive marks a structural transition between major
-document sections such as chapters, parts, or topics. The boundary
-represents a structural division in the content model rather than a
-presentation effect.
+document sections such as chapters, parts, or topics. The transition
+is semantic, not presentational.
 
-The directive supports the three standard block forms and accepts an
-optional C<:caption> attribute that describes the transition:
+A C<=boundary> is a directive, not a block. Hence, there is no
+paragraph or delimited form of the C<=boundary> directive. It accepts
+an optional C<:caption> attribute that describes the transition:
 
 =begin code :allow<B R>
 B<=boundary>
 
-B<=for boundary> :caption<R<BOUNDARY_DESCRIPTION>>
-
-B<=begin boundary> :caption<R<BOUNDARY_DESCRIPTION>>
-B<=end boundary>
+B<=boundary> :caption<R<BOUNDARY_DESCRIPTION>>
 =end code
 
-Boundaries are placed between blocks at the document structure level,
-not within them, and appear at the same structural level as the blocks
-they separate:
+Boundaries are placed between blocks, not within them, at the same
+structural level as the blocks they separate:
 
 =begin code :allow<B>
 =head1 Chapter One
@@ -2194,14 +2190,11 @@ B<=boundary>
 Content of chapter two.
 =end code
 
-Rendering is format-specific. Renderers choose appropriate
-representation for the output format and may ignore the directive when
-boundaries are not supported. Common renderings include page breaks in
-paginated formats, thematic breaks or section dividers in web formats,
-and form feed characters or separator lines in plain text. The
-C<:caption> attribute is descriptive metadata; renderers may display it
-as running header or footer text, include it in navigation, or omit it
-entirely.
+Rendering is format-specific. Renderers may use page breaks
+(paginated output), thematic breaks (web), or separator lines (plain
+text), and may ignore the directive when boundaries are not supported.
+The C<:caption> attribute is descriptive metadata; renderers may
+surface it as a header, navigation entry, or omit it.
 
 
 =head3 Inserting pictures
