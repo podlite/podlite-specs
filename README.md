@@ -29,6 +29,11 @@ Supported file extensions:
 
 [The specification](https://github.com/podlite/podlite-specs/blob/main/Specification.pod6) for the Podlite markup language is written using Podlite markup itself.
 
+## Contributing
+
+Specification changes go through [Discussions](https://github.com/podlite/podlite-specs/discussions),
+not pull requests. See [CONTRIBUTING.md](CONTRIBUTING.md) for the process.
+
 <div align="center">
 <table border=0><tr><td valign=top><div align="center">
 
