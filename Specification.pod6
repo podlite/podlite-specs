@@ -2724,6 +2724,12 @@ through command-line, environment, or interactive interface).
 When C<G<>> appears within a block marked C<:masked>, both the inline and
 surrounding content are concealed; the masking operation is idempotent.
 
+Guard is a property of content, not of location. Content marked
+with C<G<>> or carrying C<:masked> renders concealed wherever it
+appears in rendered output. The rule applies when content is
+reached through L<links|#Links>, L<inclusion|#Include directive>,
+L<aliases|#Aliases>, or L<data references|#Data blocks>.
+
 The C<G<>> code is not processed inside code blocks by default. To enable
 masking in code blocks, the C<:allow<G>> attribute is required on the
 C<=code> block (see L<C<:allow>|#Formatting within code blocks>).
