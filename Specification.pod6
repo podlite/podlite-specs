@@ -1836,7 +1836,7 @@ C<absent>, with default C<absent>. When C<header=present>, the
 renderer treats the first row as column labels in C<=table data:X>:
 
 =begin code :allow<B>
-  =begin data :key<planets> B<:mime-type<'text/csv; header=present'>>
+  =begin data :key<planets> B<:mime-type('text/csv; header=present')>
     name,radius_km,moons
     Mercury,2440,0
     Venus,6052,0
@@ -1844,7 +1844,8 @@ renderer treats the first row as column labels in C<=table data:X>:
     Mars,3390,2
   =end data
 
-  =table data:planets :caption('Inner planets')
+  =for table :caption('Inner planets')
+  data:planets
 =end code
 
 Here is a list of common MIME types and their corresponding file extensions:
