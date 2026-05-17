@@ -1756,8 +1756,8 @@ option, as in:
 
 =begin code
   =for data-table :src<file:./planets.csv>
-    :columns<name,radius_km>
-    :caption('Inner planets')
+  =    :columns<name,radius_km>
+  =    :caption('Inner planets')
 =end code
 
 The reference form refers to a named C<=data> block:
