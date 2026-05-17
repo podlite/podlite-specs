@@ -25,7 +25,8 @@ This file is deliberately specified in Podlite format
     =item C<=boundary> directive for marking structural section boundaries,
     =item C<G<>> markup code (Guarded) and C<:masked> block attribute for content masking,
     =item C<=set> directive for per-block attribute assignment with multiline values and inline markup support,
-    =item Extended C<:mime-type> attribute syntax to accept MIME parameters per RFC 6838, with C<header=present|absent> recognised for CSV/TSV header indication per RFC 4180 §3.
+    =item Extended C<:mime-type> attribute syntax to accept MIME parameters per RFC 6838, with C<header=present|absent> recognised for CSV/TSV header indication per RFC 4180 §3,
+    =item C<=data-table> block for rendering CSV and TSV data, with C<:src>, C<:columns>, C<:rename> attributes.
 
 =head3 Changed:
     =item Reclassified C<=include> as directive,
@@ -1658,32 +1659,12 @@ For example:
 
 =end code
 
-=head4 Table from CSV files or data blocks
-
-It is possible to create tables from files or data blocks.
-To do this, use the C<file:> or C<data:> schema in the first non-blank line
-to specify the source of the table data.
-For example:
-
-=begin code :allow<B>
-  =table B<file:recipe_ingredients.csv>
-
-  =for table :caption('Basic cake recipe ingredients')
-  B<data:recipe_ingredients>
-
-  =begin data B<:key<recipe_ingredients>> :mime-type<text/csv>
-    ingredient,quantity,unit
-    flour,2,cups
-    sugar,1,cups
-    eggs,2,items
-    butter,0.5,cups
-    baking powder,2,teaspoons
-  =end data
-=end code
-
 Cell spanning attributes and nested block content within cells are
 semantic properties of the table document model and are preserved
 in the document tree.
+
+For loading external CSV or TSV data into tables, use C<=data-table>
+(L<#Data-table blocks>).
 
 =head4 Error Recovery
 
@@ -1750,7 +1731,139 @@ could not be processed.
 Note that all block names consisting entirely of lowercase or entirely of
 uppercase letters are reserved. See L<#Semantic blocks>.
 
-To check custom markup codes, refer to L<#Custom markup codes>. 
+To check custom markup codes, refer to L<#Custom markup codes>.
+
+
+=head3 Data-table blocks
+
+The C<=data-table> block renders CSV and TSV tables. It accepts
+data in three forms: inline body, an external file via C<:src>, or
+a referenced C<=data> block. C<:columns> declares column projection;
+C<:rename> declares display name overrides.
+
+The inline body form embeds the source data:
+
+=begin code
+  =begin data-table :mime-type('text/csv; header=present')
+    name,age,city
+    Alice,30,London
+    Bob,25,Paris
+  =end data-table
+=end code
+
+The external file form references a CSV or TSV file via the C<:src>
+option, as in:
+
+=begin code
+  =for data-table :src<file:./planets.csv>
+    :columns<name,radius_km>
+    :caption('Inner planets')
+=end code
+
+The reference form refers to a named C<=data> block:
+
+=begin code
+  =begin data :key<sales> :mime-type('text/csv; header=present')
+    quarter,region,revenue
+    Q1,EU,120
+  =end data
+
+  =for data-table :src<data:sales> :columns<quarter,revenue>
+=end code
+
+The body is verbatim and is parsed per C<:mime-type> using RFC 4180
+for C<text/csv> or RFC 4180 §3 for C<text/tab-separated-values>.
+
+=begin nested :notify<warning>
+A CSV field with a literal newline followed by C<=end data-table> at
+virtual margin terminates the block prematurely. Such content
+requires the external file form.
+=end nested
+
+The standard C<:allow> option enables markup codes within each cell;
+listed codes are interpreted after the cell is parsed from CSV or
+TSV. Without C<:allow>, cell content is plain text.
+
+The C<:mime-type> option declares the format. With C<:src<data:X>>,
+C<:mime-type> is inherited from the referenced block; declaring it
+on C<=data-table> in this case produces an error. With
+C<:src<file:X.ext>>, C<:mime-type> may be omitted and is inferred
+from the file extension. With C<:src<http:>> or C<:src<https:>>,
+C<:mime-type> may be omitted and is inferred from the HTTP
+C<Content-Type> response header. For inline body, C<:mime-type> is
+required.
+
+Error recovery follows C<=table> rules (L<#Error Recovery>).
+
+Each C<=data-table> block can include the following attributes:
+
+=begin defn
+C<:src>
+
+This option declares the source URI. Accepted schemes are C<file:>
+for local files, C<data:> for references to C<=data> blocks by key,
+C<http:> and C<https:> for remote resources, and C<doc:> for
+cross-document references. When the scheme is omitted, C<file:> is
+the default. For example:
+
+=begin code
+  :src<file:./planets.csv>
+  :src<data:sales>
+  :src<https://example.com/data.csv>
+=end code
+
+Relative paths in C<file:> URIs resolve against the file declaring
+the directive, not the parent including document.
+
+The C<:src> option and inline body content are mutually exclusive;
+declaring both produces an error at parse time.
+
+=end defn
+
+=begin defn
+C<:columns>
+
+This option declares ordered column projection: which source columns
+appear in the output and in what order. Numeric indices refer to
+column position (1-based) in the source, not row position. For
+example:
+
+=begin code
+  :columns<product,revenue>
+  :columns<1,3,5>
+  :columns<revenue,product>
+=end code
+
+Output order matches list order; columns absent from the list are
+excluded. Omitting the option renders all source columns in their
+source order.
+
+An empty value for C<:columns> produces an error; omit the option
+to render all columns. Out-of-range indices produce an error.
+
+=end defn
+
+=begin defn
+C<:rename>
+
+This option declares display name overrides for projected columns.
+The value is a hash mapping source identifiers, either names or
+indices, to display strings. For example:
+
+=begin code
+  :rename{revenue=>USD}
+  :rename{1=>Time, 2=>Action}
+  :rename{product=>'Product name'}
+=end code
+
+Only columns appearing as hash keys receive overrides; other columns
+retain their source name when C<header=present> or numeric index
+when C<header=absent>.
+
+Hash keys referring to columns absent from C<:columns> (or from the
+source when C<:columns> is omitted) produce an error.
+
+=end defn
 
 
 =head3 Podlite comments
@@ -1847,6 +1960,20 @@ renderer treats the first row as column labels in C<=table data:X>:
   =for table :caption('Inner planets')
   data:planets
 =end code
+
+For C<=data-table> blocks, the C<:mime-type> option may be omitted
+when the format can be inferred from the source. With
+C<:src<file:X.ext>>, the format is inferred from the file extension
+via the MIME extension table below; matching is case-insensitive and
+multi-dot filenames use the last extension component. With
+C<:src<http:>> or C<:src<https:>>, the format is inferred from the
+HTTP C<Content-Type> response header. With C<:src<data:X>>, the MIME
+type is inherited from the referenced C<=data> block.
+
+For inline body and for sources where inference fails (unknown file
+extension, missing or generic HTTP C<Content-Type>, absent file
+extension), C<:mime-type> is required and its omission produces an
+error. An explicit C<:mime-type> always overrides inference.
 
 Here is a list of common MIME types and their corresponding file extensions:
 
@@ -3636,7 +3763,8 @@ icons that indicate the significance of the content.
     C<=row>             Row in advanced table format
     C<=cell>            Cell within a C<=row> block
     C<=data>            Data section
-    C<=toc>             Autogenerated table of contents 
+    C<=data-table>      Tabular rendering of CSV or TSV data
+    C<=toc>             Autogenerated table of contents
     C<=picture>         Insert pictures
     C<=formula>         Mathematical formulas
     C<=markdown>        Markdown support
