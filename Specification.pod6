@@ -5,15 +5,6 @@ This file is deliberately specified in Podlite format
 
 =TITLE Podlite - a lightweight markup language
 
-=begin nested :notify<warning> :caption('Work on the next release continues!')
-
-If you have any ideas to make it better, or if you have any questions,
-you're welcome to suggest changes or start a conversation on 
-our L<GitHub page|https://github.com/podlite/podlite-specs/discussions>.
-
-Looking forward to working on the next release with your valuable input.
-=end nested
-
 =toc head1, head2, head3
 
 =begin AUTHORS
@@ -21,15 +12,37 @@ Looking forward to working on the next release with your valuable input.
 =item Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
 =end AUTHORS
 
-=VERSION 1.0
+=VERSION 2.0
 
 =begin CHANGES
-=head2 v1.0
-=head3 New:
+
+=head2 v2.0
+
+=head3 Added:
+    =item Attributes on Markdown fenced code blocks,
+    =item Per-link configuration attributes for C<L<>> markup code,
+    =item Error recovery rules for C<=table> block,
+    =item C<=boundary> directive for marking structural section boundaries,
+    =item C<G<>> markup code (Guarded) and C<:masked> block attribute for content masking,
+    =item C<=set> directive for per-block attribute assignment with multiline values and inline markup support,
+    =item Extended C<:mime-type> attribute syntax to accept MIME parameters per RFC 6838, with C<header=present|absent> recognised for CSV/TSV header indication per RFC 4180 §3,
+    =item C<=data-table> block for rendering CSV and TSV data, with C<:src>, C<:columns>, C<:rename> attributes.
+
+=head3 Changed:
+    =item Reclassified C<=include> as directive,
+    =item Refined C<:folded> definition,
+    =item Fixed attribute name inconsistencies in examples.
+
+=head3 Removed:
+    =item Outdated string attribute syntax formats.
+
+=for head2 :folded
+v1.0
+
+=head3 Added:
     =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
     =item C<:folded> attribute,
     =item C<:folded-levels> for C<=toc> block,
-    =item Refactor Named custom blocks and markup custom codes, C<M<>>,
     =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>,
     =item C<:mime-type> attribute for C<=include> and C<=data> blocks,
     =item introduce C<data:> schema for use in C<=picture> and C<=table>,
@@ -44,24 +57,29 @@ Looking forward to working on the next release with your valuable input.
     =item inserting pictures, C<=picture>, C<P<>>,
     =item mathematical formulas, C<=formula>, C<F<>>,
     =item Markdown support, C<=markdown>,
-    =item mistake marking,  C<O<>>,
+    =item mistake marking, C<O<>>,
     =item text positioning, C<J<>>, C<H<>>,
     =item Emoji, C<E<>>,
     =item contextual backlinks, C<W<>>,
-    =item advanced table format, C<=row>,C<=cell> blocks,
+    =item advanced table format, C<=row>, C<=cell> blocks,
     C<:header>, C<:rowspan>, C<:colspan> attributes.
-=head3 Deprecated/removed:
+
+=head3 Changed:
+    =item refactor Named custom blocks and markup custom codes, C<M<>>.
+
+=head3 Removed:
     =item Contextual aliases,
     =item C<=finish>,
     =item markers in comments,
     =item C<:margin> attribute,
     =item C<=encoding> directive,
     =item C<P<toc:>> due to C<=toc> block,
-    =item C<P<man:>>, C<P<doc:>> due to C<=include> block,
+    =item C<P<man:>>, C<P<doc:>> due to C<=include> directive,
     =item C<P<>> - placement links,
     =item Declarator block,
     =item C<:formatted> attribute,
     =item C<:like> attribute.
+
 =end CHANGES
 
 =head1 Podlite
@@ -152,8 +170,8 @@ mode|Markdown mode; parser modes> for the entire file, treating all
 text as markdown even if it is not inside an C<=markdown> block.
 
 Any other file extension puts the parser in default mode. The L<C<=include>
-block|#Include block > has a mechanism to override this behavior by using 
-the C<:mime-type> attribute for the included files.
+directive|#Include directive> provides a mechanism to override this behavior
+by using the C<:mime-type> attribute for the included files.
 
 
 =head3 Delimited blocks
@@ -170,13 +188,15 @@ different ways by different types of blocks, but is always specified using
 any of:
 
 =for table :nested :caption("Block configuration syntax") :id<configuration_syntax>
- Value is...       Specify with...       Or with...
- ===============   ===================   ==============
- Boolean (true)    C«:key»               C«:key(1)»
- Boolean (false)   C«:!key»              C«:key(0)»
- String            C«:key<str>»          C«:key('str')»
- List              C«:key<1 2 3>»        C«:key[1,2,3]»
- Hash              C«:key{a=>1, b=>2}»
+ Value is...              Specify with...              Or with...                   Also valid
+ ======================   ==========================   ==========================   ==============
+ Boolean (true)           C«:key»                      C«:key(1)»
+ Boolean (false)          C«:!key»                     C«:key(0)»
+ Integer                  C«:key(N)»
+ String (single word)     C«:key<str>»                 C«:key('str')»               C«:key'str'» C«:key｢str｣» C«:key"str"»
+ String (with spaces)     C«:key('str with spaces')»   C«:key("str with spaces")»   C«:key'str with spaces'» C«:key｢str with spaces｣» C«:key"str with spaces"»
+ List                     C«:key<val1 val2>»           C«:key[val1,val2]»
+ Hash                     C«:key{a=>1, b=>2}»
 
 All option keys and values must, of course, be constants since Podlite is a
 specification language, not a programming language. Specifically, option
@@ -206,7 +226,7 @@ The general syntax is:
 For example:
 
 =begin code
-     =begin table  :caption<Table of Contents>
+     =begin table  :caption('Table of Contents')
          Constants           1
 
          Variables           10
@@ -255,7 +275,7 @@ information. The general syntax is:
 For example:
 
 =begin code
-     =for table  :caption<Table of Contents>
+     =for table  :caption('Table of Contents')
          Constants           1
          Variables           10
          Subroutines         33
@@ -455,15 +475,13 @@ in the final rendered document.
 =begin defn
 C<:folded>
 
-This option specifies whether the block is foldable and, if specified,
-whether it should be collapsed or expanded by default. This feature is
-useful in managing the length of documents and focusing the reader's
-attention on certain sections as needed.
+This option specifies that the block content is not presented
+immediately but is available on demand. The attribute controls the
+initial state: C<:folded> or C<:folded(1)> indicates the content is
+concealed by default; C<:!folded> or C<:folded(0)> indicates it is
+revealed by default.
 
-A C<:!folded> or C<:folded(0)> expands the callout by default, and a 
-C<:folded> or C<:folded(1)> collapses it instead.
-
-=begin code :allow<B> 
+=begin code :allow<B>
   =for table B<:folded> :caption('Culinary Techniques for Sustainability')
     Sous-vide   Low energy consumption
     ----------  -------------------------
@@ -471,36 +489,18 @@ C<:folded> or C<:folded(1)> collapses it instead.
     Baking      Efficient for batch cooking
 =end code
 
-When applied to a block element, such as a heading, the attribute typically
-affects all headings with lower-level content, creating a hierarchical
-folding effect.
-
-For example:
+When applied to a heading block, the attribute governs the heading
+and all associated lower-level content, forming a hierarchical
+structure.
 
 =begin code :allow<B>
   =for B<head2 :folded>
-  Green Energy Overview 
+  Green Energy Overview
 =end code
 
-=begin comment
-TODO: my be it may sense to add a C<:folded-caption> attribute to 
-define a custom title for the collapsed block.
+In non-interactive contexts, the distinction may be expressed through
+visual means such as sidebar placement or reduced emphasis.
 
-The C<:folded-caption> attribute enables the definition of a custom title
-for the collapsed block. If no caption is provided, rendering systems
-may automatically use the C<:caption> attribute. In the absence of 
-the C<:caption> attribute, the first line or paragraph of the block
-serves as the default title. For semantic blocks, the name of the block
-may be used as the default title.
-
-
-=begin code
-    =picture :folded(1) :folded-caption("Wind Turbine Fields")
-    Images/wind_turbines.jpg
-    Wind turbines stand tall against the sky, harnessing
-    the power of the wind to generate energy 
-=end code
-=end comment
 =end defn
 
 =begin defn
@@ -613,7 +613,7 @@ between Podlite block names and their corresponding Markdown elements.
 =end table
 
 The most common use of Selectors is to create L<table of contents|#Table of contents> and
-in L<include block|#Include block>.
+in the L<include directive|#Include directive>.
 
 =head2 Block types
 
@@ -1515,7 +1515,7 @@ or with multi-line headers I<and> multi-line data:
 
 =head4 Advanced Table Format
 
-Tables may construct using C<=row> and C<=cell> blocks.
+Tables may be constructed using C<=row> and C<=cell> blocks.
 The C<=row> blocks represent individual rows within the table.
 
 The C<=cell> blocks exist within rows and contain the actual content of the table.
@@ -1587,9 +1587,9 @@ This attribute determines how many rows a cell should span vertically.
 Cells with C<:rowspan> can cover multiple rows in a table, creating a vertical merge effect.
 =end defn
 
-These example demonstrate how C<:colspan> and C<:rowspan> attributes can be used
-to create tables with merged cells, which is especially useful for complex
-data structures.
+The following examples demonstrate how C<:colspan> and C<:rowspan> attributes
+are used to create tables with merged cells, which is particularly useful
+for complex data structures.
 
 =begin code
     =begin table
@@ -1616,7 +1616,7 @@ data structures.
 =end code
 
 
-It draw somethink like this: 
+The resulting table is rendered as follows:
 
     ---------------------------------------------------------------
     |         Item and Quantity        |     Description          |
@@ -1659,31 +1659,37 @@ For example:
 
 =end code
 
-=head4 Table from CSV files or data blocks
+Cell spanning attributes and nested block content within cells are
+semantic properties of the table document model and are preserved
+in the document tree.
 
-It is possible to create tables from files or data blocks. 
-To do this, use the C<file:> or C<data:> schema in the first non-blank line
-to specify the source of the table data.
-For example:
+For loading external CSV or TSV data into tables, use C<=data-table>
+(L<#Data-table blocks>).
 
-=begin code :allow<B>
-  =table B<file:recipe_ingredients.csv>
-  
-  =for table :caption('Basic cake recipe ingredients')
-  B<data:recipe_ingredients>
+=head4 Error Recovery
 
-  =begin data B<:key<recipe_ingredients>> :mime-type<text/csv>
-    ingredient,quantity,unit
-    flour,2,cups
-    sugar,1,cups
-    eggs,2,items
-    butter,0.5,cups
-    baking powder,2,teaspoons
-  =end data
-=end code
+The column separator type is determined per line. If visible separators
+(C<|> or C<+>) are present, they are used; otherwise, sequences of two
+or more consecutive whitespace characters serve as separators. Mixed
+separator types across lines produce a warning; the table is not
+rejected.
 
+The expected cell count is established from the header row or, in its
+absence, the row with the most cells. Rows with fewer cells are padded
+with empty cells; rows with excess cells are truncated. In both cases,
+a warning is issued.
 
-=for head3 :id<Custom blocks>
+For C<=row>/C<=cell> tables, separator recovery does not apply, but
+mismatched cell counts produce a warning.
+
+For tables sourced from C<file:> or C<data:> references, three levels
+of error are defined. If the source cannot be resolved, an error is
+issued and the table is rendered as an empty block. If the source
+cannot be interpreted as CSV, the content is rendered as a C<=code>
+block. If the CSV contains rows with unequal field counts, parsing
+proceeds with padding for missing fields, and a warning is issued.
+
+=for head3 :id('Custom blocks')
 Named or modular custom blocks
 
 D<Blocks|Named block> whose names contain at least one uppercase and one lowercase
@@ -1725,7 +1731,139 @@ could not be processed.
 Note that all block names consisting entirely of lowercase or entirely of
 uppercase letters are reserved. See L<#Semantic blocks>.
 
-To check custom markup codes, refer to L<#Custom markup codes>. 
+To check custom markup codes, refer to L<#Custom markup codes>.
+
+
+=head3 Data-table blocks
+
+The C<=data-table> block renders CSV and TSV tables. It accepts
+data in three forms: inline body, an external file via C<:src>, or
+a referenced C<=data> block. C<:columns> declares column projection;
+C<:rename> declares display name overrides.
+
+The inline body form embeds the source data:
+
+=begin code
+  =begin data-table :mime-type('text/csv; header=present')
+    name,age,city
+    Alice,30,London
+    Bob,25,Paris
+  =end data-table
+=end code
+
+The external file form references a CSV or TSV file via the C<:src>
+option, as in:
+
+=begin code
+  =for data-table :src<file:./planets.csv>
+  =    :columns<name,radius_km>
+  =    :caption('Inner planets')
+=end code
+
+The reference form refers to a named C<=data> block:
+
+=begin code
+  =begin data :key<sales> :mime-type('text/csv; header=present')
+    quarter,region,revenue
+    Q1,EU,120
+  =end data
+
+  =for data-table :src<data:sales> :columns<quarter,revenue>
+=end code
+
+The body is verbatim and is parsed per C<:mime-type> using RFC 4180
+for C<text/csv> or RFC 4180 §3 for C<text/tab-separated-values>.
+
+=begin nested :notify<warning>
+A CSV field with a literal newline followed by C<=end data-table> at
+virtual margin terminates the block prematurely. Such content
+requires the external file form.
+=end nested
+
+The standard C<:allow> option enables markup codes within each cell;
+listed codes are interpreted after the cell is parsed from CSV or
+TSV. Without C<:allow>, cell content is plain text.
+
+The C<:mime-type> option declares the format. With C<:src<data:X>>,
+C<:mime-type> is inherited from the referenced block; declaring it
+on C<=data-table> in this case produces an error. With
+C<:src<file:X.ext>>, C<:mime-type> may be omitted and is inferred
+from the file extension. With C<:src<http:>> or C<:src<https:>>,
+C<:mime-type> may be omitted and is inferred from the HTTP
+C<Content-Type> response header. For inline body, C<:mime-type> is
+required.
+
+Error recovery follows C<=table> rules (L<#Error Recovery>).
+
+Each C<=data-table> block can include the following attributes:
+
+=begin defn
+C<:src>
+
+This option declares the source URI. Accepted schemes are C<file:>
+for local files, C<data:> for references to C<=data> blocks by key,
+C<http:> and C<https:> for remote resources, and C<doc:> for
+cross-document references. When the scheme is omitted, C<file:> is
+the default. For example:
+
+=begin code
+  :src<file:./planets.csv>
+  :src<data:sales>
+  :src<https://example.com/data.csv>
+=end code
+
+Relative paths in C<file:> URIs resolve against the file declaring
+the directive, not the parent including document.
+
+The C<:src> option and inline body content are mutually exclusive;
+declaring both produces an error at parse time.
+
+=end defn
+
+=begin defn
+C<:columns>
+
+This option declares ordered column projection: which source columns
+appear in the output and in what order. Numeric indices refer to
+column position (1-based) in the source, not row position. For
+example:
+
+=begin code
+  :columns<product,revenue>
+  :columns<1,3,5>
+  :columns<revenue,product>
+=end code
+
+Output order matches list order; columns absent from the list are
+excluded. Omitting the option renders all source columns in their
+source order.
+
+An empty value for C<:columns> produces an error; omit the option
+to render all columns. Out-of-range indices produce an error.
+
+=end defn
+
+=begin defn
+C<:rename>
+
+This option declares display name overrides for projected columns.
+The value is a hash mapping source identifiers, either names or
+indices, to display strings. For example:
+
+=begin code
+  :rename{revenue=>USD}
+  :rename{1=>Time, 2=>Action}
+  :rename{product=>'Product name'}
+=end code
+
+Only columns appearing as hash keys receive overrides; other columns
+retain their source name when C<header=present> or numeric index
+when C<header=absent>.
+
+Hash keys referring to columns absent from C<:columns> (or from the
+source when C<:columns> is omitted) produce an error.
+
+=end defn
 
 
 =head3 Podlite comments
@@ -1805,6 +1943,38 @@ C<:mime-type>
 This option indicates the MIME type of the data, such as C<image/png> for PNG images,
 which helps determine how the data should be interpreted and processed.
 
+The C<header> MIME parameter (per RFC 4180 §3) is recognised on
+C<:mime-type> for CSV and TSV content. It accepts C<present> or
+C<absent>, with default C<absent>. When C<header=present>, the
+renderer treats the first row as column labels in C<=table data:X>:
+
+=begin code :allow<B>
+  =begin data :key<planets> B<:mime-type('text/csv; header=present')>
+    name,radius_km,moons
+    Mercury,2440,0
+    Venus,6052,0
+    Earth,6371,1
+    Mars,3390,2
+  =end data
+
+  =for table :caption('Inner planets')
+  data:planets
+=end code
+
+For C<=data-table> blocks, the C<:mime-type> option may be omitted
+when the format can be inferred from the source. With
+C<:src<file:X.ext>>, the format is inferred from the file extension
+via the MIME extension table below; matching is case-insensitive and
+multi-dot filenames use the last extension component. With
+C<:src<http:>> or C<:src<https:>>, the format is inferred from the
+HTTP C<Content-Type> response header. With C<:src<data:X>>, the MIME
+type is inherited from the referenced C<=data> block.
+
+For inline body and for sources where inference fails (unknown file
+extension, missing or generic HTTP C<Content-Type>, absent file
+extension), C<:mime-type> is required and its omission produces an
+error. An explicit C<:mime-type> always overrides inference.
+
 Here is a list of common MIME types and their corresponding file extensions:
 
 =table
@@ -1859,7 +2029,7 @@ Example of storing images in C<=data> blocks:
 
 =end code
 
-In the example above, we have a C<=data> block with C<:id> C<Logo> that stores
+In the example above, we have a C<=data> block with C<:key> C<Logo> that stores
 the base64-encoded image data. We also specify the filename, mime type,
 access time, and edit time as attributes of the C<=data> block.
 
@@ -2032,7 +2202,7 @@ specified level.
 For example: 
 
 =begin code :allow<B>
-  =for toc B« :folded-levels< 2=>1, 4 => 1, 3=>0 > »
+  =for toc B« :folded-levels{ 2=>1, 4 => 1, 3=>0 } »
     head1, head2, head3, item1, item2
 =end code
 
@@ -2048,14 +2218,17 @@ document attribute for the C<=pod> block. In this case, the specific configurati
 and outcome of the TOC are determined by the renderer implementation.
 
 
-=head3 Include block
+=head3 Include directive
 
-The C<=include> block enables reuse of specific parts of documents within 
-project sources. This feature is particularly useful for complex documents 
-that require including sections from different files while maintaining the 
-overall context and structure.
+The C<=include> directive enables reuse of specific parts of documents within
+project sources. It is useful for complex documents that combine sections
+from different files while maintaining overall context and structure.
 
-The C<=include> block is followed by a L<"Selector"|#Selectors> that specifies the 
+The C<=include> construct is classified as a directive, consistent with
+C<=config> and C<=alias>. As a directive, C<=include> references external
+content rather than containing it directly.
+
+The C<=include> directive is followed by a L<"Selector"|#Selectors> that specifies the
 content to be included.
 
 In this example, the content of the file C<chapter01.pod6> located in the 
@@ -2093,22 +2266,59 @@ Podlite detects the type of the included file by its extension.
 For example, if the included file has a C<.md> extension, 
 it is treated as a Markdown file.
 
-To override the type of the included file, use the C<:mime-type>
-attribute. This attribute specifies the MIME type of the included file.
-For example:
+To override the type of the included file, the C<:mime-type> attribute
+is placed on the directive line after the source URI. For example:
 
 =begin code :allow<B>
-  =for include B<:mime-type('text/podlite')>
-  file:./includes/text.txt 
+=include file:./includes/text.txt B<:mime-type('text/podlite')>
 =end code
 
-The C<:mime-type> attribute is particularly useful when including files with 
-extensions that do not match their actual MIME type.
+The C<:mime-type> attribute lets the parser handle files whose extension
+does not match their actual type.
 
-Security considerations are crucial, as adding content from external
-sources could potentially create vulnerabilities such as injecting harmful code
-or malicious material. Tools responsible for displaying and handling the content
-should provide warnings in such situations.
+External content can introduce vulnerabilities such as code injection.
+Tools displaying included content should provide warnings.
+
+C<=set> directives accumulated before C<=include> apply to the first
+block of the resolved included content (resolution-time targeting).
+The C<=include> directive itself does not receive C<=set> attributes.
+Full discipline: L<Block attribute assignment with =set|#Block attribute assignment with =set>.
+
+
+=head3 Section boundaries
+
+The C<=boundary> directive marks a structural transition between major
+document sections such as chapters, parts, or topics. The transition
+is semantic, not presentational.
+
+A C<=boundary> is a directive, not a block. Hence, there is no
+paragraph or delimited form of the C<=boundary> directive. It accepts
+an optional C<:caption> attribute that describes the transition:
+
+=begin code :allow<B R>
+B<=boundary>
+
+B<=boundary> :caption<R<BOUNDARY_DESCRIPTION>>
+=end code
+
+Boundaries are placed between blocks, not within them, at the same
+structural level as the blocks they separate:
+
+=begin code :allow<B>
+=head1 Chapter One
+Content of chapter one.
+
+B<=boundary>
+
+=head1 Chapter Two
+Content of chapter two.
+=end code
+
+Rendering is format-specific. Renderers may use page breaks
+(paginated output), thematic breaks (web), or separator lines (plain
+text), and may ignore the directive when boundaries are not supported.
+The C<:caption> attribute is descriptive metadata; renderers may
+surface it as a header, navigation entry, or omit it.
 
 
 =head3 Inserting pictures
@@ -2194,7 +2404,7 @@ a commonly used format for writing mathematical equations.
 The formula caption can be defined using the C<:caption> attribute:
 
 =begin code :allow<B>
-  =formula B< :caption<Quadratic Formula> >
+  =for formula B< :caption('Quadratic Formula') >
   x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 =end code
 
@@ -2240,6 +2450,89 @@ content within Podlite documents. This is achieved using the C<=markdown> block.
 
 This block allows to seamlessly combine Podlite's structured blocks with
 the flexibility of Markdown.
+
+
+=head4 Fenced code block attributes
+
+Within markdown content, fenced code blocks may include Podlite configuration
+attributes following the language identifier. The language identifier on the
+opening fence line maps directly to the C<:lang> attribute of the native
+C<=code> block.
+
+=begin code :allow<B>
+  B<```python>
+  def hello():
+      print("Hello")
+  B<```>
+=end code
+
+This fenced code block is semantically equivalent to:
+
+=begin code :allow<B>
+  B<=begin code :lang<python>>
+  def hello():
+      print("Hello")
+  B<=end code>
+=end code
+
+Both backtick (C<```>) and tilde (C<~~~>) fence delimiters are supported.
+The two forms are semantically identical.
+
+Extended attributes may be specified after the language identifier using
+standard Podlite configuration syntax:
+
+=begin code :allow<B>
+  B<```python :line-numbers :highlight<2,5-7> :caption<Example>>
+  def fibonacci(n):
+      if n <= 1:
+          return n
+      return fibonacci(n-1) + fibonacci(n-2)
+  B<```>
+=end code
+
+This is equivalent to:
+
+=begin code :allow<B>
+  B<=begin code :lang<python> :line-numbers :highlight<2,5-7> :caption<Example>>
+  def fibonacci(n):
+      if n <= 1:
+          return n
+      return fibonacci(n-1) + fibonacci(n-2)
+  B<=end code>
+=end code
+
+All attributes defined for C<=code> blocks in this specification are available
+on fenced code blocks. The complete attribute syntax is described in the
+L<Block Configuration|#Block Configuration> section.
+
+Implementation of extended attributes beyond the language identifier is optional.
+Parsers not supporting extended attributes parse the language identifier and
+either ignore trailing content or emit a warning, continuing processing in
+accordance with the graceful degradation principle.
+
+=begin table :caption('Fence to code block attribute equivalence')
+Markdown fence          Podlite equivalent
+==============          ==================
+C<```python>               C«=code :lang<python>»
+C<```javascript>           C«=code :lang<javascript>»
+C<```>                     C«=code»
+C<~~~rust>                 C«=code :lang<rust>»
+=end table
+
+Common attribute patterns found in various markdown implementations may be
+mapped to Podlite notation as follows:
+
+=begin table :caption<Common markdown attributes to Podlite notation>
+Function            Common pattern          Podlite equivalent
+========            ==============          ==================
+Line numbers        C<showLineNumbers>         C«:line-numbers»
+Line numbers        C<.numberLines>            C«:line-numbers»
+Start line          C<startFrom="N">           C«:start-line<N>»
+Highlight           C<{1,3-5}>                 C«:highlight<1,3-5>»
+Title               C<title="text">            C«:caption<text>»
+Element ID          C<#identifier>             C«:id<identifier>»
+CSS class           C<.classname>              C«:class<classname>»
+=end table
 
 
 =head2 Markup codes
@@ -2525,6 +2818,63 @@ The C<Z<>> markup code is the inline equivalent of a
 L<C<=comment> block|#Comments>.
 
 
+=head3 Content masking
+
+The C<G<>> markup code marks an inline text fragment, and the
+C<:masked> attribute marks an entire block, as guarded. The original
+content is preserved in the document model; only the rendered output is
+concealed.
+
+The mechanism provides presentation-layer concealment for sensitive
+content (API tokens, credentials, personally identifiable information,
+age-restricted material). It complements other security layers such as
+source file access controls and authenticated build pipelines.
+
+=begin code :allow<B R>
+The password is B<G<>R<hunter2>B<>> and must not be exposed.
+
+=for R<BLOCKTYPE> B<:masked>
+=end code
+
+The mask character is determined by the renderer; the recommended default
+is U+2588 (█ FULL BLOCK). Whitespace structure is preserved in the masked
+output.
+
+Two render modes are defined:
+
+=item Production mode (default): guarded content is concealed
+=item Draft mode: guarded content is rendered visibly for editing and review
+
+Selection between modes is implementation-defined (renderer-controlled
+through command-line, environment, or interactive interface).
+
+When C<G<>> appears within a block marked C<:masked>, both the inline and
+surrounding content are concealed; the masking operation is idempotent.
+
+Guard is a property of content, not of location. Content marked
+with C<G<>> or carrying C<:masked> renders concealed wherever it
+appears in rendered output. The rule applies when content is
+reached through L<links|#Links>, L<inclusion|#Include directive>,
+L<aliases|#Aliases>, or L<data references|#Data blocks>.
+
+The C<G<>> code is not processed inside code blocks by default. To enable
+masking in code blocks, the C<:allow<G>> attribute is required on the
+C<=code> block (see L<C<:allow>|#Formatting within code blocks>).
+
+=begin code :allow<B>
+Z<>=begin code :lang<python> B<:allow<G>>
+api_key = "G<sk-12345>"
+Z<>=end code
+=end code
+
+The C<G<>> code marks content for concealment at render time but
+does not protect it. The original text remains in plain form in
+source files, document model, version control, and any consumer
+that does not invoke the renderer. For cryptographic security or
+access control, complementary mechanisms (file permissions,
+encryption, authenticated access) are required.
+
+
 =head3 Links
 
 The C<L<>> code is used to specify all kinds of links, filenames, citations,
@@ -2790,6 +3140,94 @@ Contextual backlinks might be visually distinguished from
 standard links through color coding.
 
 
+=head3 Link configuration attributes
+
+The C<L<>> and C<W<>> markup codes may be extended with optional
+configuration attributes following the link specification. These attributes
+are specified using the standard Podlite configuration syntax.
+
+The general form is:
+
+=begin code :allow<B>
+  L<[text|]linkspec B<[:attr1 :attr2<value> ...]>>
+  W<[text|]linkspec B<[:attr1 :attr2<value> ...]>>
+=end code
+
+The configuration portion begins at the first whitespace character that
+is immediately followed by a colon (C<:>). The substring preceding this
+boundary constitutes the link specification. This boundary rule is
+unambiguous because URL schemes begin with a letter character, not a colon,
+and standard URLs do not contain space-colon sequences.
+
+For example:
+
+=begin code :allow<B>
+  L<https://example.com B<:new>>
+=end code
+
+In this example, the boundary occurs at the space before C<:new>.
+
+The following attributes are defined:
+
+=begin table :caption<Link Configuration Attributes>
+  Attribute     Type              Semantics
+  ==========|=================|=============================================
+  :new        Boolean           Resource is opened in a new navigation context
+  :title      String            Advisory information about the resource
+  :lang       String            Primary language of the linked resource
+  :download   Boolean/String    Resource is downloaded; string suggests filename
+=end table
+
+For example:
+
+=begin code :allow<B>
+  L<API Reference|https://api.example.com B<:new :title('Official documentation')>>
+
+  L<Download SDK|https://example.com/sdk.tar.gz B<:download<sdk-v2.tar.gz>>>
+
+  L<French Guide|https://example.fr/guide B<:lang<fr>>>
+
+  W<related term|defn:glossary B<:title('See definition')>>
+=end code
+
+When the same attribute is specified both in C<=config L<>> and in an
+inline C<L<>> instance, the inline value takes precedence:
+
+=begin code :allow<B>
+  =config L<> :new
+
+  =comment inherits :new
+  L<External|https://example.com>
+
+  =comment overrides to false
+  L<Internal|file:local.html B<:!new>>
+=end code
+
+Link specifications containing literal spaces are required to be quoted.
+The C<file:> scheme commonly requires this treatment:
+
+=begin code :allow<B>
+  =comment correct
+  L<file:B<'>my document.txtB<'> :download>
+=end code
+
+Colons within URLs (such as port numbers or path parameters) are not
+preceded by whitespace and therefore do not trigger attribute parsing:
+
+=begin code :allow<B>
+  =comment  :8080 is port
+  L<http://localhost:8080/api :new>
+  
+  =comment  :id is path
+  L<https://api.example.com/users/:id :title('User profile')>
+=end code
+
+Parsers that do not implement this extension treat the entire content
+of C<L<>> as a link specification. The link remains functional; only
+metadata is lost. Renderers that encounter unknown attributes are
+required to ignore them without error.
+
+
 =head3 Alias placements
 
 The C<A<>> code is replaced by the contents of the named alias or object
@@ -2974,7 +3412,7 @@ name specifier C<MODULE_NAME> and then the C<OPTIONAL CONFIG INFO>
 The name specifier should follow the same rules as for 
 L<named blocks|#Custom blocks>.
 
-The C<M<>> formatting code is the inline equivalent of a
+The C<M<>> markup code is the inline equivalent of a
 L<named block|#Custom blocks>.
 
 An example of how this code might be used is :
@@ -3048,6 +3486,100 @@ by naming it with a pair of angles as a suffix. For example:
 Note that, even though the markup code is named using single-angles,
 the preconfiguration applies regardless of the actual delimiters used on
 subsequent instances of the code.
+
+For per-block attribute assignment that targets a single block instance
+rather than setting type-wide defaults, see L<Block attribute assignment
+with =set|#Block attribute assignment with =set>.
+
+
+=head2 Block attribute assignment with =set
+
+The C<=set> directive assigns attribute values to the next block in
+the same lexical scope. Like C<=config>, it sets attributes for a
+block; unlike C<=config>, it targets a single block instance rather
+than all blocks of a type. Attribute values may include multiline
+content with inline markup codes.
+
+The directive has two syntax variants. Configuration syntax uses
+standard delimited attribute values, for example:
+
+=begin code :allow<B>
+B<=set> :caption('Product comparison') :id<table-1>
+B<=set> :lang<en> :numbered
+
+=begin table
+...
+=end table
+=end code
+
+Alias syntax permits multiline values with inline markup codes, for
+example:
+
+=begin code :allow<B>
+B<=set> :caption Selected B<chemical> elements with their
+B<=   >          L<atomic numbers|#elements> and symbols
+
+=begin table
+Element     Symbol    Atomic Number
+=========   ======    =============
+Hydrogen    H         1
+Carbon      C         6
+Oxygen      O         8
+=end table
+=end code
+
+Continuation lines (C<=> followed by whitespace) extend multiline
+alias values until the next non-continuation directive or a blank
+line. Lines join into the final value before markup processing.
+
+Both syntax variants may be mixed across continuation lines, as in
+the following example combining configuration-syntax continuation
+(C<=    :folded<true>>) with alias-syntax continuation:
+
+=begin code :allow<B>
+B<=set> :id<special-table>
+B<=   > :folded<true>
+B<=set> :caption Product B<Performance> Metrics
+B<=   >          with detailed analysis
+
+=begin table
+...
+=end table
+=end code
+
+The table receives all three attributes (C<:id>, C<:folded>, C<:caption>).
+
+C<=set> assignments override C<=config> defaults but yield to explicit
+attributes on the block declaration. When multiple C<=set> directives
+assign the same attribute key, the last assignment wins, regardless
+of syntax variant.
+
+Directives (C<=set>, C<=config>, C<=alias>, C<=include>, C<=boundary>)
+and C<=comment> blocks are transparent to C<=set> targeting and do not
+consume the assignment. For example:
+
+=begin code :allow<B>
+B<=set> :caption Renewable energy sources
+=config table :width<100%>
+=alias COMPANY Acme Corp
+=comment Approved
+=begin table
+Source      Type
+=========   ==========
+Solar       photovoltaic
+Wind        turbine
+=end table
+=end code
+
+The C<=table> block receives the C<:caption> attribute despite the
+intervening directives and C<=comment>.
+
+For C<=include>, attributes apply to the first block of the resolved
+included content. C<=set> directives inside an included file are
+lexically scoped to that file and do not leak to the parent file.
+
+If no block follows before the end of the containing block or file,
+parsers issue a warning that the C<=set> directive has no target.
 
 
 =head2 Aliases
@@ -3142,7 +3674,7 @@ For example:
 Below is a table outlining the different types of notification blocks
 along with a brief description of each type.
 
-=begin table :caption<"Types of Notification blocks">
+=begin table :caption("Types of Notification blocks")
     
     Type          Description
     ----------    ------------------------------------------------------
@@ -3166,7 +3698,7 @@ along with a brief description of each type.
 TODO:
 custom (e.g. `faq`, etc.)???       Allows for specifying the specific context or content.
 
-    =begin nested :caption<"Foldable FAQ: Question 1"> :notice<faq> :folded
+    =begin nested :caption("Foldable FAQ: Question 1") :notice<faq> :folded
     This is how you make content foldable for a cleaner look.
     =end nested
 
@@ -3177,7 +3709,7 @@ The title of the block and visibility of the information can be customized
 using the C<:caption> and C<:folded> options.
 
 =begin code :allow<I B Z> 
-  =begin nested B<:caption<"Astronaut's Reminder">> :notify<important> B<:folded>
+  =begin nested B<:caption("Astronaut's Reminder")> :notify<important> B<:folded>
     Space missions require meticulous planning and adherence to safety protocols.
     Neglecting these can lead to mission failure or, worse, endanger lives.
   =end nested
@@ -3186,7 +3718,7 @@ using the C<:caption> and C<:folded> options.
 Title-only callouts can be created by omitting the body.
 
 =begin code 
-  =for nested :notify<important> :folded :caption<"Title-only callout">
+  =for nested :notify<important> :folded :caption("Title-only callout")
 =end code
 
 Notification blocks are displayed with distinctive colors and 
@@ -3201,9 +3733,12 @@ icons that indicate the significance of the content.
     _________           ____________________________________________________
     C<=begin>           Start of an explicitly terminated block
     C<=config>          Lexical modifications to a block or markup code
+    C<=set>             Attribute assignment to the next block
     C<=end>             Explicit termination of a C<=begin> block
     C<=for>             Start of an implicitly (blank-line) terminated block
     C<=alias>           Define a Podlite macro
+    C<=include>         Include content from other sources
+    C<=boundary>        Marker for a structural section boundary
 
 =end table
 
@@ -3225,9 +3760,11 @@ icons that indicate the significance of the content.
     C<=para>            Ordinary paragraph
     C<=pod>             No "ambient" blocks inside
     C<=table>           Simple rectangular table
+    C<=row>             Row in advanced table format
+    C<=cell>            Cell within a C<=row> block
     C<=data>            Data section
-    C<=toc>             Autogenerated table of contents 
-    C<=include>         Include other blocks or documents
+    C<=data-table>      Tabular rendering of CSV or TSV data
+    C<=toc>             Autogenerated table of contents
     C<=picture>         Insert pictures
     C<=formula>         Mathematical formulas
     C<=markdown>        Markdown support
@@ -3240,7 +3777,7 @@ icons that indicate the significance of the content.
 =config C<> :allow<R V>
 =begin table :nested
 
-    Formatting code       Specifies
+    Markup code           Specifies
     ___________________   ___________________________________________________
     C<A<...>>             Replaced by contents of specified macro/object
     C<B<...>>             Basis/focus of sentence (typically rendered bold)
@@ -3248,7 +3785,7 @@ icons that indicate the significance of the content.
     C<D<...|...;...>>     Definition (C<D<R<defined term>|R<synonym>;R<synonym>;...>>)
     C<E<...;...>>         Entity names or numeric codepoints (C<E<R<entity1>;R<entity2>;...>>), emoji
     C<F<...>>             Mathematical formula
-    C<G<...>>             Reserved
+    C<G<...>>             Guard inline content (concealed in published output)
     C<H<...>>             Superscript
     C<I<...>>             Important (typically rendered in italics)
     C<J<...>>             Subscript

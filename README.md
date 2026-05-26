@@ -1,7 +1,7 @@
 
 <div align="center">
 
-[![Podlite](https://github.com/zag/specs/raw/podlite-specification/assets/podlite_logo_256x256.png)](https://podlite.org)
+[![Podlite](https://github.com/podlite/podlite-specs/raw/main/assets/podlite_logo_256x256.png)](https://podlite.org)
 
 </div>
 
@@ -28,6 +28,11 @@ Supported file extensions:
 | `Markdown` mode   | `.md`, `.markdown`
 
 [The specification](https://github.com/podlite/podlite-specs/blob/main/Specification.pod6) for the Podlite markup language is written using Podlite markup itself.
+
+## Contributing
+
+Specification changes go through [Discussions](https://github.com/podlite/podlite-specs/discussions),
+not pull requests. See [CONTRIBUTING.md](CONTRIBUTING.md) for the process.
 
 <div align="center">
 <table border=0><tr><td valign=top><div align="center">
