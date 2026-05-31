@@ -2861,7 +2861,7 @@ The C<G<>> code is not processed inside code blocks by default. To enable
 masking in code blocks, the C<:allow<G>> attribute is required on the
 C<=code> block (see L<C<:allow>|#Formatting within code blocks>).
 
-=begin code :allow<B>
+=begin code :allow<B Z>
 Z<>=begin code :lang<python> B<:allow<G>>
 api_key = "G<sk-12345>"
 Z<>=end code
