@@ -2522,7 +2522,7 @@ C<~~~rust>                 C«=code :lang<rust>»
 Common attribute patterns found in various markdown implementations may be
 mapped to Podlite notation as follows:
 
-=begin table :caption<Common markdown attributes to Podlite notation>
+=begin table :caption('Common markdown attributes to Podlite notation')
 Function            Common pattern          Podlite equivalent
 ========            ==============          ==================
 Line numbers        C<showLineNumbers>         C«:line-numbers»
@@ -3169,7 +3169,7 @@ In this example, the boundary occurs at the space before C<:new>.
 
 The following attributes are defined:
 
-=begin table :caption<Link Configuration Attributes>
+=begin table :caption('Link Configuration Attributes')
   Attribute     Type              Semantics
   ==========|=================|=============================================
   :new        Boolean           Resource is opened in a new navigation context
