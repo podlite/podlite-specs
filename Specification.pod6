@@ -18,8 +18,12 @@ This file is deliberately specified in Podlite format
 
 =head2 Unreleased
 
+=head3 Added:
+    =item Rules for reading attribute values.
+
 =head3 Changed:
     =item Corrected conflicting value forms in the block configuration table.
+    =item Extended the block configuration table to the forms the parser accepts.
 
 =head2 v2.0
 
@@ -197,15 +201,31 @@ any of:
  ======================   ==========================   ==========================   ==============
  Boolean (true)           C«:key»
  Boolean (false)          C«:!key»
- Integer                  C«:key(N)»
+ Number                   C«:key(42)»                  C«:key(2.3)»
  String (single word)     C«:key<str>»                 C«:key('str')»               C«:key'str'» C«:key｢str｣» C«:key"str"»
  String (with spaces)     C«:key('str with spaces')»   C«:key("str with spaces")»   C«:key'str with spaces'» C«:key｢str with spaces｣» C«:key"str with spaces"»
- List                     C«:key<val1 val2>»           C«:key[val1,val2]»
+ List                     C«:key<val1 val2>»           C«:key[val1,val2]»           C«:key(val1, val2)»
  Hash                     C«:key{a=>1, b=>2}»
 
 All option keys and values must, of course, be constants since Podlite is a
 specification language, not a programming language. Specifically, option
 values cannot be closures.
+
+The way a value is read is determined by the delimiters that enclose it.
+Square brackets always denote a list, whatever the number of elements, while
+parentheses denote a single value and denote a list only when the elements are
+separated by commas. Whitespace surrounding a value is not significant and is
+removed before the value is read.
+
+Text enclosed in angle brackets is not converted to another type, so
+C<< :key<1> >> is read as the string C<1> rather than as a number. Whitespace
+inside angle brackets separates the content into a list, which makes
+C<< :key<a b> >> a list of two elements. A comma is retained as part of the
+value, so C<< :key<a,b> >> is read as the string C<a,b>. Quotation marks inside
+angle brackets delimit a string and suppress that separation. A quoted value is
+read as a string even when it holds a single word or nothing at all.
+C<< :key<'a b'> >>, C<< :key<'a'> >> and C<< :key<''> >> are therefore all
+strings.
 
 The configuration section may be extended over subsequent lines by
 starting those lines with an C<=> in the first (virtual) column followed
