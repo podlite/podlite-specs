@@ -16,6 +16,11 @@ This file is deliberately specified in Podlite format
 
 =begin CHANGES
 
+=head2 Unreleased
+
+=head3 Changed:
+    =item Corrected conflicting value forms in the block configuration table.
+
 =head2 v2.0
 
 =head3 Added:
@@ -190,8 +195,8 @@ any of:
 =for table :nested :caption("Block configuration syntax") :id<configuration_syntax>
  Value is...              Specify with...              Or with...                   Also valid
  ======================   ==========================   ==========================   ==============
- Boolean (true)           C«:key»                      C«:key(1)»
- Boolean (false)          C«:!key»                     C«:key(0)»
+ Boolean (true)           C«:key»
+ Boolean (false)          C«:!key»
  Integer                  C«:key(N)»
  String (single word)     C«:key<str>»                 C«:key('str')»               C«:key'str'» C«:key｢str｣» C«:key"str"»
  String (with spaces)     C«:key('str with spaces')»   C«:key("str with spaces")»   C«:key'str with spaces'» C«:key｢str with spaces｣» C«:key"str with spaces"»
