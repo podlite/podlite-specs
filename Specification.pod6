@@ -1781,7 +1781,7 @@ option, as in:
 
 =begin code
   =for data-table :src<file:./planets.csv>
-  =    :columns[name,radius_km]
+  =    :columns<name radius_km>
   =    :caption('Inner planets')
 =end code
 
@@ -1793,7 +1793,7 @@ The reference form refers to a named C<=data> block:
     Q1,EU,120
   =end data
 
-  =for data-table :src<data:sales> :columns[quarter,revenue]
+  =for data-table :src<data:sales> :columns<quarter revenue>
 =end code
 
 The body is verbatim and is parsed per C<:mime-type> using RFC 4180
@@ -1854,9 +1854,9 @@ column position (1-based) in the source, not row position. For
 example:
 
 =begin code
-  :columns[product,revenue]
+  :columns<product revenue>
   :columns[1,3,5]
-  :columns[revenue,product]
+  :columns<revenue product>
 =end code
 
 Output order matches list order; columns absent from the list are
