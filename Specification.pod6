@@ -18,12 +18,7 @@ This file is deliberately specified in Podlite format
 
 =head2 Unreleased
 
-=head3 Added:
-    =item Rules for reading attribute values.
-
 =head3 Changed:
-    =item Corrected conflicting value forms in the block configuration table.
-    =item Extended the block configuration table to the forms the parser accepts.
     =item Reworked the forms of an attribute value.
 
 =head2 v2.0
