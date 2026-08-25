@@ -20,6 +20,8 @@ This file is deliberately specified in Podlite format
 
 =head3 Changed:
     =item Reworked the forms of an attribute value.
+    =item Allowed a value in parentheses or braces to span configuration lines.
+    =item Described the empty forms of a value.
 
 =head2 v2.0
 
@@ -215,6 +217,10 @@ string C<a,b>. Quotation marks delimit a string and suppress separation by
 whitespace, which makes C<< :key<'a b'> >> a string. Guillemets are not
 quotation marks and are retained as part of the value.
 
+A delimiter with nothing inside it carries the empty value of its kind, so
+C<< :key<> >> and C<:key()> are an empty list and C<:key{}> is an empty hash.
+An empty string is written with quotation marks, as C<:key('')>.
+
 Apart from C<True> and C<False>, an unquoted word is not a valid element of a
 parenthesised list or value of a hash entry. Inside braces an option is read
 as on the marker line: with no value it denotes the boolean true, and negated
@@ -226,7 +232,9 @@ identifies the position of the discarded value.
 
 The configuration section may be extended over subsequent lines by
 starting those lines with an C<=> in the first (virtual) column followed
-by a whitespace character.
+by a whitespace character. A value in parentheses or braces may continue on
+such a line. A value in angle brackets or in quotation marks ends with its
+line.
 
 The lines following the opening delimiter and configuration are the
 data or contents of the block, which continue until the block's matching
