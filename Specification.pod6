@@ -19,6 +19,9 @@ This file is deliberately specified in Podlite format
 =head2 Unreleased
 
 =head3 Changed:
+    =item Named the kind of a value in the block configuration table.
+    =item Distinguished the two hash notations by the keys each admits.
+    =item Stated that the separators of an index entry describe one structure.
     =item Reworked the forms of an attribute value.
     =item Allowed a value in parentheses or braces to span configuration lines.
     =item Described the empty forms of a value.
@@ -202,8 +205,11 @@ any of:
  String                   C«:key<str>»                 C«:key('str')» C«:key"str"» C«:key'str'» C«:key｢str｣»
  String with spaces       C«:key('str with spaces')»   C«:key("str with spaces")» C«:key'str with spaces'» C«:key｢str with spaces｣»
  List                     C«:key<a b>»                 C«:key('a','b')»
- Hash                     C«:key{:a<x>, :b(42), :c}»   C«:key{a=>1, b=>'str', c=>True}»
- Hash with numeric keys   C«:key{1=>'x', 2=>'y'}»
+ Hash, identifier keys    C«:key{:a<x>, :b(42), :c}»   C«:key{a=>1, b=>'str', c=>True}»
+ Hash, other keys         C«:key{1=>'x', 2=>'y'}»
+
+The first column of the table names the kind of the value. A rule that refers
+to the kind of a value refers to these names.
 
 All option keys and values are constants: Podlite is a specification
 language, not a programming language. An option value cannot be a closure.
@@ -2533,7 +2539,7 @@ This is equivalent to:
 
 All attributes defined for C<=code> blocks in this specification are available
 on fenced code blocks. The complete attribute syntax is described in the
-L<Block Configuration|#Block Configuration> section.
+L<block configuration table|#configuration_syntax>.
 
 Implementation of extended attributes beyond the language identifier is optional.
 Parsers not supporting extended attributes parse the language identifier and
@@ -2845,7 +2851,7 @@ verbatim, which often eliminates the need for the C<V<>> as well:
 =end code
 
 The C<Z<>> markup code is the inline equivalent of a
-L<C<=comment> block|#Comments>.
+L<C<=comment> block|#Podlite comments>.
 
 
 =head3 Content masking
@@ -3387,6 +3393,10 @@ the entries with semicolons:
   is an unordered collection of scalar values indexed by their
   associated string key.
 =end code
+
+Both notations describe one structure: a list of entries, each of which is a
+list of levels. The order of entries and the order of levels are significant.
+Whitespace adjacent to either separator is not part of a value.
 
 The indexed text can be empty, creating a "zero-width" index entry:
 
