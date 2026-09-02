@@ -18,7 +18,12 @@ This file is deliberately specified in Podlite format
 
 =head2 Unreleased
 
+=head3 Added:
+    =item Described predicates in selectors: the operators, the outcome for empty and absent values, membership, and the combination of conditions.
+    =item Described the universal pattern, which matches a block of any name.
+
 =head3 Changed:
+    =item Described a selector pattern as a block name or the universal C<*> followed by an optional predicate.
     =item Named the kind of a value in the block configuration table.
     =item Distinguished the two hash notations by the keys each admits.
     =item Stated that the separators of an index entry describe one structure.
@@ -597,7 +602,8 @@ or
 ...where
 
 =item EXTERNAL_SOURCE - optional source of blocks for filtering, default current document,
-=item BLOCK_SELECTOR - list of block names, filter for
+=item BLOCK_SELECTOR - list of patterns; a pattern is a block name or the
+universal C<*>, optionally followed by a L<predicate|#Predicates>
 
 For example:
 
@@ -650,6 +656,142 @@ between Podlite block names and their corresponding Markdown elements.
 
 The most common use of Selectors is to create L<table of contents|#Table of contents> and
 in the L<include directive|#Include directive>.
+
+=head3 Predicates
+
+A pattern may carry a D<predicate>. The predicate is written in square brackets
+after the block name. It tests the configuration of a block. A block is
+selected when its name matches the pattern and every condition of the
+predicate holds.
+
+Conditions are written in the syntax of the
+L<block configuration table|#configuration_syntax>, so an operator means the
+same thing in a declaration and in a predicate.
+
+=for table :nested :caption("Predicate operators") :id<predicate_operators>
+ Written as               Holds when
+ ======================   ==============================================================
+ C«[ :attr ]»             the attribute exists and its value is neither empty nor false
+ C«[ :!attr ]»            the value is false
+ C«[ :?attr ]»            the attribute exists, whatever its value
+ C«[ :!?attr ]»           the attribute does not exist
+ C«[ :attr<value> ]»      the value equals the operand
+ C«[ :!attr<value> ]»     the attribute exists and its value does not equal the operand
+ C«[ :attr~<element> ]»   the operand occurs among the values
+
+Predicates are case-sensitive. No adjustment to case is provided.
+
+A value containing whitespace is written in quotation marks, as it is in a
+L<declaration|#configuration_syntax>:
+
+=begin code
+=include file:./guide.podlite | para[ :author('John Doe') ]
+=end code
+
+=head3 Universal pattern
+
+The character C<*> forms a D<universal pattern>, which matches a block of any
+name and stands in the position of a block name. It is used when the selection
+is by configuration rather than by name:
+
+=begin code
+=include file:./guide.podlite | *[ :platform<arm> ]
+=end code
+
+C<*> is not a valid identifier start, so a pattern and a block name cannot be
+confused.
+
+A universal pattern without a predicate selects every block and filters
+nothing.
+
+Within a single selection, one attribute may be encountered as several kinds
+of value, because a universal pattern matches blocks of every name. Every
+predicate is defined for every kind of value. The selection is not interrupted
+by a kind it does not expect.
+
+=head3 Empty and absent values
+
+An attribute that exists with an empty value is distinct from an attribute
+that does not exist and from one whose value is false. The following table
+states the outcome for each predicate:
+
+=for table :nested :caption("Predicates over empty and absent values") :id<predicate_empty_values>
+ Declared as        C«[ :attr ]»   C«[ :!attr ]»   C«[ :?attr ]»   C«[ :!?attr ]»
+ ================   ============   =============   =============   ==============
+ C«:attr<value>»    true           false           true            false
+ C«:attr(False)»    false          true            true            false
+ C«:attr<>»         false          false           true            false
+ C«:attr()»         false          false           true            false
+ C«:attr('')»       false          false           true            false
+ not declared       false          false           false           true
+
+No predicate distinguishes an empty list from an empty string. An empty list
+holds no values. An empty string is one value of zero length. Both are false
+and both satisfy the tests above in the same way. The distinction is preserved
+in the document tree.
+
+=head3 Membership
+
+C«[ :attr~<V> ]» holds when every element of C<V> occurs among the values of
+the attribute. Values present in the attribute and absent from the operand do
+not affect the outcome. The condition states what is required to be present.
+The condition says nothing about what is required to be absent.
+
+The D<operand> of C«~<>» is read by the
+L<rule that governs any value|#configuration_syntax>. Whitespace inside the
+operand separates a list. A single word is a string. Quotation marks produce
+one element that may contain whitespace.
+
+=begin code
+=for para :id<A> :tags<draft review>
+=for para :id<B> :tags<draft review urgent>
+=for para :id<C> :tags<draft>
+=for para :id<D> :tags<'draft review'>
+
+| para[ :tags~<draft> ]              # A, B, C
+| para[ :tags~<draft review> ]       # A, B
+| para[ :tags~<'draft review'> ]     # D
+=end code
+
+An empty operand is an error and is reported when the selector is read. An
+empty list occurs among any set of values, so the condition would hold for
+every block and would test nothing.
+
+Membership is not a test for a substring. C«[ :tags~<spec> ]» does not hold for
+C«:tags<specification>», and C«~<>» never falls back to comparing parts of a
+value.
+
+Addressing the keys of a hash is not defined. Applied to a hash, C«~<>» yields
+no match.
+
+=head3 Combining conditions
+
+Whitespace separates one condition from the next. A block is selected only
+when every condition holds. Whitespace enclosed by brackets, by parentheses or
+by quotation marks belongs to the condition it appears in.
+
+=begin code
+code[ :lang<python> :numbered ]
+=end code
+
+A comma separates whole patterns, and a block is selected when it matches any
+of them:
+
+=begin code
+head1, head2, code[ :lang<python> ]
+=end code
+
+The result is a set in document order. A block that matches more than one
+pattern appears once.
+
+=head3 Non-matching conditions
+
+A condition naming an attribute that no block declares holds for no block. No
+diagnostic is required.
+
+A value whose kind does not admit the test is reported as a non-match. The
+selection is not interrupted, which the universal pattern requires. Under it,
+values of unexpected kinds are encountered by construction.
 
 =head2 Block types
 
