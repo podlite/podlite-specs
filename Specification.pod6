@@ -19,6 +19,7 @@ This file is deliberately specified in Podlite format
 =head2 Unreleased
 
 =head3 Added:
+    =item Described C<=test> blocks with selector assertions, and their C<=fixture>, C<=assert> and C<=resource> children.
     =item Described predicates in selectors: the operators, the outcome for empty and absent values, membership, and the combination of conditions.
     =item Described the universal pattern, which matches a block of any name.
 
@@ -2499,6 +2500,198 @@ The C<:caption> attribute is descriptive metadata; renderers may
 surface it as a header, navigation entry, or omit it.
 
 
+=head3 Test blocks
+
+=begin defn
+C<=test>
+
+A block stating a piece of source and one or more statements that must hold of
+what a parser makes of it.
+=end defn
+
+The statements are written with L<selectors|#Selectors>. A test contains one or
+more C<=assert> blocks. It may contain C<=fixture> blocks, each a document an
+assertion of it may be resolved against under the rule stated below. It may
+contain C<=resource> blocks where the subject of the test is the resolution of a
+path:
+
+=begin code :allow<B>
+  B<=begin test> :id<heading-carries-its-level>
+
+  B<=begin fixture>
+  =head2 Overview
+  B<=end fixture>
+
+  B<=for assert> :caption('a second-level heading is recognised as such')
+  head2
+
+  B<=end test>
+=end code
+
+A test containing no C<=assert> does not pass. An implementation that does not
+recognise a child of C<=test> reports the test as skipped rather than failed; one
+it recognises but cannot satisfy is a failure.
+
+=head4 The blocks a test contains
+
+=begin defn
+C<=fixture>
+
+A verbatim block whose body is a document in its own right, carried as Podlite
+source.
+=end defn
+
+The body of a C<=fixture> is not processed by the document that holds it:
+nothing in it is read as that document's markup and nothing in it is resolved.
+It is still passed to the parser verbatim where an assertion is resolved
+against the fixture. Anything a test requires besides the body is declared as
+C<=resource> and is not written into the body.
+
+A test may contain more than one C<=fixture>. Only another C<=fixture> ends the
+reach of one, and whatever else stands between, child of the test or not, leaves
+it unchanged.
+
+=begin defn
+C<=assert>
+
+A verbatim block carrying a L<selector|#Selectors> expression.
+=end defn
+
+An assertion holds according to whether it carries C<:absent>:
+
+=item Without C<:absent>, the assertion holds when the selector matches at least
+one block, and fails when it matches none.
+=item With C<:absent>, the assertion holds when the selector matches no block,
+and fails when it matches one or more.
+
+Where a test contains several C<=assert> blocks, it passes when every assertion
+holds. Their order among themselves carries no meaning; position relative to a
+C<=fixture> decides which document an assertion takes.
+
+An assertion states that something is present somewhere in the document, not
+that it holds for every block. A statement of that kind is written with
+C<:absent> over the opposite condition. That every invoice carries the attribute
+C<:number> is stated by requiring that none lacks it:
+
+=begin code :allow<B>
+  =for assert B<:absent>
+  Invoice[ :!?number ]
+=end code
+
+=begin defn
+C<=resource>
+
+A verbatim block carrying content the test requires to be reachable by a path.
+=end defn
+
+Two properties are fixed of a declared resource:
+
+=item The name is reachable only while the body of a C<=fixture> of the same
+test is read. A reference in that body, or inside a resource reached from it,
+obtains only what the test declares.
+=item How the content is made reachable is not fixed here, and an implementation
+that cannot write to a filesystem is not excluded.
+
+A resource is reached from the body of a fixture by the path it declares:
+
+=begin code :allow<B>
+  =begin test :id<include-reaches-resource>
+
+  B<=begin resource> :name<includes/guide.podlite>
+  =head1 Guide
+  B<=end resource>
+
+  =begin fixture
+  =include file:./includes/guide.podlite
+  =end fixture
+
+  =for assert
+  head1
+
+  =end test
+=end code
+
+A declared name is given relative to the body of the C<=fixture> an assertion is
+resolved against. A directive or markup code in that body resolves its relative
+paths against the file declaring it, and not against the parent including
+document.
+
+=head4 Options
+
+C<:id> and C<:caption> are the L<standard options|#Standard configuration options>
+of those names. C<:id> names a test; C<:caption> records what a test, or a single
+assertion, is for.
+
+=begin code :allow<B>
+  =begin test B<:id<value-comma-stays>> B<:caption('a comma inside a value stays part of it')>
+
+  =begin fixture
+  =for para :one<a,b>
+  text
+  =end fixture
+
+  =for assert B<:caption('the value is one string')>
+  para[ :one<a,b> ]
+
+  =end test
+=end code
+
+=begin defn
+C<:name>
+
+The path under which the content of a C<=resource> is made reachable. Its form
+is the form of the reference that resolves it.
+=end defn
+
+=begin defn
+C<:absent>
+
+Written on an C<=assert>, gives the assertion its negative sense.
+=end defn
+
+=head4 The document an assertion is resolved against
+
+An assertion that names a source is resolved against that source. An assertion
+that names none is resolved against the document the implementation has made
+current.
+
+Which document that is follows three cases in order:
+
+=item a document supplied to the implementation from outside;
+=item where none is supplied, the body of the C<=fixture> nearest preceding the
+assertion;
+=item where neither is present, the document in which the test sits.
+
+Where a document is supplied from outside, the bodies of C<=fixture> are not
+read as the input of the test. That a supplied document happens to be the one
+containing the test does not change this.
+
+The file the tests are taken from is not a supplied document. A document is
+supplied only where the implementation is told to examine it, separately from
+being told where to find the tests.
+
+A failure against a C<=fixture> is about the implementation: the text is fixed
+and its reading is not. A failure against a supplied document is about the
+document.
+
+A relative path in the source of an assertion is resolved against the file the
+test is written in, and not among the declared resources of the test.
+
+An assertion whose named source cannot be obtained does not hold, whether or not
+it carries C<:absent>. A missing source is not a document in which nothing
+matched.
+
+=head4 A document containing tests
+
+Where the document an assertion is resolved against is the one containing the
+test, the C<=test> blocks of that document are part of it and a selector reaches
+them: an assertion written over every block of a document matches the tests
+written in it.
+
+Walking a document does not run the tests found in it. An implementation
+resolves the assertions of the test it was given, and a C<=test> block met while
+walking is not a test to obtain.
+
 =head3 Inserting pictures
  
 Podlite allows to include images using a C<=picture> block with an inline version
@@ -3950,6 +4143,10 @@ icons that indicate the significance of the content.
     C<=picture>         Insert pictures
     C<=formula>         Mathematical formulas
     C<=markdown>        Markdown support
+    C<=test>            Statements required to hold of a piece of source
+    C<=fixture>         Source supplied to a test
+    C<=assert>          Condition a test requires of a document
+    C<=resource>        Content a test requires to be reachable by a path
     C<=>R<RESERVED>     Semantic blocks (C<=SYNOPSIS>, C<=BUGS>, etc.)
     C<=>R<Typename>     User-defined block
 
