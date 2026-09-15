@@ -19,6 +19,7 @@ This file is deliberately specified in Podlite format
 =head2 Unreleased
 
 =head3 Added:
+    =item Described operations written in parentheses, the rule telling an operation from a value, and the C<in> operator with its operands.
     =item Described C<=test> blocks with selector assertions, and their C<=fixture>, C<=assert> and C<=resource> children.
     =item Described predicates in selectors: the operators, the outcome for empty and absent values, membership, and the combination of conditions.
     =item Described the universal pattern, which matches a block of any name.
@@ -679,6 +680,7 @@ same thing in a declaration and in a predicate.
  C«[ :attr<value> ]»      the value equals the operand
  C«[ :!attr<value> ]»     the attribute exists and its value does not equal the operand
  C«[ :attr~<element> ]»   the operand occurs among the values
+ C«[ :attr(in V,W) ]»     a value of the attribute is any of the operands
 
 Predicates are case-sensitive. No adjustment to case is provided.
 
@@ -764,6 +766,63 @@ value.
 
 Addressing the keys of a hash is not defined. Applied to a hash, C«~<>» yields
 no match.
+
+=head3 Operations in parentheses
+
+The operation is named, and its operands follow the name inside parentheses:
+
+=begin code
+| Invoice[ :author('John Doe') ]             # a value
+| Invoice[ :status(in 'draft','issued') ]    # an operation
+=end code
+
+What follows the opening parenthesis is read as a value when it is one of
+the forms of the L<block configuration table|#configuration_syntax>. Every
+other name is the name of an operation. A name in that position which this
+specification does not define is an error and is reported when the selector
+is read.
+
+=for table :nested :caption("Operations in parentheses") :id<paren_operations>
+ Written as                Holds when
+ =======================   ===========================================================
+ C«[ :attr(in V,W) ]»      a value of the attribute is any of the operands
+
+C<in> is written with one or more operands. An absent operand and an empty
+operand are both errors and are reported when the selector is read.
+
+Literal operands are separated by commas, as the L<block configuration
+table|#configuration_syntax> writes a list. Angle brackets instead separate
+values with whitespace.
+
+The condition holds when at least one value of the attribute equals an
+operand. Other values do not affect the outcome, as in:
+
+=begin code
+=for note :tags<approved secret>
+
+| note[ :tags(in 'approved') ]      # holds
+=end code
+
+A literal operand is a number or a value in quotation marks. Alternatively,
+a L<selector|#Selectors> supplies the values and is the sole operand. Where
+the operand is a selector, the condition holds when a value of the attribute
+is one the selector yields:
+
+=begin code
+=include file:./guide.podlite | Invoice[ :type(in file:./vocabulary.podlite | defn) ]
+=end code
+
+The term is taken from a definition, as
+L<definition lists|#Definition lists> state. Nothing is taken from a block
+whose kind defines no single value.
+
+A source is resolved and read before a condition carrying a selector reports
+a match or a non-match. Failure to resolve a source is an
+error; the source is not treated as empty. Such a failure establishes neither
+a match nor a non-match.
+
+Within an operand, a number sign separates an internal address from the
+path. A path containing that character cannot be written there.
 
 =head3 Combining conditions
 
