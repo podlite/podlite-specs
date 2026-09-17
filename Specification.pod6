@@ -1714,7 +1714,7 @@ Or:
     Geothermal energy            Low emissions
     Biomass                      Reduces waste
 
-=end table
+ =end table
 =end code
 
 or line-by-line with multi-line headers:
@@ -2001,10 +2001,10 @@ option, as in:
 The reference form refers to a named C<=data> block:
 
 =begin code
-  =begin data :key<sales> :mime-type('text/csv; header=present')
+    =begin data :key<sales> :mime-type('text/csv; header=present')
     quarter,region,revenue
     Q1,EU,120
-  =end data
+    =end data
 
   =for data-table :src<data:sales> :columns<quarter revenue>
 =end code
@@ -2889,7 +2889,7 @@ attributes following the language identifier. The language identifier on the
 opening fence line maps directly to the C<:lang> attribute of the native
 C<=code> block.
 
-=begin code :allow<B>
+=begin code :allow<B> :lang<markdown>
   B<```python>
   def hello():
       print("Hello")
@@ -2911,7 +2911,7 @@ The two forms are semantically identical.
 Extended attributes may be specified after the language identifier using
 standard Podlite configuration syntax:
 
-=begin code :allow<B>
+=begin code :allow<B> :lang<markdown>
   B<```python :line-numbers :highlight<2,5-7> :caption<Example>>
   def fibonacci(n):
       if n <= 1:
@@ -3036,7 +3036,7 @@ such content would be rendered in an underlined style.
 =item
 The C<I<>> markup code specifies that the contained text is
 B<important>; that it is of I<major significance>. Such content would
-typically be rendered in italics or in C< <em>...</em> > tags
+typically be rendered in italics or in C< <em>...</em> > tags.
 
 =item
 The C<B<>> markup code specifies that the contained text is the
@@ -3272,8 +3272,8 @@ output.
 
 Two render modes are defined:
 
-=item Production mode (default): guarded content is concealed
-=item Draft mode: guarded content is rendered visibly for editing and review
+=item production mode (default): guarded content is concealed;
+=item draft mode: guarded content is rendered visibly for editing and review.
 
 Selection between modes is implementation-defined (renderer-controlled
 through command-line, environment, or interactive interface).
