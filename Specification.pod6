@@ -32,6 +32,7 @@ This file is deliberately specified in Podlite format
     =item Reworked the forms of an attribute value.
     =item Allowed a value in parentheses or braces to span configuration lines.
     =item Described the empty forms of a value.
+    =item Stated where a relative path resolves from in selector sources, images and links, and that including the document elsewhere does not change it.
 
 =head2 v2.0
 
@@ -658,6 +659,11 @@ between Podlite block names and their corresponding Markdown elements.
 
 The most common use of Selectors is to create L<table of contents|#Table of contents> and
 in the L<include directive|#Include directive>.
+
+A relative path in a C<file:> source of a selector resolves against the file in
+which that source is written, not the parent including document. This also
+applies to a selector used as an operand of C<in>. Within tests, the rules in
+L<#Test blocks> also apply.
 
 =head3 Predicates
 
@@ -2469,6 +2475,8 @@ content rather than containing it directly.
 The C<=include> directive is followed by a L<"Selector"|#Selectors> that specifies the
 content to be included.
 
+Relative C<file:> sources follow the resolution rule in L<#Selectors>.
+
 In this example, the content of the file C<chapter01.pod6> located in the 
 C<./includes> directory is included:
 
@@ -2672,8 +2680,7 @@ A resource is reached from the body of a fixture by the path it declares:
 
 A declared name is given relative to the body of the C<=fixture> an assertion is
 resolved against. A directive or markup code in that body resolves its relative
-paths against the file declaring it, and not against the parent including
-document.
+paths against the file declaring it, and not the parent including document.
 
 =head4 Options
 
@@ -2768,14 +2775,20 @@ source of the image, and the remaining content is treated as caption.
 This source can be either local or remote, and it can be
 specified using different schemas: C<https:> for remote images, C<file:> for
 local ones, or C<data:> for L<embedded images|#Data blocks> in the document.
-If no schema is provided, C<file:> is used as default.
+If no schema is provided, C<file:> is used as default. For example:
 
 =begin code :allow<B>
  =picture https://example.com/image.jpg
  =picture file:/local/image.png
  =picture /local/image.png
- =picture ../image.png
  =picture data:Logo
+=end code
+
+In C<=picture> and C<P<>>, a relative C<file:> path resolves against the file
+in which the image reference is written, not the parent including document:
+
+=begin code :allow<B>
+ =picture ../image.png
 =end code
 
 Following the source line, it possible to include an image caption.
@@ -3335,7 +3348,8 @@ A standard web URL. For example:
 =end code
 
 If the link does not start with C<//> it is treated as being relative to
-the location of the current document:
+the location of the document in which it is written, not the parent
+including document:
 
 =begin code :allow<B>
   See also: L<B<http:tutorial/faq.html>> and
@@ -3354,8 +3368,8 @@ A filename on the local system. For example:
   L<B<file:/usr/local/lib/.configrc>> or L<B<file:~/.configrc>>).
 =end code
 
-Filenames that don't begin with a C</> or a C<~> are relative
-to the current document's location:
+Filenames that don't begin with a C</> or a C<~> are relative to the location
+of the file in which the link is written, not the parent including document:
 
 =begin code :allow<B>
     Then, edit the local config file (that is, either
