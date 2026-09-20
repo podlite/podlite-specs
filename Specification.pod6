@@ -145,8 +145,8 @@ every C<($?TABSTOP // 8)> characters.
 
 The content of a document is specified within one or more D<blocks|block>.
 Every Podlite block may be declared in any of three forms:
-I<L<delimited style|#Delimited blocks>>, I<L<paragraph style|#Paragraph
-blocks>>, or I<L<abbreviated style|#Abbreviated blocks>>.
+I<L<delimited style|#Delimited blocks>>, I<L<paragraph style|#Paragraph blocks>>,
+or I<L<abbreviated style|#Abbreviated blocks>>.
 All of these forms are equivalent.
 
 Anything in a document that is neither a Podlite directive nor contained
@@ -253,8 +253,8 @@ line.
 The lines following the opening delimiter and configuration are the
 data or contents of the block, which continue until the block's matching
 C<=end> marker line. For most block types, these contents may be
-indented if you wish, without them being treated as L<code blocks|#Code
-blocks>. Indented text is only treated as code within
+indented if you wish, without them being treated as
+L<code blocks|#Code blocks>. Indented text is only treated as code within
 C<=pod>, L<C<=nested>|#Nesting blocks>, L<C<=item>|#Lists>, C<=code>,
 and L<semantic|#Semantic blocks> blocks.
 
@@ -550,8 +550,9 @@ visual means such as sidebar placement or reduced emphasis.
 =begin defn
 C<:lang>
 
-This option is used to L<provide information|#Assign programming language to 
-code blocks> about the programming language used in a specific code block.
+This option is used to
+L<provide information|#Assign programming language to code blocks>
+about the programming language used in a specific code block.
 This helps ensure that the code is displayed and interpreted correctly
 by rendering engines or syntax highlighters.
 
@@ -584,8 +585,8 @@ This option expects a list of markup codes that are to be recognized
 within any C<V<>> codes that appear in (or are implicitly applied to)
 the current block. The option is most often used on C<=code> blocks to
 allow mark-up within those otherwise verbatim blocks, though it can be
-used in I<any> block that contains verbatim text. See L<#Formatting
-within code blocks>.
+used in I<any> block that contains verbatim text.
+See L<#Formatting within code blocks>.
 
 =end defn
 
