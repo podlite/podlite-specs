@@ -20,6 +20,7 @@ This file is deliberately specified in Podlite format
 
 =head3 Added:
     =item Described operations written in parentheses, the rule telling an operation from a value, and the C<in> operator with its operands.
+    =item Described internal addresses: the three parts of their reading, their bounds in a selector and in a link, and the naming of a C<data:> column.
     =item Described C<=test> blocks with selector assertions, and their C<=fixture>, C<=assert> and C<=resource> children.
     =item Described predicates in selectors: the operators, the outcome for empty and absent values, membership, and the combination of conditions.
     =item Described the universal pattern, which matches a block of any name.
@@ -666,6 +667,71 @@ which that source is written, not the parent including document. This also
 applies to a selector used as an operand of C<in>. Within tests, the rules in
 L<#Test blocks> also apply.
 
+=head3 Internal addresses
+
+An internal address follows a C<#>, or the separator a scheme requires in its
+place. It names a section or block in a document, a column in a table, or a
+position or range in audio or video. Three parts of the reading are separate:
+
+=item the syntax separates the address at the C<#>, and reads no further;
+=item the scheme resolves the source into content;
+=item the format of that content reads the address.
+
+A scheme may define the structure of its own address, and must then state so in
+its own description. If no such definition is given, the format reads the
+address.
+
+Within a selector operand the separator is the C<#>. The address is bounded by
+whitespace, carries none of the characters that structure a selection, and is
+never empty. A path containing a C<#> cannot be written there, and no escape is
+provided.
+
+If the scheme is omitted, it is read as C<file:>. The vertical bar required
+before a selection is then what tells a source from a block name:
+
+=begin code
+=include file:./guide.podlite#Overview
+=include article.podlite | head1
+=end code
+
+Within a link markup code the address is bounded by what ends the code. Three
+rules bound it, and they apply in this order:
+
+=item the vertical bar separates the link text;
+=item the first whitespace immediately followed by C<:> begins the configuration;
+=item the matching closing angle bracket or brackets end the code.
+
+What remains is the address: in C«L<the introduction|#intro :new>» it is C<#intro>.
+
+An address the format does not recognise does not resolve, and the outcome is
+told from two others:
+
+=for table :nested :caption('When an internal address does not resolve') :id<address_outcomes>
+ What happened                     What is reported
+ ===============================   ============================
+ the source did not resolve        an error of resolution
+ the format is unknown             an error of format
+ no such address for that format   the address does not resolve
+
+None of the three yields an empty result. A condition carrying a selector
+reports a match or a non-match only if resolution, column selection and
+decoding all succeed.
+
+If a C<data:> source reads one column, the address names it by the heading its
+MIME type declares present. If none is declared, no column has a name. Such an
+address is read only if the content is tabular: C<data:> reaches content of any
+kind, and against an image it does not resolve. For example, a column addressed
+by a declared heading:
+
+=begin code
+=begin data :key<statuses> :mime-type('text/tab-separated-values; header=present')
+value	label
+draft	Draft
+=end data
+
+| Invoice[ :status(in data:statuses#value) ]
+=end code
+
 =head3 Predicates
 
 A pattern may carry a D<predicate>. The predicate is written in square brackets
@@ -811,8 +877,8 @@ operand. Other values do not affect the outcome, as in:
 =end code
 
 A literal operand is a number or a value in quotation marks. Alternatively,
-a L<selector|#Selectors> supplies the values and is the sole operand. Where
-the operand is a selector, the condition holds when a value of the attribute
+a L<selector|#Selectors> supplies the values and is the sole operand. If the
+operand is a selector, the condition holds when a value of the attribute
 is one the selector yields:
 
 =begin code
@@ -828,8 +894,8 @@ a match or a non-match. Failure to resolve a source is an
 error; the source is not treated as empty. Such a failure establishes neither
 a match nor a non-match.
 
-Within an operand, a number sign separates an internal address from the
-path. A path containing that character cannot be written there.
+The rules for an internal address within an operand are stated in
+L<#Internal addresses>.
 
 =head3 Combining conditions
 
@@ -2580,7 +2646,7 @@ what a parser makes of it.
 The statements are written with L<selectors|#Selectors>. A test contains one or
 more C<=assert> blocks. It may contain C<=fixture> blocks, each a document an
 assertion of it may be resolved against under the rule stated below. It may
-contain C<=resource> blocks where the subject of the test is the resolution of a
+contain C<=resource> blocks if the subject of the test is the resolution of a
 path:
 
 =begin code :allow<B>
@@ -2611,7 +2677,7 @@ source.
 
 The body of a C<=fixture> is not processed by the document that holds it:
 nothing in it is read as that document's markup and nothing in it is resolved.
-It is still passed to the parser verbatim where an assertion is resolved
+It is still passed to the parser verbatim if an assertion is resolved
 against the fixture. Anything a test requires besides the body is declared as
 C<=resource> and is not written into the body.
 
@@ -2632,7 +2698,7 @@ one block, and fails when it matches none.
 =item With C<:absent>, the assertion holds when the selector matches no block,
 and fails when it matches one or more.
 
-Where a test contains several C<=assert> blocks, it passes when every assertion
+If a test contains several C<=assert> blocks, it passes when every assertion
 holds. Their order among themselves carries no meaning; position relative to a
 C<=fixture> decides which document an assertion takes.
 
@@ -2725,16 +2791,16 @@ current.
 Which document that is follows three cases in order:
 
 =item a document supplied to the implementation from outside;
-=item where none is supplied, the body of the C<=fixture> nearest preceding the
+=item if none is supplied, the body of the C<=fixture> nearest preceding the
 assertion;
-=item where neither is present, the document in which the test sits.
+=item if neither is present, the document in which the test sits.
 
-Where a document is supplied from outside, the bodies of C<=fixture> are not
+If a document is supplied from outside, the bodies of C<=fixture> are not
 read as the input of the test. That a supplied document happens to be the one
 containing the test does not change this.
 
 The file the tests are taken from is not a supplied document. A document is
-supplied only where the implementation is told to examine it, separately from
+supplied only if the implementation is told to examine it, separately from
 being told where to find the tests.
 
 A failure against a C<=fixture> is about the implementation: the text is fixed
@@ -2750,7 +2816,7 @@ matched.
 
 =head4 A document containing tests
 
-Where the document an assertion is resolved against is the one containing the
+If the document an assertion is resolved against is the one containing the
 test, the C<=test> blocks of that document are part of it and a selector reaches
 them: an assertion written over every block of a document matches the tests
 written in it.
@@ -3335,6 +3401,9 @@ separated from the preceding external address by a C<#>, unless the
 particular addressing scheme requires some other syntax. When new
 addressing schemes are created specifically for Podlite, it is strongly
 recommended that C<#> be used to mark the start of internal addresses.
+
+The rules for the internal address and the outcomes of reading it are stated
+in L<#Internal addresses>.
 
 Standard schemes include:
 
