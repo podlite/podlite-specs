@@ -34,6 +34,7 @@ This file is deliberately specified in Podlite format
     =item Allowed a value in parentheses or braces to span configuration lines.
     =item Described the empty forms of a value.
     =item Stated where a relative path resolves from in selector sources, images and links, and that including the document elsewhere does not change it.
+    =item Removed the claim that an internal address is written in the syntax of its scheme.
 
 =head2 v2.0
 
@@ -3392,15 +3393,12 @@ and cross-references (both internal and external).
 
 A link specification consists of a I<scheme specifier> terminated by a
 colon, followed by an I<external address> (in the scheme's preferred
-syntax), followed by an I<internal address> (again, in the scheme's syntax).
-All three components are optional, though at least one must be present in
-any link specification.
+syntax), followed by an I<internal address>. All three components are
+optional, though at least one must be present in any link specification.
 
-Usually, in schemes where an internal address makes sense, it will be
-separated from the preceding external address by a C<#>, unless the
-particular addressing scheme requires some other syntax. When new
-addressing schemes are created specifically for Podlite, it is strongly
-recommended that C<#> be used to mark the start of internal addresses.
+When new addressing schemes are created specifically for Podlite, it is
+strongly recommended that C<#> be used to mark the start of internal
+addresses.
 
 The rules for the internal address and the outcomes of reading it are stated
 in L<#Internal addresses>.
