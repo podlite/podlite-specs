@@ -35,6 +35,7 @@ This file is deliberately specified in Podlite format
     =item Described the empty forms of a value.
     =item Stated where a relative path resolves from in selector sources, images and links, and that including the document elsewhere does not change it.
     =item Removed the claim that an internal address is written in the syntax of its scheme.
+    =item Stated that a predicate tests the configuration in effect for a block, that a C<=config> reaches neither earlier blocks nor another file, and which C<=set> wins on the first included block.
 
 =head2 v2.0
 
@@ -736,7 +737,9 @@ draft	Draft
 =head3 Predicates
 
 A pattern may carry a D<predicate>. The predicate is written in square brackets
-after the block name. It tests the configuration of a block. A block is
+after the block name. It tests the configuration in effect for a block,
+including options supplied by C<=config> and C<=set>, and does not distinguish
+them from options written on the block. A block is
 selected when its name matches the pattern and every condition of the
 predicate holds.
 
@@ -3974,7 +3977,9 @@ The general syntax for configuration directives is:
 A C<=config> is a directive, not a block. Hence,
 there is no paragraph or delimited form of the C<=config> directive.
 Each C<=config> specification is lexically scoped to the surrounding
-block or file in which it is specified.
+block or file in which it is specified. It applies to the blocks of its type
+that follow it within that scope, and not to blocks of another file, whether
+included or read by a selector.
 
 Note that, if a particular block later explicitly specifies a
 configuration option with the same key, that option overrides the
@@ -4093,6 +4098,9 @@ intervening directives and C<=comment>.
 For C<=include>, attributes apply to the first block of the resolved
 included content. C<=set> directives inside an included file are
 lexically scoped to that file and do not leak to the parent file.
+On the first block of the resolved included content, C<=set> assignments
+accumulated before C<=include> override those of the same key from the included
+file.
 
 If no block follows before the end of the containing block or file,
 parsers issue a warning that the C<=set> directive has no target.
