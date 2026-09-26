@@ -24,6 +24,8 @@ This file is deliberately specified in Podlite format
     =item Described C<=test> blocks with selector assertions, and their C<=fixture>, C<=assert> and C<=resource> children.
     =item Described predicates in selectors: the operators, the outcome for empty and absent values, membership, and the combination of conditions.
     =item Described the universal pattern, which matches a block of any name.
+    =item Added tests for the block frame: the three forms of a block, where a block ends, the virtual margin, and indentation as code.
+    =item Added a list of the tests at the end of the specification.
 
 =head3 Changed:
     =item Described a selector pattern as a block name or the universal C<*> followed by an optional predicate.
@@ -140,6 +142,30 @@ determined by the indentation of its opening delimiter.
 In other words, if a directive is indented from the left margin, the
 column at which the first character of its opening delimiter appears is
 thereafter considered the first column of the entire block's contents.
+
+=begin test :id<indented-directive-sets-the-virtual-margin> :caption('an indented directive sets the first column of its block')
+=begin fixture
+=begin pod
+    =begin nested :v<1>
+    Text at the column of the directive.
+    =end nested
+=end pod
+=end fixture
+=for assert :caption('the indented directive is recognised')
+nested[ :v<1> ]
+=for assert :absent :caption('text at the virtual margin is not indented and forms no code block')
+code
+
+=begin fixture
+=begin pod
+    =begin nested :v<2>
+        Text indented past the column of the directive.
+    =end nested
+=end pod
+=end fixture
+=for assert :caption('text indented past the virtual margin is a code block')
+code
+=end test
 
 The virtual margin treats leading tabs as aligning to tabstops spaced 
 every C<($?TABSTOP // 8)> characters.
@@ -261,6 +287,18 @@ L<code blocks|#Code blocks>. Indented text is only treated as code within
 C<=pod>, L<C<=nested>|#Nesting blocks>, L<C<=item>|#Lists>, C<=code>,
 and L<semantic|#Semantic blocks> blocks.
 
+=begin test :id<indented-text-in-para-is-not-code> :caption('indented contents of a =para block are not treated as code')
+=begin fixture
+=begin para :x<1>
+    indented body
+=end para
+=end fixture
+=for assert :caption('the block is read with its configuration')
+para[ :x<1> ]
+=for assert :absent :caption('no code block arises inside it')
+code
+=end test
+
 The general syntax is:
 
 =begin code :allow< R >
@@ -311,7 +349,41 @@ Paragraph blocks are introduced by a C<=for> marker and terminated by
 the next Podlite directive or the first blank line (which is I<not>
 considered to be part of the block's contents). The C<=for> marker is
 followed by the name of the block and optional configuration
-information. The general syntax is:
+information.
+
+=begin test :id<blank-line-ends-a-for-block> :caption('a blank line ends a block introduced by =for')
+=begin fixture
+=begin pod
+=for head2
+Title
+
+Text after the blank line.
+=end pod
+=end fixture
+=for assert :caption('the blank line ends the heading; the text after it lies between blocks and is a para block')
+para
+
+=begin fixture
+=begin pod
+=for head2
+Title
+Text on the next line.
+=end pod
+=end fixture
+=for assert :absent :caption('without the blank line the text is part of the contents of the heading and no para block arises')
+para
+=end test
+
+=begin test :id<for-marker-carries-configuration> :caption('a =for marker carries configuration for its block')
+=begin fixture
+=for para :x<1>
+text
+=end fixture
+=for assert
+para[ :x<1> ]
+=end test
+
+The general syntax is:
 
 =begin code :allow< R >
      =for R<BLOCK_TYPE>  R<OPTIONAL CONFIG INFO>
@@ -344,8 +416,30 @@ Abbreviated blocks are introduced by an C<'='> sign in the
 first column, which is followed immediately by the typename of the
 block. The rest of the line is treated as block data, rather than as
 configuration. The content terminates at the next Podlite directive or the
-first blank line (which is not part of the block data). The general
-syntax is:
+first blank line (which is not part of the block data).
+
+=begin test :id<blank-line-ends-an-abbreviated-block> :caption('a blank line ends an abbreviated block')
+=begin fixture
+=begin pod
+=head2 Title
+
+Text after the blank line.
+=end pod
+=end fixture
+=for assert :caption('the blank line ends the heading; the text after it lies between blocks and is a para block')
+para
+
+=begin fixture
+=begin pod
+=head2 Title
+Text on the next line.
+=end pod
+=end fixture
+=for assert :absent :caption('without the blank line the text is part of the contents of the heading and no para block arises')
+para
+=end test
+
+The general syntax is:
 
 =begin code :allow< R >
      =R<BLOCK_TYPE>  R<BLOCK DATA>
@@ -370,6 +464,16 @@ For example:
 Note that abbreviated blocks cannot specify configuration information. If
 configuration is required, use a C<=for> or C<=begin>/C<=end> instead.
 
+=begin test :id<abbreviated-line-is-data> :caption('the rest of an abbreviated line is data, not configuration')
+=begin fixture
+=para :x<1> text
+=end fixture
+=for assert :caption('the block is recognised')
+para
+=for assert :absent :caption('no configuration is read from the line')
+para[ :?x ]
+=end test
+
 
 =head3 Block equivalence
 
@@ -379,6 +483,29 @@ It is possible to choose the form is most convenient for a particular
 documentation task. In the descriptions that follow, the abbreviated
 form will generally be used, but should be read as standing for all
 three forms equally.
+
+=begin test :id<three-forms-yield-one-block-name> :caption('each of the three forms yields a head2 block; the test does not tell the forms apart')
+=begin fixture
+=begin head2
+Title
+=end head2
+=end fixture
+=for assert
+head2
+
+=begin fixture
+=for head2
+Title
+=end fixture
+=for assert
+head2
+
+=begin fixture
+=head2 Title
+=end fixture
+=for assert
+head2
+=end test
 
 For example, although L<#Headings> shows only:
 
@@ -1139,6 +1266,16 @@ For example:
 
 Implicit code blocks may only be used within C<=pod>, C<=item>, C<=defn>,
 C<=nested>, or L<semantic|#Semantic blocks> blocks.
+
+=begin test :id<indented-text-in-nested-is-code> :caption('indented text inside =nested is a code block; the fixture has no =code, so only the implicit block can match')
+=begin fixture
+=begin nested
+    indented text
+=end nested
+=end fixture
+=for assert
+code
+=end test
 
 There is also an explicit C<=code> block (which can be specified within
 I<any> other block type, not just C<=pod>, C<=item>, etc.):
@@ -4337,6 +4474,9 @@ icons that indicate the significance of the content.
 =end table
 
 =end SUMMARY
+
+=for toc :caption('Tests')
+test
 
 =LICENSE Artistic license 2.0
 
