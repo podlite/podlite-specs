@@ -25,6 +25,7 @@ This file is deliberately specified in Podlite format
     =item Described predicates in selectors: the operators, the outcome for empty and absent values, membership, and the combination of conditions.
     =item Described the universal pattern, which matches a block of any name.
     =item Added tests for the block frame, kept in files under C<t/> and included after the rules they check: the three forms of a block, where a block ends, the virtual margin, and indentation as code.
+    =item Added tests for block configuration, kept in files under C<t/> and included after the rules they check: the notations of a value, empty values, continuation lines, the C<:nested> and C<:lang> options, and the language of a Markdown fence.
     =item Added a list of the tests at the end of the specification.
 
 =head3 Changed:
@@ -224,6 +225,8 @@ any of:
  Hash, identifier keys    C«:key{:a<x>, :b(42), :c}»   C«:key{a=>1, b=>'str', c=>True}»
  Hash, other keys         C«:key{1=>'x', 2=>'y'}»
 
+=include file:./t/delimited-blocks.podlite#whitespace-in-angles-makes-a-list
+
 The first column of the table names the kind of the value. A rule that refers
 to the kind of a value refers to these names.
 
@@ -239,9 +242,15 @@ string C<a,b>. Quotation marks delimit a string and suppress separation by
 whitespace, which makes C<< :key<'a b'> >> a string. Guillemets are not
 quotation marks and are retained as part of the value.
 
+=include file:./t/delimited-blocks.podlite#comma-in-angles-stays-in-the-value
+
+=include file:./t/delimited-blocks.podlite#quotes-make-one-string
+
 A delimiter with nothing inside it carries the empty value of its kind, so
 C<< :key<> >> and C<:key()> are an empty list and C<:key{}> is an empty hash.
 An empty string is written with quotation marks, as C<:key('')>.
+
+=include file:./t/delimited-blocks.podlite#empty-values-exist-and-are-empty
 
 Apart from C<True> and C<False>, an unquoted word is not a valid element of a
 parenthesised list or value of a hash entry. Inside braces an option is read
@@ -257,6 +266,12 @@ starting those lines with an C<=> in the first (virtual) column followed
 by a whitespace character. A value in parentheses or braces may continue on
 such a line. A value in angle brackets or in quotation marks ends with its
 line.
+
+=include file:./t/delimited-blocks.podlite#continuation-line-carries-configuration
+
+=include file:./t/delimited-blocks.podlite#value-in-parentheses-continues
+
+=include file:./t/delimited-blocks.podlite#angle-value-ends-with-its-line
 
 The lines following the opening delimiter and configuration are the
 data or contents of the block, which continue until the block's matching
@@ -503,6 +518,8 @@ Note that C<:!nested> could also be used for this purpose:
 =end code
 
 =end defn
+
+=include file:./t/standard-configuration-options.podlite#nested-takes-a-level
 
 =begin defn
 C<:numbered>
@@ -1228,6 +1245,8 @@ The C<:lang> attribute will be used to provide information about the
 programming language used in a particular block of code. This helps
 in ensuring that the code is correctly rendered and interpreted by the
 renderers or syntax highlighting tools.
+
+=include file:./t/assign-programming-language-to-code-blocks.podlite#lang-names-the-language
 
 For example:
 
@@ -3007,6 +3026,8 @@ attributes following the language identifier. The language identifier on the
 opening fence line maps directly to the C<:lang> attribute of the native
 C<=code> block.
 
+=include file:./t/fenced-code-block-attributes.podlite#fence-language-becomes-lang
+
 =begin code :allow<B> :lang<markdown>
   B<```python>
   def hello():
@@ -3025,6 +3046,8 @@ This fenced code block is semantically equivalent to:
 
 Both backtick (C<```>) and tilde (C<~~~>) fence delimiters are supported.
 The two forms are semantically identical.
+
+=include file:./t/fenced-code-block-attributes.podlite#tilde-fence-is-a-fence
 
 Extended attributes may be specified after the language identifier using
 standard Podlite configuration syntax:

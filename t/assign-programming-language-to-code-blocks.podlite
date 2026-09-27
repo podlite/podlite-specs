@@ -1,0 +1,9 @@
+=begin test :id<lang-names-the-language> :caption('the :lang option carries the language of a code block')
+=begin fixture
+=begin code :lang<raku>
+say 1;
+=end code
+=end fixture
+=for assert
+code[ :lang<raku> ]
+=end test

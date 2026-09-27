@@ -1,0 +1,23 @@
+=begin test :id<fence-language-becomes-lang> :caption('the language on an opening fence becomes the :lang of a code block')
+=begin fixture
+=begin markdown
+```python
+print(1)
+```
+=end markdown
+=end fixture
+=for assert
+code[ :lang<python> ]
+=end test
+
+=begin test :id<tilde-fence-is-a-fence> :caption('a tilde fence is read as a backtick fence is')
+=begin fixture
+=begin markdown
+~~~rust
+fn main() {}
+~~~
+=end markdown
+=end fixture
+=for assert
+code[ :lang<rust> ]
+=end test

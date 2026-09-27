@@ -1,0 +1,17 @@
+=begin test :id<nested-takes-a-level> :caption('the value of :nested is read as a level or as false; only the value is checked')
+=begin fixture
+=begin para :nested(3)
+text
+=end para
+=end fixture
+=for assert :caption('the attribute has the value 3')
+para[ :nested(3) ]
+
+=begin fixture
+=begin code :!nested
+text
+=end code
+=end fixture
+=for assert :caption('the negated form gives the value false')
+code[ :!nested ]
+=end test

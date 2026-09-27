@@ -9,3 +9,84 @@ para[ :x<1> ]
 =for assert :absent :caption('no code block arises inside it')
 code
 =end test
+
+=begin test :id<whitespace-in-angles-makes-a-list> :caption('whitespace inside angle brackets separates the elements of a list')
+=begin fixture
+=for para :k<a b>
+text
+=end fixture
+=for assert :caption('both elements are values of the attribute')
+para[ :k~<a b> ]
+=for assert :absent :caption('the value is not one string holding the space')
+para[ :k<'a b'> ]
+=end test
+
+=begin test :id<comma-in-angles-stays-in-the-value> :caption('a comma inside angle brackets is part of the value')
+=begin fixture
+=for para :k<a,b>
+text
+=end fixture
+=for assert :caption('the value is the string a,b')
+para[ :k<a,b> ]
+=for assert :absent :caption('the comma does not separate elements')
+para[ :k~<a> ]
+=end test
+
+=begin test :id<quotes-make-one-string> :caption('quotation marks inside angle brackets make one string')
+=begin fixture
+=for para :k<'a b'>
+text
+=end fixture
+=for assert :caption('the value is the string a b')
+para[ :k('a b') ]
+=for assert :absent :caption('the space does not separate elements')
+para[ :k~<a> ]
+=end test
+
+=begin test :id<empty-values-exist-and-are-empty> :caption('an empty delimiter carries the empty value of its kind')
+=begin fixture
+=for para :l<> :p() :h{} :s('')
+text
+=end fixture
+=for assert :caption('each empty value exists')
+para[ :?l :?p :?h :?s ]
+=for assert :absent :caption('an empty value fails the test for a value neither empty nor false')
+para[ :l ], para[ :p ], para[ :h ], para[ :s ]
+=for assert :absent :caption('an empty value is not the value false')
+para[ :!l ], para[ :!p ], para[ :!h ], para[ :!s ]
+=end test
+
+=begin test :id<continuation-line-carries-configuration> :caption('configuration continues on a line that starts with = and whitespace')
+=begin fixture
+=begin para :one<a>
+= :two<b>
+text
+=end para
+=end fixture
+=for assert
+para[ :one<a> :two<b> ]
+=end test
+
+=begin test :id<value-in-parentheses-continues> :caption('a value in parentheses continues on the next configuration line')
+=begin fixture
+=begin para :nums(1, 2,
+= 3, 4)
+text
+=end para
+=end fixture
+=for assert :caption('an element written on the continuation line belongs to the value')
+para[ :nums(in 4) ]
+=end test
+
+=begin test :id<angle-value-ends-with-its-line> :caption('a value in angle brackets ends with its line')
+=begin fixture
+=begin para :k<a
+= :ok<b>
+text
+=end para
+=end fixture
+=for assert :caption('reading of the configuration continues after the unclosed value')
+para[ :ok<b> ]
+=for assert :absent :caption('the unclosed value is discarded with its attribute')
+para[ :?k ]
+=end test
