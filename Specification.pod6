@@ -41,6 +41,7 @@ This file is deliberately specified in Podlite format
     =item Removed the claim that an internal address is written in the syntax of its scheme.
     =item Stated that a predicate tests the configuration in effect for a block, that a C<=config> reaches neither earlier blocks nor another file, and which C<=set> wins on the first included block.
     =item Stated that the implicit C<=pod> of a file is not a block a selector reaches.
+    =item Stated that an included block brings all its content and that a block found inside another found block is included once.
 
 =head2 v2.0
 
@@ -2596,6 +2597,11 @@ content to be included.
 The blocks that the C<=include> directive resolves to take the place of the
 directive in the document that contains it, and selectors applied to that
 document, including the selector of a table of contents, reach them.
+
+A found block brings its content with it, whether or not the blocks within it
+match the selector. A block contained in another found block is not placed a
+second time: the included content consists of the found blocks that no other
+found block contains, in document order.
 
 Relative C<file:> sources follow the resolution rule in L<#Selectors>.
 
