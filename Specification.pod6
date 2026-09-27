@@ -40,6 +40,7 @@ This file is deliberately specified in Podlite format
     =item Stated where a relative path resolves from in selector sources, images and links, and that including the document elsewhere does not change it.
     =item Removed the claim that an internal address is written in the syntax of its scheme.
     =item Stated that a predicate tests the configuration in effect for a block, that a C<=config> reaches neither earlier blocks nor another file, and which C<=set> wins on the first included block.
+    =item Stated that the implicit C<=pod> of a file is not a block a selector reaches.
 
 =head2 v2.0
 
@@ -191,6 +192,11 @@ in a C<=pod> block:
 
 The contents of files with the extensions C<.podlite> and C<.pod6> are 
 implicitly wrapped in a C<=pod> directive.
+
+The implicit wrapper establishes the mode of parsing and is not a block that a
+selector reaches. A selector applied to such a file finds only the blocks written
+in it, so C<file:./part.podlite | pod> selects nothing when the file contains no
+explicit C<=pod> block.
 
 For C<.md> and C<.markdown> files, the parser operates in D<"Markdown" 
 mode|Markdown mode; parser modes> for the entire file, treating all 
