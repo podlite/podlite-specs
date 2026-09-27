@@ -43,6 +43,7 @@ This file is deliberately specified in Podlite format
     =item Stated that the implicit C<=pod> of a file is not a block a selector reaches.
     =item Stated that an included block brings all its content and that a block found inside another found block is included once.
     =item Stated that a predicate tests the block itself and that a selected block keeps its content, with an example of a negated condition.
+    =item Stated that the selector of a table of contents is applied to the document the block is in.
 
 =head2 v2.0
 
@@ -2533,6 +2534,7 @@ in a document. The TOC is an index of section titles within the document,
 and its structure is determined by the document's organization. 
 
 The first non-blank line of C<=toc> content is treated as a L<selector|#Selectors>.
+The selector is applied to the document the block is in; a selector naming a source lists nothing.
 
 For example:
 
