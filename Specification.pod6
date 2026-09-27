@@ -42,6 +42,7 @@ This file is deliberately specified in Podlite format
     =item Stated that a predicate tests the configuration in effect for a block, that a C<=config> reaches neither earlier blocks nor another file, and which C<=set> wins on the first included block.
     =item Stated that the implicit C<=pod> of a file is not a block a selector reaches.
     =item Stated that an included block brings all its content and that a block found inside another found block is included once.
+    =item Stated that a predicate tests the block itself and that a selected block keeps its content, with an example of a negated condition.
 
 =head2 v2.0
 
@@ -804,6 +805,25 @@ same thing in a declaration and in a predicate.
  C«[ :attr(in V,W) ]»     a value of the attribute is any of the operands
 
 Predicates are case-sensitive. No adjustment to case is provided.
+
+A predicate tests the block it is applied to, not the blocks within it. A
+selected block keeps all of its content, and a negated condition does not remove
+the blocks within it that fail the condition. In the following file, the
+C<=pod> block has no C<:draft> option and is selected by C<*[ :!?draft ]>, and
+the draft paragraph is brought in with it:
+
+=begin code
+=begin pod
+=for para :draft
+Unfinished text.
+
+=para Finished text.
+=end pod
+=end code
+
+=begin code
+=include file:./part.podlite | *[ :!?draft ]
+=end code
 
 A value containing whitespace is written in quotation marks, as it is in a
 L<declaration|#configuration_syntax>:
