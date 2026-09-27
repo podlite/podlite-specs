@@ -1,0 +1,23 @@
+=begin test :id<indented-directive-sets-the-virtual-margin> :caption('an indented directive sets the first column of its block')
+=begin fixture
+=begin pod
+    =begin nested :v<1>
+    Text at the column of the directive.
+    =end nested
+=end pod
+=end fixture
+=for assert :caption('the indented directive is recognised')
+nested[ :v<1> ]
+=for assert :absent :caption('text at the virtual margin is not indented and forms no code block')
+code
+
+=begin fixture
+=begin pod
+    =begin nested :v<2>
+        Text indented past the column of the directive.
+    =end nested
+=end pod
+=end fixture
+=for assert :caption('text indented past the virtual margin is a code block')
+code
+=end test

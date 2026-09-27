@@ -1,0 +1,30 @@
+=begin test :id<blank-line-ends-an-abbreviated-block> :caption('a blank line ends an abbreviated block')
+=begin fixture
+=begin pod
+=head2 Title
+
+Text after the blank line.
+=end pod
+=end fixture
+=for assert :caption('the blank line ends the heading; the text after it lies between blocks and is a para block')
+para
+
+=begin fixture
+=begin pod
+=head2 Title
+Text on the next line.
+=end pod
+=end fixture
+=for assert :absent :caption('without the blank line the text is part of the contents of the heading and no para block arises')
+para
+=end test
+
+=begin test :id<abbreviated-line-is-data> :caption('the rest of an abbreviated line is data, not configuration')
+=begin fixture
+=para :x<1> text
+=end fixture
+=for assert :caption('the block is recognised')
+para
+=for assert :absent :caption('no configuration is read from the line')
+para[ :?x ]
+=end test

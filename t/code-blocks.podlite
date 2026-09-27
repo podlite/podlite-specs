@@ -1,0 +1,9 @@
+=begin test :id<indented-text-in-nested-is-code> :caption('indented text inside =nested is a code block; the fixture has no =code, so only the implicit block can match')
+=begin fixture
+=begin nested
+    indented text
+=end nested
+=end fixture
+=for assert
+code
+=end test

@@ -1,0 +1,31 @@
+=begin test :id<blank-line-ends-a-for-block> :caption('a blank line ends a block introduced by =for')
+=begin fixture
+=begin pod
+=for head2
+Title
+
+Text after the blank line.
+=end pod
+=end fixture
+=for assert :caption('the blank line ends the heading; the text after it lies between blocks and is a para block')
+para
+
+=begin fixture
+=begin pod
+=for head2
+Title
+Text on the next line.
+=end pod
+=end fixture
+=for assert :absent :caption('without the blank line the text is part of the contents of the heading and no para block arises')
+para
+=end test
+
+=begin test :id<for-marker-carries-configuration> :caption('a =for marker carries configuration for its block')
+=begin fixture
+=for para :x<1>
+text
+=end fixture
+=for assert
+para[ :x<1> ]
+=end test

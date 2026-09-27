@@ -1,0 +1,22 @@
+=begin test :id<three-forms-yield-one-block-name> :caption('each of the three forms yields a head2 block; the test does not tell the forms apart')
+=begin fixture
+=begin head2
+Title
+=end head2
+=end fixture
+=for assert
+head2
+
+=begin fixture
+=for head2
+Title
+=end fixture
+=for assert
+head2
+
+=begin fixture
+=head2 Title
+=end fixture
+=for assert
+head2
+=end test

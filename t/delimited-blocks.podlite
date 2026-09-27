@@ -1,0 +1,11 @@
+=begin test :id<indented-text-in-para-is-not-code> :caption('indented contents of a =para block are not treated as code')
+=begin fixture
+=begin para :x<1>
+    indented body
+=end para
+=end fixture
+=for assert :caption('the block is read with its configuration')
+para[ :x<1> ]
+=for assert :absent :caption('no code block arises inside it')
+code
+=end test
