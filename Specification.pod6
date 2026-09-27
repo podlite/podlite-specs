@@ -28,6 +28,7 @@ This file is deliberately specified in Podlite format
     =item Added a list of the tests at the end of the specification.
 
 =head3 Changed:
+    =item Described how blocks and tests brought in by C<=include> belong to the including document.
     =item Described a selector pattern as a block name or the universal C<*> followed by an optional predicate.
     =item Named the kind of a value in the block configuration table.
     =item Distinguished the two hash notations by the keys each admits.
@@ -2683,6 +2684,10 @@ content rather than containing it directly.
 The C<=include> directive is followed by a L<"Selector"|#Selectors> that specifies the
 content to be included.
 
+The blocks that the C<=include> directive resolves to take the place of the
+directive in the document that contains it, and selectors applied to that
+document, including the selector of a table of contents, reach them.
+
 Relative C<file:> sources follow the resolution rule in L<#Selectors>.
 
 In this example, the content of the file C<chapter01.pod6> located in the 
@@ -2961,6 +2966,14 @@ If the document an assertion is resolved against is the one containing the
 test, the C<=test> blocks of that document are part of it and a selector reaches
 them: an assertion written over every block of a document matches the tests
 written in it.
+
+When an implementation is given a file from which to obtain tests, the C<=test>
+blocks of that file are obtained after its C<=include> directives are resolved.
+A C<=test> block obtained more than once, from different files given for a single
+execution of the tests, is run once, if each time it is obtained each of its
+assertions is resolved against a C<=fixture> or against a source it names. Blocks
+so obtained are one block if they originate from the same C<=test> block in the
+file in which it is written.
 
 Walking a document does not run the tests found in it. An implementation
 resolves the assertions of the test it was given, and a C<=test> block met while
@@ -3728,7 +3741,7 @@ The scheme name may also be omitted in that case:
 Podlite includes the possibility of assigning a unique identifier to a block.
 These identifiers can be explicitly assigned to any blocks using 
 the C<:id> attribute. Later, these identifiers are utilized for addressing blocks
-and creating links.
+and creating links. An identifier that occurs twice in a document is an error.
 
 =begin code :allow<B>
   =for head1 :id<intro>
