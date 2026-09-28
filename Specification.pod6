@@ -47,6 +47,7 @@ This file is deliberately specified in Podlite format
     =item Allowed a C<:mime-type> written on C<=data-table> to override the format of a C<data:> source.
     =item Stated that a test obtained under different configurations is run under each.
     =item Stated that the rule governs if a test of this specification differs from it.
+    =item Stated which content counts as external for the warning about included content.
     =item Stated that the implicit C<=pod> of a file is not a block a selector reaches.
     =item Stated that an included block brings all its content and that a block found inside another found block is included once.
     =item Stated that a predicate tests the block itself and that a selected block keeps its content, with an example of a negated condition.
@@ -2693,7 +2694,10 @@ The C<:mime-type> attribute lets the parser handle files whose extension
 does not match their actual type.
 
 External content can introduce vulnerabilities such as code injection.
-Tools displaying included content should provide warnings.
+Tools displaying included content should provide warnings. For this
+warning, content is external when it comes from a remote source or from a
+file outside the root directory the tool specifies. Blocks of the same
+document are not external. The warning names the source.
 
 C<=set> directives accumulated before C<=include> apply to the first
 block of the resolved included content (resolution-time targeting).
