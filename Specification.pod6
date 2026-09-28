@@ -52,6 +52,7 @@ This file is deliberately specified in Podlite format
     =item Stated that a predicate tests the block itself and that a selected block keeps its content, with an example of a negated condition.
     =item Stated that the selector of a table of contents is applied to the document the block is in.
     =item Stated where C<=set> assignments before an C<=include> go when it brings no block or fails to resolve.
+    =item Stated that an C<=alias> is scoped to its file and reaches blocks placed there by C<=include>.
 
 =head2 v2.0
 
@@ -4264,7 +4265,8 @@ L<C<A<> markup code>|#Alias placements>.
 Note that C<=alias> is a fundamental Podlite directive, like C<=begin> or
 C<=for>; there are no equivalent paragraph or delimited forms.
 
-Macro aliases are lexically scoped to the surrounding Podlite block.
+Macro aliases are lexically scoped to the surrounding Podlite block or file,
+including blocks placed there by C<=include>.
 
 The simplest form of alias takes two arguments. The first is an
 identifier (which is usually specified in uppercase, though this is
