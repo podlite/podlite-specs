@@ -29,3 +29,39 @@ text
 =for assert
 para[ :x<1> ]
 =end test
+
+=begin test :id<item-text-is-an-ordinary-paragraph> :caption('the text of an item is a para block in each of the three forms')
+=begin fixture
+=config para :x<1>
+=item Abbreviated item text
+=end fixture
+=for assert :caption('the text on the directive line of an abbreviated item is a para block and gets the value 1 from =config')
+para[ :x<1> ]
+
+=begin fixture
+=config para :x<1>
+=item Abbreviated item text
+continued abbreviated item text
+=end fixture
+=for assert :caption('the text of the abbreviated item with a continuation line is a para block and gets the value 1 from =config')
+para[ :x<1> ]
+
+=begin fixture
+=config para :x<1>
+=for item
+For item text
+continued for item text
+=end fixture
+=for assert :caption('the text of the =for item is a para block and gets the value 1 from =config')
+para[ :x<1> ]
+
+=begin fixture
+=config para :x<1>
+=begin item
+Delimited item text
+continued delimited item text
+=end item
+=end fixture
+=for assert :caption('the text of the delimited item is a para block and gets the value 1 from =config')
+para[ :x<1> ]
+=end test

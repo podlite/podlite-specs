@@ -49,6 +49,7 @@ This file is deliberately specified in Podlite format
     =item Stated that the rule governs if a test of this specification differs from it.
     =item Stated which content counts as external for the warning about included content.
     =item Stated which blocks give a document its name for the C<doc:> scheme, and that a name two documents carry does not resolve.
+    =item Stated that text on the directive line of an abbreviated C<=item> is an ordinary paragraph of the item.
     =item Stated that the implicit C<=pod> of a file is not a block a selector reaches.
     =item Stated that an included block brings all its content and that a block found inside another found block is included once.
     =item Stated that a predicate tests the block itself and that a selected block keeps its content, with an example of a negated condition.
@@ -1197,6 +1198,11 @@ As the previous example implies, when any form of explicit C<=para> block
 is used, any whitespace at the start of each line is removed during rendering.
 In addition, within a delimited C<=begin para>/C<=end para> block, any
 blank lines are preserved.
+
+In an abbreviated C<=item>, text that begins on the directive line, together
+with the lines that continue it, is an ordinary paragraph of that item.
+
+=include file:./t/paragraph-blocks.podlite#item-text-is-an-ordinary-paragraph
 
 
 =head3 Code blocks
