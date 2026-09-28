@@ -1,0 +1,34 @@
+=begin test :id<include-selector-reads-the-source> :caption('a selector on =include reads its source without the configuration of the including document')
+=begin resource :name<part.podlite>
+=para Plain.
+=end resource
+=begin fixture
+=config para :v<1>
+=include file:./part.podlite | para[ :v<1> ]
+
+=for para :src<own>
+After.
+=end fixture
+=for assert :caption('the paragraph of the including document is present')
+para[ :src<own> ]
+=for assert :absent :caption('the source paragraph without a value for :v is not included')
+para[ :!?src ]
+=end test
+
+=begin test :id<selector-reads-nested-includes> :caption('a selector reads a source whose own includes and configuration are resolved')
+=begin resource :name<leaf.podlite>
+=para Leaf.
+=end resource
+=begin resource :name<part.podlite>
+=config para :v<part>
+=include file:./leaf.podlite
+=end resource
+=begin fixture
+=config para :v<book>
+=include file:./part.podlite | para[ :v<part> ]
+=end fixture
+=for assert :caption('the nested included paragraph is selected with the value part')
+para[ :v<part> ]
+=for assert :absent :caption('the value book from the including document does not replace the value part')
+para[ :v<book> ]
+=end test

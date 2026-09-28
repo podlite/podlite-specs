@@ -26,6 +26,7 @@ This file is deliberately specified in Podlite format
     =item Described the universal pattern, which matches a block of any name.
     =item Added tests for the block frame, kept in files under C<t/> and included after the rules they check: the three forms of a block, where a block ends, the virtual margin, and indentation as code.
     =item Added tests for block configuration, kept in files under C<t/> and included after the rules they check: the notations of a value, empty values, continuation lines, the C<:nested> and C<:lang> options, and the language of a Markdown fence.
+    =item Added tests for configuration precedence and for C<=config>, C<=set> and selectors across C<=include>.
     =item Added a list of the tests at the end of the specification.
 
 =head3 Changed:
@@ -39,7 +40,13 @@ This file is deliberately specified in Podlite format
     =item Described the empty forms of a value.
     =item Stated where a relative path resolves from in selector sources, images and links, and that including the document elsewhere does not change it.
     =item Removed the claim that an internal address is written in the syntax of its scheme.
-    =item Stated that a predicate tests the configuration in effect for a block, that a C<=config> reaches neither earlier blocks nor another file, and which C<=set> wins on the first included block.
+    =item Stated that a predicate tests the configuration in effect for a block.
+    =item Stated configuration precedence and made C<=set> assignments in an included file override those accumulated before C<=include>.
+    =item Made C<=config> reach blocks brought in by C<=include>, which changes the reading of documents written under the earlier rule, with no transition period.
+    =item Stated that the default language of a code block comes from its source file.
+    =item Allowed a C<:mime-type> written on C<=data-table> to override the format of a C<data:> source.
+    =item Stated that a test obtained under different configurations is run under each.
+    =item Stated that the rule governs if a test of this specification differs from it.
     =item Stated that the implicit C<=pod> of a file is not a block a selector reaches.
     =item Stated that an included block brings all its content and that a block found inside another found block is included once.
     =item Stated that a predicate tests the block itself and that a selected block keeps its content, with an example of a negated condition.
@@ -542,7 +549,8 @@ The numbering conventions for headings and lists are specified in those
 sections, but it is up to individual renderers to decide how to display
 any numbering associated with other types of blocks.
 
-Note that numbering is never explicit; it is always implied by context.
+Note that numbering is never explicit; it is always implied by context. For a
+block placed by C<=include>, the context is the document it is placed in.
 
 =end defn
 
@@ -623,8 +631,8 @@ values for the C<:lang> attribute:
 
 =end table
 
-If the language is not specified, the default language is used based 
-on the file extension or mime type of the current document.
+If the language is not specified, the default language is used based on the
+file extension or MIME type of the file in which the block is written.
 
 =end defn
 
@@ -715,6 +723,13 @@ A relative path in a C<file:> source of a selector resolves against the file in
 which that source is written, not the parent including document. This also
 applies to a selector used as an operand of C<in>. Within tests, the rules in
 L<#Test blocks> also apply.
+
+A selector whose source is another file is applied without the configuration
+in effect in the document containing the selector.
+
+=include file:./t/selectors.podlite#include-selector-reads-the-source
+
+=include file:./t/selectors.podlite#selector-reads-nested-includes
 
 =head3 Internal addresses
 
@@ -2170,9 +2185,11 @@ listed codes are interpreted after the cell is parsed from CSV or
 TSV. Without C<:allow>, cell content is plain text.
 
 The C<:mime-type> option declares the format. With C<:src<data:X>>,
-C<:mime-type> is inherited from the referenced block; declaring it
-on C<=data-table> in this case produces an error. With
-C<:src<file:X.ext>>, C<:mime-type> may be omitted and is inferred
+the format is taken from the referenced block unless a C<:mime-type>
+written on C<=data-table> overrides it. A C<:mime-type> supplied by
+C<=config> does not override the referenced format.
+
+With C<:src<file:X.ext>>, C<:mime-type> may be omitted and is inferred
 from the file extension. With C<:src<http:>> or C<:src<https:>>,
 C<:mime-type> may be omitted and is inferred from the HTTP
 C<Content-Type> response header. For inline body, C<:mime-type> is
@@ -2198,7 +2215,8 @@ the default. For example:
 =end code
 
 Relative paths in C<file:> URIs resolve against the file declaring
-the directive, not the parent including document.
+the directive, not the parent including document. For a URI supplied by
+C<=config>, this is the file declaring that C<=config>.
 
 The C<:src> option and inline body content are mutually exclusive;
 declaring both produces an error at parse time.
@@ -2352,8 +2370,8 @@ C<:src<file:X.ext>>, the format is inferred from the file extension
 via the MIME extension table below; matching is case-insensitive and
 multi-dot filenames use the last extension component. With
 C<:src<http:>> or C<:src<https:>>, the format is inferred from the
-HTTP C<Content-Type> response header. With C<:src<data:X>>, the MIME
-type is inherited from the referenced C<=data> block.
+HTTP C<Content-Type> response header. For a C<data:> source, see
+L<#Data-table blocks>.
 
 For inline body and for sources where inference fails (unknown file
 extension, missing or generic HTTP C<Content-Type>, absent file
@@ -2750,6 +2768,8 @@ A test containing no C<=assert> does not pass. An implementation that does not
 recognise a child of C<=test> reports the test as skipped rather than failed; one
 it recognises but cannot satisfy is a failure.
 
+If a test of this specification differs from the rule it checks, the rule governs.
+
 =head4 The blocks a test contains
 
 =begin defn
@@ -2907,11 +2927,13 @@ written in it.
 
 When an implementation is given a file from which to obtain tests, the C<=test>
 blocks of that file are obtained after its C<=include> directives are resolved.
+
 A C<=test> block obtained more than once, from different files given for a single
 execution of the tests, is run once, if each time it is obtained each of its
 assertions is resolved against a C<=fixture> or against a source it names. Blocks
 so obtained are one block if they originate from the same C<=test> block in the
-file in which it is written.
+file in which it is written, under the same configuration in effect.
+Different configurations give distinct blocks, and the test is run under each.
 
 Walking a document does not run the tests found in it. An implementation
 resolves the assertions of the test it was given, and a C<=test> block met while
@@ -4068,20 +4090,47 @@ The general syntax for configuration directives is:
 
 A C<=config> is a directive, not a block. Hence,
 there is no paragraph or delimited form of the C<=config> directive.
+
 Each C<=config> specification is lexically scoped to the surrounding
 block or file in which it is specified. It applies to the blocks of its type
-that follow it within that scope, and not to blocks of another file, whether
-included or read by a selector.
+that follow it within that scope, including blocks placed there by
+C<=include>.
 
-Note that, if a particular block later explicitly specifies a
-configuration option with the same key, that option overrides the
-pre-configured option. For example, given the code blocks configurations in the
-previous example, to specify another language for code block:
+=include file:./t/block-pre-configuration.podlite#included-config-does-not-leak
+
+=include file:./t/block-pre-configuration.podlite#config-before-include-only
+
+A block placed by C<=include> is read with the configuration at the
+directive, including C<:allow> and the preconfiguration of markup codes.
+
+An option takes its value from the first of these that sets it: an option
+written on the block, a C<=set> assignment, a C<=config> setting, the default
+of the option.
+
+Among settings of one kind, the one nearest to the block takes precedence.
+A C<=config> in the block's file takes precedence over one in an including
+file, and a nearer including file over a more distant one. The value taken
+replaces any other for that option as a whole.
+
+For example, a code block can override a preconfigured language:
 
 =begin code
   =for code :lang<javascript>
   print(JSON.stringify([1,2]]));
 =end code
+
+=include file:./t/block-pre-configuration.podlite#config-reaches-included-blocks
+
+=include file:./t/block-pre-configuration.podlite#block-set-config-precedence
+
+=include file:./t/block-pre-configuration.podlite#config-reaches-markdown
+
+=include file:./t/block-pre-configuration.podlite#included-config-outranks-including-config
+
+=include file:./t/block-pre-configuration.podlite#nearer-including-config-outranks-farther
+
+=include file:./t/block-pre-configuration.podlite#config-replaces-list-value
+
 
 
 =head3 Pre-configuring markup codes
@@ -4162,10 +4211,8 @@ B<=   >          with detailed analysis
 
 The table receives all three attributes (C<:id>, C<:folded>, C<:caption>).
 
-C<=set> assignments override C<=config> defaults but yield to explicit
-attributes on the block declaration. When multiple C<=set> directives
-assign the same attribute key, the last assignment wins, regardless
-of syntax variant.
+When multiple C<=set> directives assign the same attribute key, the last
+assignment wins, regardless of syntax variant.
 
 Directives (C<=set>, C<=config>, C<=alias>, C<=include>, C<=boundary>)
 and C<=comment> blocks are transparent to C<=set> targeting and do not
@@ -4190,14 +4237,17 @@ intervening directives and C<=comment>.
 
 For C<=include>, attributes apply to the first block of the resolved
 included content, under the same rules of transparency. If there is no such
-block, they pass on to the next block after the C<=include> directive. If the
-C<=include> directive fails to resolve, for any reason, they are not applied.
+block, they pass on to the next block after the C<=include> directive.
+
+If the C<=include> directive fails to resolve, for any reason, the attributes are not applied.
 Their non-application is reported with that failure, instead of a warning that
-the C<=set> directive has no target. C<=set> directives inside an included
-file are lexically scoped to that file and do not leak to the parent file.
-On the first block of the resolved included content, C<=set> assignments
-accumulated before C<=include> override those of the same key from the included
-file.
+the C<=set> directive has no target.
+
+C<=set> directives inside an included file are lexically scoped to that file
+and do not leak to the parent file. On the first included block, assignments
+from that file override those accumulated before C<=include> for the same key.
+
+=include file:./t/block-attribute-assignment-with-set.podlite#included-set-outranks-including-set
 
 If no block follows before the end of the containing block or file,
 parsers issue a warning that the C<=set> directive has no target.
@@ -4353,7 +4403,7 @@ icons that indicate the significance of the content.
     Directive           Specifies
     _________           ____________________________________________________
     C<=begin>           Start of an explicitly terminated block
-    C<=config>          Lexical modifications to a block or markup code
+    C<=config>          Pre-configuration of following blocks of a type, or of a markup code
     C<=set>             Attribute assignment to the next block
     C<=end>             Explicit termination of a C<=begin> block
     C<=for>             Start of an implicitly (blank-line) terminated block

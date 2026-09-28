@@ -1,0 +1,18 @@
+=begin test :id<included-set-outranks-including-set> :caption('assignments in an included file outrank earlier assignments for the same key')
+=begin resource :name<part.podlite>
+=set :v<inner> :w<inner>
+=head1 Included
+=end resource
+=begin fixture
+=set :v<outer> :x<outer>
+=include file:./part.podlite
+=end fixture
+=for assert :caption('the included heading gets the value inner from the nearer assignment')
+head1[ :v<inner> ]
+=for assert :absent :caption('the included heading does not get the value outer for the shared key')
+head1[ :v<outer> ]
+=for assert :caption('the included heading keeps the value inner for the key set only inside')
+head1[ :w<inner> ]
+=for assert :caption('the included heading receives the value outer for the key set before =include')
+head1[ :x<outer> ]
+=end test

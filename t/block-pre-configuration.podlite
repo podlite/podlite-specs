@@ -1,0 +1,151 @@
+=begin test :id<config-reaches-included-blocks> :caption('=config applies to included blocks')
+=begin resource :name<part.podlite>
+=for para :src<plain>
+Included.
+=for para :src<own> :v<2>
+Own.
+=end resource
+=begin fixture
+=config para :v<1>
+=include file:./part.podlite
+=end fixture
+=for assert :absent :caption('every included paragraph has a value for :v')
+para[ :!?v ]
+=for assert :caption('the included paragraph without its own value gets the value 1 from the including =config')
+para[ :src<plain> :v<1> ]
+=for assert :caption('the included paragraph keeps the value 2 written on it')
+para[ :src<own> :v<2> ]
+=end test
+
+=begin test :id<included-config-does-not-leak> :caption('configuration in an included file does not reach the including file')
+=begin resource :name<part.podlite>
+=config para :v<1>
+=para Included.
+=end resource
+=begin fixture
+=include file:./part.podlite
+
+=for para :src<parent>
+After.
+=end fixture
+=for assert :caption('the included paragraph gets the value 1 from its own file')
+para[ :v<1> ]
+=for assert :caption('the paragraph of the including document is present')
+para[ :src<parent> ]
+=for assert :absent :caption('the paragraph of the including document does not get the value 1 from the included file')
+para[ :src<parent> :v<1> ]
+=end test
+
+=begin test :id<config-before-include-only> :caption('only following blocks receive the =config value')
+=begin resource :name<guest.podlite>
+=para Guest.
+=end resource
+=begin fixture
+=include file:./guest.podlite
+=config para :v<1>
+
+=for para :src<own>
+Own.
+=end fixture
+=for assert :caption('the included paragraph is present')
+para[ :!?src ]
+=for assert :absent :caption('the included paragraph does not get the value 1 from the following =config')
+para[ :!?src :v<1> ]
+=for assert :caption('the paragraph after =config gets the value 1')
+para[ :src<own> :v<1> ]
+=end test
+
+=begin test :id<included-config-outranks-including-config> :caption('configuration in an included file outranks configuration in the including file')
+=begin resource :name<part.podlite>
+=config para :v<own>
+=para Included.
+=end resource
+=begin fixture
+=config para :v<book> :w<book>
+=include file:./part.podlite
+=end fixture
+=for assert :caption('the included paragraph gets the value own for the shared key')
+para[ :v<own> ]
+=for assert :absent :caption('the included paragraph does not get the value book from the including file')
+para[ :v<book> ]
+=for assert :caption('the included paragraph receives the value book for the key set only by the including file')
+para[ :w<book> ]
+=end test
+
+=begin test :id<nearer-including-config-outranks-farther> :caption('nearer including configuration outranks more distant configuration')
+=begin resource :name<chapter.podlite>
+=para Leaf.
+=end resource
+=begin resource :name<part.podlite>
+=config para :v<part>
+=include file:./chapter.podlite
+=end resource
+=begin fixture
+=config para :v<book>
+=include file:./part.podlite
+=end fixture
+=for assert :caption('the nested included paragraph gets the value part from the nearer including file')
+para[ :v<part> ]
+=for assert :absent :caption('the nested included paragraph does not get the value book from the more distant including file')
+para[ :v<book> ]
+=end test
+
+=begin test :id<config-reaches-markdown> :caption('=config applies to included Markdown blocks and supplies the language of a code fence')
+=begin resource :name<part.md>
+Text.
+
+```
+x
+```
+=end resource
+=begin fixture
+=config para :v<outer>
+=config code :lang<python>
+=include file:./part.md
+=end fixture
+=for assert :caption('the included Markdown paragraph gets the value outer from the including file')
+para[ :v<outer> ]
+=for assert :absent :caption('every included Markdown paragraph has a value for :v')
+para[ :!?v ]
+=for assert :caption('the included code fence gets the value python for :lang from =config')
+code[ :lang<python> ]
+=end test
+
+=begin test :id<block-set-config-precedence> :caption('block attributes outrank =set, and =set outranks =config')
+=begin fixture
+=config para :v<config>
+=set :v<set>
+=for para :src<block> :v<block>
+Written.
+
+=set :v<set>
+=for para :src<set>
+Assigned.
+
+=for para :src<config>
+Configured.
+=end fixture
+=for assert :caption('the block keeps the value block rather than the =set value')
+para[ :src<block> :v<block> ]
+=for assert :caption('the =set value outranks the =config value')
+para[ :src<set> :v<set> ]
+=for assert :caption('the =config value is used when neither the block nor =set specifies the option')
+para[ :src<config> :v<config> ]
+=end test
+
+=begin test :id<config-replaces-list-value> :caption('the included value replaces the including value as a whole')
+=begin resource :name<part.podlite>
+=config para :v<c d>
+=para Included.
+=end resource
+=begin fixture
+=config para :v<a b>
+=include file:./part.podlite
+=end fixture
+=for assert :caption('the included paragraph has both the values c and d')
+para[ :v~<c d> ]
+=for assert :absent :caption('the including value a is not retained in the included paragraph')
+para[ :v~<a> ]
+=for assert :absent :caption('the including value b is not retained in the included paragraph')
+para[ :v~<b> ]
+=end test
