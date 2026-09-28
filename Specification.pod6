@@ -44,6 +44,7 @@ This file is deliberately specified in Podlite format
     =item Stated that an included block brings all its content and that a block found inside another found block is included once.
     =item Stated that a predicate tests the block itself and that a selected block keeps its content, with an example of a negated condition.
     =item Stated that the selector of a table of contents is applied to the document the block is in.
+    =item Stated where C<=set> assignments before an C<=include> go when it brings no block or fails to resolve.
 
 =head2 v2.0
 
@@ -4168,7 +4169,8 @@ of syntax variant.
 
 Directives (C<=set>, C<=config>, C<=alias>, C<=include>, C<=boundary>)
 and C<=comment> blocks are transparent to C<=set> targeting and do not
-consume the assignment. For example:
+consume the assignment, except an C<=include> directive that fails to
+resolve. For example:
 
 =begin code :allow<B>
 B<=set> :caption Renewable energy sources
@@ -4187,8 +4189,12 @@ The C<=table> block receives the C<:caption> attribute despite the
 intervening directives and C<=comment>.
 
 For C<=include>, attributes apply to the first block of the resolved
-included content. C<=set> directives inside an included file are
-lexically scoped to that file and do not leak to the parent file.
+included content, under the same rules of transparency. If there is no such
+block, they pass on to the next block after the C<=include> directive. If the
+C<=include> directive fails to resolve, for any reason, they are not applied.
+Their non-application is reported with that failure, instead of a warning that
+the C<=set> directive has no target. C<=set> directives inside an included
+file are lexically scoped to that file and do not leak to the parent file.
 On the first block of the resolved included content, C<=set> assignments
 accumulated before C<=include> override those of the same key from the included
 file.
