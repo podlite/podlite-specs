@@ -48,6 +48,7 @@ This file is deliberately specified in Podlite format
     =item Stated that a test obtained under different configurations is run under each.
     =item Stated that the rule governs if a test of this specification differs from it.
     =item Stated which content counts as external for the warning about included content.
+    =item Stated which blocks give a document its name for the C<doc:> scheme, and that a name two documents carry does not resolve.
     =item Stated that the implicit C<=pod> of a file is not a block a selector reaches.
     =item Stated that an included block brings all its content and that a block found inside another found block is included once.
     =item Stated that a predicate tests the block itself and that a selected block keeps its content, with an example of a negated condition.
@@ -3622,6 +3623,11 @@ corresponds to a specific part of the document set. An example would be:
     
     ...
 =end code
+
+Only a C<=TITLE> or C<=NAME> block written in the document itself, at any
+depth, names it; one brought in by C<=include> does not. A name that two
+documents carry does not resolve, and the error of resolution names the
+documents.
 
 When Podlite processes a link, it can automatically use the document's title
 from the C<=TITLE> or C<=NAME> blocks as the display text for the hyperlink if no
