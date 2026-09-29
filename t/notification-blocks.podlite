@@ -1,0 +1,9 @@
+=begin test :id<notice-names-the-type> :caption('the :notice attribute of a =nested block carries the notification type')
+=begin fixture
+=begin nested :notice<tip>
+Text.
+=end nested
+=end fixture
+=for assert :caption('the block written with :notice is selected by its notification type')
+nested[ :notice<tip> ]
+=end test

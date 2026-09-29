@@ -63,6 +63,7 @@ This file is deliberately specified in Podlite format
     =item Stated that the selector of a table of contents is applied to the document the block is in.
     =item Stated where C<=set> assignments before an C<=include> go when it brings no block or fails to resolve.
     =item Stated that an C<=alias> is scoped to its file and reaches blocks placed there by C<=include>.
+    =item Fixed the notification attribute name to C<:notice> where it differed from the rule.
 
 =head2 v2.0
 
@@ -88,7 +89,7 @@ This file is deliberately specified in Podlite format
 v1.0
 
 =head3 Added:
-    =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
+    =item Notification blocks, C<:notice> attribute for C<=nested> blocks,
     =item C<:folded> attribute,
     =item C<:folded-levels> for C<=toc> block,
     =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>,
@@ -2158,7 +2159,7 @@ or:
   =Image http://www.perlfoundation.org/images/perl_logo_32x104.png
 =end code
 
-=begin nested :notify<note>
+=begin nested :notice<note>
 Named or modular blocks are defined within separate modules 
 and integrated into the core system through a defined interface or API.
 
@@ -2224,7 +2225,7 @@ The reference form refers to a named C<=data> block:
 The body is verbatim and is parsed per C<:mime-type> using RFC 4180
 for C<text/csv> or RFC 4180 §3 for C<text/tab-separated-values>.
 
-=begin nested :notify<warning>
+=begin nested :notice<warning>
 A CSV field with a literal newline followed by C<=end data-table> at
 virtual margin terminates the block prematurely. Such content
 requires the external file form.
@@ -4401,11 +4402,13 @@ the C<=nested> block and C<:notice> attribute are used.
 For example:
 
 =begin code :allow<B>
-    B<=begin nested> B<:notify<tip>>
+    B<=begin nested> B<:notice<tip>>
     Remember to always use oven mitts when handling hot bakeware
     to prevent burns.
     B<=end nested>
 =end code
+
+=include file:./t/notification-blocks.podlite#notice-names-the-type
 
 Below is a table outlining the different types of notification blocks
 along with a brief description of each type.
@@ -4430,22 +4433,12 @@ along with a brief description of each type.
 
 =end table
 
-=begin comment
-TODO:
-custom (e.g. `faq`, etc.)???       Allows for specifying the specific context or content.
-
-    =begin nested :caption("Foldable FAQ: Question 1") :notice<faq> :folded
-    This is how you make content foldable for a cleaner look.
-    =end nested
-
-=end comment
-
 By default, the title of the notification block is its type identifier in title case.
 The title of the block and visibility of the information can be customized
 using the C<:caption> and C<:folded> options.
 
 =begin code :allow<I B Z> 
-  =begin nested B<:caption("Astronaut's Reminder")> :notify<important> B<:folded>
+  =begin nested B<:caption("Astronaut's Reminder")> :notice<important> B<:folded>
     Space missions require meticulous planning and adherence to safety protocols.
     Neglecting these can lead to mission failure or, worse, endanger lives.
   =end nested
@@ -4454,7 +4447,7 @@ using the C<:caption> and C<:folded> options.
 Title-only callouts can be created by omitting the body.
 
 =begin code 
-  =for nested :notify<important> :folded :caption("Title-only callout")
+  =for nested :notice<important> :folded :caption("Title-only callout")
 =end code
 
 Notification blocks are displayed with distinctive colors and 
