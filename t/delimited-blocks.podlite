@@ -10,6 +10,30 @@ para[ :x<1> ]
 code
 =end test
 
+=begin test :id<indented-text-in-delimited-defn-is-code> :caption('indented text after a blank line in a delimited =defn is a code block')
+=begin fixture
+=begin defn
+virtual margin
+
+    indented body
+=end defn
+=end fixture
+=for assert :caption('the indented text is a code block')
+code
+
+=begin fixture
+=begin defn
+virtual margin
+
+not indented
+=end defn
+=end fixture
+=for assert :caption('without indentation the text is a paragraph')
+para
+=for assert :absent :caption('and no code block arises')
+code
+=end test
+
 =begin test :id<whitespace-in-angles-makes-a-list> :caption('whitespace inside angle brackets separates the elements of a list')
 =begin fixture
 =for para :k<a b>

@@ -55,6 +55,7 @@ This file is deliberately specified in Podlite format
     =item Stated that a virtual margin ends with its block, which changes the reading of text indented under an ended block.
     =item Stated that a line left of the virtual margin stays in its block, and a warning may be issued.
     =item Stated that indented text in the abbreviated and paragraph forms of C<=item> and C<=defn> is not code.
+    =item Stated that a delimited C<=defn> holds implicit code blocks, as the rule on code blocks already did.
     =item Stated that the implicit C<=pod> of a file is not a block a selector reaches.
     =item Stated that the body of a C<=fixture> is read as a C<.podlite> file.
     =item Stated that an included block brings all its content and that a block found inside another found block is included once.
@@ -326,10 +327,12 @@ data or contents of the block, which continue until the block's matching
 C<=end> marker line. For most block types, these contents may be
 indented if you wish, without them being treated as
 L<code blocks|#Code blocks>. Indented text is only treated as code within
-C<=pod>, L<C<=nested>|#Nesting blocks>, L<C<=item>|#Lists>, C<=code>,
+C<=pod>, L<C<=nested>|#Nesting blocks>, L<C<=item>|#Lists>,
+L<C<=defn>|#Definition lists>, C<=code>,
 and L<semantic|#Semantic blocks> blocks.
 
 =include file:./t/delimited-blocks.podlite#indented-text-in-para-is-not-code
+=include file:./t/delimited-blocks.podlite#indented-text-in-delimited-defn-is-code
 
 The general syntax is:
 
