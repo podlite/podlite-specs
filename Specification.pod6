@@ -28,6 +28,7 @@ This file is deliberately specified in Podlite format
     =item Added tests for block configuration, kept in files under C<t/> and included after the rules they check: the notations of a value, empty values, continuation lines, the C<:nested> and C<:lang> options, and the language of a Markdown fence.
     =item Added tests for configuration precedence and for C<=config>, C<=set> and selectors across C<=include>.
     =item Added a list of the tests at the end of the specification.
+    =item Described a C<=pod> block nested in another as a group.
 
 =head3 Changed:
     =item Described how blocks and tests brought in by C<=include> belong to the including document.
@@ -50,7 +51,12 @@ This file is deliberately specified in Podlite format
     =item Stated which content counts as external for the warning about included content.
     =item Stated which blocks give a document its name for the C<doc:> scheme, and that a name two documents carry does not resolve.
     =item Stated that text on the directive line of an abbreviated C<=item> is an ordinary paragraph of the item.
+    =item Stated that the first line of an implicit paragraph or code block decides it, regardless of later indentation.
+    =item Stated that a virtual margin ends with its block, which changes the reading of text indented under an ended block.
+    =item Stated that a line left of the virtual margin stays in its block, and a warning may be issued.
+    =item Stated that indented text in the abbreviated and paragraph forms of C<=item> and C<=defn> is not code.
     =item Stated that the implicit C<=pod> of a file is not a block a selector reaches.
+    =item Stated that the body of a C<=fixture> is read as a C<.podlite> file.
     =item Stated that an included block brings all its content and that a block found inside another found block is included once.
     =item Stated that a predicate tests the block itself and that a selected block keeps its content, with an example of a negated condition.
     =item Stated that the selector of a table of contents is applied to the document the block is in.
@@ -159,9 +165,17 @@ determined by the indentation of its opening delimiter.
 
 In other words, if a directive is indented from the left margin, the
 column at which the first character of its opening delimiter appears is
-thereafter considered the first column of the entire block's contents.
+considered the first column of the entire block's contents until the block
+ends, when the virtual margin of the enclosing block applies again.
 
 =include file:./t/general-syntactic-structure.podlite#indented-directive-sets-the-virtual-margin
+
+=include file:./t/general-syntactic-structure.podlite#margin-ends-with-its-block
+
+A non-blank line other than a directive that starts left of its block's virtual
+margin is read as starting at that margin; Podlite parsers may issue a warning.
+
+=include file:./t/general-syntactic-structure.podlite#line-left-of-the-margin-stays-in-the-block
 
 The virtual margin treats leading tabs as aligning to tabstops spaced 
 every C<($?TABSTOP // 8)> characters.
@@ -183,8 +197,8 @@ will I<usually> ignore such blocks.
 This is the D<default mode|Default mode; parser modes> of the parser.
 
 All directives have a defined terminator and the Podlite parser always reverts to
-D<"ambient"|Ambient mode; parser modes> at the end of each Podlite directive or 
-block.
+the mode of the enclosing block, or to D<"ambient"|Ambient mode; parser modes>
+outside any block, at the end of each Podlite directive or block.
 
 The C<=pod> block puts the parser in D<"pod" mode|Pod mode; parser modes>, 
 treating all text between blocks as implicit paragraph Podlite, even if 
@@ -205,21 +219,34 @@ in a C<=pod> block:
   B<=end pod>
 =end code
 
+A C<=pod> block nested in another groups the blocks it contains: the parser
+stays in "pod" mode, the group has its own virtual margin and scope, and it adds
+no formatting.
+
+=include file:./t/podlite-blocks.podlite#nested-pod-is-a-group
+
 The contents of files with the extensions C<.podlite> and C<.pod6> are 
 implicitly wrapped in a C<=pod> directive.
 
 The implicit wrapper establishes the mode of parsing and is not a block that a
 selector reaches. A selector applied to such a file finds only the blocks written
 in it, so C<file:./part.podlite | pod> selects nothing when the file contains no
-explicit C<=pod> block.
+explicit C<=pod> block. A C<=pod> block written in the file is reached like any
+other block.
 
 For C<.md> and C<.markdown> files, the parser operates in D<"Markdown" 
 mode|Markdown mode; parser modes> for the entire file, treating all 
 text as markdown even if it is not inside an C<=markdown> block.
 
+=include file:./t/podlite-blocks.podlite#markdown-file-is-read-in-markdown-mode
+
 Any other file extension puts the parser in default mode. The L<C<=include>
 directive|#Include directive> provides a mechanism to override this behavior
 by using the C<:mime-type> attribute for the included files.
+
+=include file:./t/podlite-blocks.podlite#other-extension-is-read-in-default-mode
+
+=include file:./t/podlite-blocks.podlite#mime-type-overrides-the-extension
 
 
 =head3 Delimited blocks
@@ -1146,8 +1173,8 @@ squeezed, lines filled, and any special L<inline mark-up|#Markup codes>
 applied.
 
 Ordinary paragraphs consist of one or more consecutive lines of text,
-each of which starts with a non-whitespace character at (virtual) column
-1. The paragraph is terminated by the first blank line or block
+the first of which starts with a non-whitespace character at (virtual) column
+1. The paragraph is terminated by the first blank line or Podlite
 directive. For example:
 
 =begin code
@@ -1164,10 +1191,14 @@ directive. For example:
   the trailing directive on the next line.
     =head2 This is another heading block
   
-    This is yet another ordinary paragraph,
-    at the first virtual column set by the
-    previous directive
+  This is yet another ordinary paragraph,
+  at the virtual margin of the enclosing block
 =end code
+
+The heading block ends at the blank line, and its virtual margin with it (see
+L<general syntactic structure|#General syntactic structure>).
+
+=include file:./t/paragraph-blocks.podlite#indented-line-continues-a-paragraph
 
 Within a C<=pod>, C<=item>, C<=defn>, C<=nested>, or
 L<semantic|#Semantic blocks> block, ordinary paragraphs do not require
@@ -1203,6 +1234,7 @@ In an abbreviated C<=item>, text that begins on the directive line, together
 with the lines that continue it, is an ordinary paragraph of that item.
 
 =include file:./t/paragraph-blocks.podlite#item-text-is-an-ordinary-paragraph
+=include file:./t/paragraph-blocks.podlite#indented-continuation-in-abbreviated-item
 
 
 =head3 Code blocks
@@ -1216,9 +1248,9 @@ of code, mark-up, or other textual specifications, and are rendered
 using a fixed-width font.
 
 A code block may be implicitly specified as one or more lines of text,
-each of which starts with a whitespace character at the block's virtual
-left margin. The implicit code block is then terminated by a blank line.
-For example:
+the first of which starts with a whitespace character at the block's virtual
+left margin. The implicit code block is then terminated by a blank line or
+Podlite directive. For example:
 
 =begin code
   This ordinary paragraph introduces a code block:
@@ -1228,9 +1260,15 @@ For example:
 =end code
 
 Implicit code blocks may only be used within C<=pod>, C<=item>, C<=defn>,
-C<=nested>, or L<semantic|#Semantic blocks> blocks.
+C<=nested>, or L<semantic|#Semantic blocks> blocks. In the abbreviated and
+paragraph forms of C<=item> and C<=defn>, unlike the delimited form, indented
+text does not start an implicit code block.
 
 =include file:./t/code-blocks.podlite#indented-text-in-nested-is-code
+
+=include file:./t/code-blocks.podlite#line-at-the-margin-continues-code
+
+=include file:./t/code-blocks.podlite#indented-text-in-item-and-defn-forms-is-text
 
 There is also an explicit C<=code> block (which can be specified within
 I<any> other block type, not just C<=pod>, C<=item>, etc.):
@@ -2788,7 +2826,7 @@ If a test of this specification differs from the rule it checks, the rule govern
 C<=fixture>
 
 A verbatim block whose body is a document in its own right, carried as Podlite
-source.
+source and read as a C<.podlite> file.
 =end defn
 
 The body of a C<=fixture> is not processed by the document that holds it:
@@ -2796,6 +2834,12 @@ nothing in it is read as that document's markup and nothing in it is resolved.
 It is still passed to the parser verbatim if an assertion is resolved
 against the fixture. Anything a test requires besides the body is declared as
 C<=resource> and is not written into the body.
+
+To test another mode from a fixture, the document is declared as a
+C<=resource> and brought in by C<=include>; its mode follows the extension of
+the resource name or a C<:mime-type> on the C<=include>.
+
+=include file:./t/test-blocks.podlite#fixture-body-is-read-in-pod-mode
 
 A test may contain more than one C<=fixture>. Only another C<=fixture> ends the
 reach of one, and whatever else stands between, child of the test or not, leaves

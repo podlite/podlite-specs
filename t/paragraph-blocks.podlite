@@ -65,3 +65,35 @@ continued delimited item text
 =for assert :caption('the text of the delimited item is a para block and gets the value 1 from =config')
 para[ :x<1> ]
 =end test
+
+=begin test :id<indented-continuation-in-abbreviated-item> :caption('an indented line under an abbreviated item continues its text')
+=begin fixture
+=item Happy
+    and glad
+=end fixture
+=for assert :absent :caption('the indented line does not start a code block')
+code
+=for assert :caption('the text of the abbreviated item is a para block')
+para
+
+=begin fixture
+=begin item
+Happy
+
+    and glad
+=end item
+=end fixture
+=for assert :caption('in a delimited item an indented line after a blank line is a code block')
+code
+=end test
+
+=begin test :id<indented-line-continues-a-paragraph> :caption('the first line decides an ordinary paragraph, and an indented line continues it')
+=begin fixture
+Plain text of a paragraph
+    continued on an indented line.
+=end fixture
+=for assert :caption('the text is a paragraph')
+para
+=for assert :absent :caption('the indented line does not start a code block')
+code
+=end test

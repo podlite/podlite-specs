@@ -1,0 +1,23 @@
+=begin test :id<fixture-body-is-read-in-pod-mode> :caption('the body of a fixture is read as a .podlite file, in pod mode')
+=begin fixture
+Plain text.
+=end fixture
+=for assert :caption('text between blocks is a paragraph')
+para
+
+=begin fixture
+# Title
+=end fixture
+=for assert :absent :caption('a Markdown heading line is not a heading in pod mode')
+head1
+=for assert :caption('it is a paragraph')
+para
+
+=begin fixture
+=head1 Heading
+=end fixture
+=for assert :caption('the block written in the body is reached')
+head1
+=for assert :absent :caption('the implicit wrapper is not a block a selector reaches')
+pod
+=end test

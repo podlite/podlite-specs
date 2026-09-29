@@ -1,0 +1,92 @@
+=begin test :id<nested-pod-is-a-group> :caption('a =pod block nested in another is a group with its own margin and scope')
+=begin fixture
+=begin pod
+=config para :x<1>
+Text inside the group.
+=end pod
+Text after the group.
+=end fixture
+=for assert :caption('the group is a block that a selector reaches')
+pod
+=for assert :caption('the configuration inside the group reaches its paragraph')
+para[ :x<1> ]
+=for assert :caption('after the group the configuration no longer applies')
+para[ :!?x ]
+
+=begin fixture
+=begin pod
+    =begin pod
+    Text at the margin of the group.
+    =end pod
+=end pod
+=end fixture
+=for assert :caption('the group has its own margin, so text at it is a paragraph')
+para
+=for assert :absent :caption('and not a code block')
+code
+
+=begin fixture
+=begin pod
+    =begin pod
+    Text at the margin of the group.
+    =end pod
+    Text indented after the group.
+=end pod
+=end fixture
+=for assert :caption('after the group the margin of the enclosing block applies again, so the indented text is a code block')
+code
+=end test
+
+=begin test :id<markdown-file-is-read-in-markdown-mode> :caption('a file with the .md extension is read in Markdown mode')
+=begin resource :name<doc.md>
+# Title
+
+Some text.
+=end resource
+=begin fixture
+=include file:./doc.md
+=end fixture
+=for assert :caption('a Markdown heading becomes a heading block')
+head1
+=for assert :caption('Markdown text becomes a paragraph')
+para
+
+=begin fixture
+# Title
+=end fixture
+=for assert :absent :caption('in pod mode the same line is not a heading')
+head1
+=end test
+
+=begin test :id<other-extension-is-read-in-default-mode> :caption('a file with another extension is read in default mode')
+=begin resource :name<doc.txt>
+Text outside any block.
+=head1 Heading
+=end resource
+=begin fixture
+=include file:./doc.txt
+=end fixture
+=for assert :caption('a directive is recognised')
+head1
+=for assert :caption('text outside a block is kept as an ambient block')
+ambient
+=for assert :absent :caption('and is not a paragraph')
+para
+=end test
+
+=begin test :id<mime-type-overrides-the-extension> :caption('a :mime-type on =include decides the mode instead of the extension')
+=begin resource :name<doc.txt>
+# Title
+=end resource
+=begin fixture
+=include file:./doc.txt :mime-type('text/markdown')
+=end fixture
+=for assert :caption('read in Markdown mode, the line is a heading')
+head1
+
+=begin fixture
+=include file:./doc.txt
+=end fixture
+=for assert :absent :caption('read by its extension, in default mode, the line is not a heading')
+head1
+=end test

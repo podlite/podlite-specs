@@ -21,3 +21,60 @@ code
 =for assert :caption('text indented past the virtual margin is a code block')
 code
 =end test
+
+=begin test :id<margin-ends-with-its-block> :caption('the virtual margin of a block ends with it, and the margin of the enclosing block applies again')
+=begin fixture
+=begin pod
+    =head2 Shifted heading
+
+    Text indented to the column of the heading.
+=end pod
+=end fixture
+=for assert :caption('the heading has ended, so the indented text is a code block')
+code
+
+=begin fixture
+=begin pod
+    =head2 Shifted heading
+
+Text at the margin of the enclosing block.
+=end pod
+=end fixture
+=for assert :caption('text at the margin of the enclosing block is a paragraph')
+para
+=for assert :absent :caption('and no code block arises')
+code
+=end test
+
+=begin test :id<line-left-of-the-margin-stays-in-the-block> :caption('a line left of the virtual margin stays in its block and is read as if at the margin')
+=begin fixture
+=begin pod
+    =begin nested
+    =config para :v<1>
+    Text at the margin of the nested block,
+  continued two columns to the left of it.
+    =end nested
+=end pod
+=end fixture
+=for assert :caption('the paragraph stays in the nested block and gets its configuration')
+para[ :v<1> ]
+=for assert :absent :caption('no paragraph arises outside the nested block')
+para[ :!?v ]
+=for assert :absent :caption('the line left of the margin does not start a code block')
+code
+
+=begin fixture
+=begin pod
+    =begin nested
+    =config para :v<1>
+  Text that starts two columns to the left of the margin.
+    =end nested
+=end pod
+=end fixture
+=for assert :caption('a first line left of the margin is a paragraph of the nested block')
+para[ :v<1> ]
+=for assert :absent :caption('no paragraph arises outside the nested block')
+para[ :!?v ]
+=for assert :absent :caption('and no code block arises')
+code
+=end test

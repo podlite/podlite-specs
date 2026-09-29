@@ -7,3 +7,43 @@
 =for assert
 code
 =end test
+
+=begin test :id<line-at-the-margin-continues-code> :caption('the first line decides an implicit code block, and a line at the margin continues it')
+=begin fixture
+    my $x = 1;
+say $x;
+=end fixture
+=for assert :caption('the text is a code block')
+code
+=for assert :absent :caption('the line at the margin does not start a paragraph')
+para
+=end test
+
+=begin test :id<indented-text-in-item-and-defn-forms-is-text> :caption('indented text in the abbreviated and paragraph forms of =item and =defn is text')
+=begin fixture
+=for item
+    Install the package first.
+=end fixture
+=for assert :caption('the text of =for item is a paragraph')
+para
+=for assert :absent :caption('and not a code block')
+code
+
+=begin fixture
+=item
+    Install the package first.
+=end fixture
+=for assert :caption('the text of a bare =item is a paragraph')
+para
+=for assert :absent :caption('and not a code block')
+code
+
+=begin fixture
+=defn virtual margin
+    The column at which a block's directive starts.
+=end fixture
+=for assert :caption('the definition is a paragraph')
+para
+=for assert :absent :caption('and not a code block')
+code
+=end test
