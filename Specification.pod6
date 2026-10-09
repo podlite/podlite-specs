@@ -40,7 +40,7 @@ This file is deliberately specified in Podlite format
 v1.0
 
 =head3 Added:
-    =item Notification blocks, C<:notify> attribute for C<=nested> blocks,
+    =item Notification blocks, C<:notice> attribute for C<=nested> blocks,
     =item C<:folded> attribute,
     =item C<:folded-levels> for C<=toc> block,
     =item embedding binary data into documents, C<=data>, C<:filename>, C<:encoding>,
@@ -1708,7 +1708,7 @@ or:
   =Image http://www.perlfoundation.org/images/perl_logo_32x104.png
 =end code
 
-=begin nested :notify<note>
+=begin nested :notice<note>
 Named or modular blocks are defined within separate modules 
 and integrated into the core system through a defined interface or API.
 
@@ -1774,7 +1774,7 @@ The reference form refers to a named C<=data> block:
 The body is verbatim and is parsed per C<:mime-type> using RFC 4180
 for C<text/csv> or RFC 4180 §3 for C<text/tab-separated-values>.
 
-=begin nested :notify<warning>
+=begin nested :notice<warning>
 A CSV field with a literal newline followed by C<=end data-table> at
 virtual margin terminates the block prematurely. Such content
 requires the external file form.
@@ -3665,7 +3665,7 @@ the C<=nested> block and C<:notice> attribute are used.
 For example:
 
 =begin code :allow<B>
-    B<=begin nested> B<:notify<tip>>
+    B<=begin nested> B<:notice<tip>>
     Remember to always use oven mitts when handling hot bakeware
     to prevent burns.
     B<=end nested>
@@ -3709,7 +3709,7 @@ The title of the block and visibility of the information can be customized
 using the C<:caption> and C<:folded> options.
 
 =begin code :allow<I B Z> 
-  =begin nested B<:caption("Astronaut's Reminder")> :notify<important> B<:folded>
+  =begin nested B<:caption("Astronaut's Reminder")> :notice<important> B<:folded>
     Space missions require meticulous planning and adherence to safety protocols.
     Neglecting these can lead to mission failure or, worse, endanger lives.
   =end nested
@@ -3718,7 +3718,7 @@ using the C<:caption> and C<:folded> options.
 Title-only callouts can be created by omitting the body.
 
 =begin code 
-  =for nested :notify<important> :folded :caption("Title-only callout")
+  =for nested :notice<important> :folded :caption("Title-only callout")
 =end code
 
 Notification blocks are displayed with distinctive colors and 
