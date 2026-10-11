@@ -28,6 +28,7 @@ This file is deliberately specified in Podlite format
     =item Added tests for block configuration, kept in files under C<t/> and included after the rules they check: the notations of a value, empty values, continuation lines, the C<:nested> and C<:lang> options, and the language of a Markdown fence.
     =item Added tests for configuration precedence and for C<=config>, C<=set> and selectors across C<=include>.
     =item Added tests for C<=set> targeting, predicates over configuration, relative paths in selector sources, and tests brought in by C<=include>.
+    =item Added tests for heading levels, the C<:numbered> option, input and output blocks, semantic blocks, pictures and formulas.
     =item Added a list of the tests at the end of the specification.
     =item Described a C<=pod> block nested in another as a group.
 
@@ -1082,6 +1083,8 @@ course, provide more than that). Headings at levels without distinct
 renderings would typically be rendered like the lowest distinctly
 rendered level.
 
+=include file:./t/headings.podlite#heading-levels-are-distinguished
+
 
 =head4 Numbered headings
 
@@ -1132,6 +1135,8 @@ Details
 
 3. The Implementation
 =end nested
+
+=include file:./t/headings.podlite#numbered-option-on-a-heading
 
 It is usually better to preset a numbering scheme for each heading
 level, in a series of L<configuration blocks|#Block pre-configuration>:
@@ -1373,6 +1378,8 @@ which should be rendered without rejustification or squeezing of whitespace.
 The C<=output> block is used to specify pre-formatted terminal or file
 output which should also be rendered without rejustification or
 whitespace-squeezing.
+
+=include file:./t/io-blocks.podlite#input-and-output-blocks
 
 Note that, like C<=code> blocks, both C<=input> and C<=output> blocks have an
 implicit level of nesting. They are also like C<=code> blocks in that they
@@ -2548,6 +2555,8 @@ Standard semantic blocks include:
     =SUMMARY
 =end code
 
+=include file:./t/semantic-blocks.podlite#semantic-block-by-name
+
 The plural forms of each of these keywords are also reserved, and are
 aliases for the singular forms.
 
@@ -3081,6 +3090,8 @@ A caption can also be defined using the C<:caption> attribute:
  diag01.png
 =end code
 
+=include file:./t/pictures.podlite#picture-block-and-its-caption
+
 
 =head3 Mathematical formulas
 
@@ -3108,6 +3119,8 @@ The formula caption can be defined using the C<:caption> attribute:
   =for formula B< :caption('Quadratic Formula') >
   x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 =end code
+
+=include file:./t/formulas.podlite#formula-block-and-its-caption
 
 
 =head3 Markdown support

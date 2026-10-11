@@ -1,0 +1,14 @@
+=begin test :id<picture-block-and-its-caption> :caption('=picture is a block, and :caption on it is an option of the block')
+=begin fixture
+=picture astronaut.png
+=end fixture
+=for assert :caption('the abbreviated picture block is recognized')
+picture
+
+=begin fixture
+=for picture :caption<diagram>
+diag01.png
+=end fixture
+=for assert :caption('the caption written as an attribute is an option of the picture block')
+picture[ :caption<diagram> ]
+=end test

@@ -1,0 +1,26 @@
+=begin test :id<heading-levels-are-distinguished> :caption('every level of heading is recognized and kept apart from the others')
+=begin fixture
+=head2 Second level
+=end fixture
+=for assert :caption('the second-level heading is recognized')
+head2
+=for assert :absent :caption('it is not taken for a heading of the first or the eighty-sixth level')
+head86, head1
+
+=begin fixture
+=head86 Eighty-sixth level
+=end fixture
+=for assert :caption('a heading at a level beyond the first four is recognized')
+head86
+=for assert :absent :caption('it is not taken for a heading of the first or the second level')
+head2, head1
+=end test
+
+=begin test :id<numbered-option-on-a-heading> :caption('a heading written with :numbered carries the option')
+=begin fixture
+=for head1 :numbered
+The Problem
+=end fixture
+=for assert :caption('the heading written with :numbered is selected by the option')
+head1[ :numbered ]
+=end test

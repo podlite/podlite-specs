@@ -1,0 +1,13 @@
+=begin test :id<semantic-block-by-name> :caption('a semantic block is a block of its uppercase name, in either form')
+=begin fixture
+=AUTHOR Jane Doe
+
+=begin DESCRIPTION
+What the module does.
+=end DESCRIPTION
+=end fixture
+=for assert :caption('the abbreviated semantic block is recognized')
+AUTHOR
+=for assert :caption('the delimited semantic block is recognized')
+DESCRIPTION
+=end test
