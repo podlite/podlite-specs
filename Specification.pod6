@@ -29,6 +29,7 @@ This file is deliberately specified in Podlite format
     =item Added tests for configuration precedence and for C<=config>, C<=set> and selectors across C<=include>.
     =item Added tests for C<=set> targeting, predicates over configuration, relative paths in selector sources, and tests brought in by C<=include>.
     =item Added tests for heading levels, the C<:numbered> option, input and output blocks, semantic blocks, pictures and formulas.
+    =item Added tests for test blocks: the blocks a test contains, their options, and the document an assertion is resolved against.
     =item Added a list of the tests at the end of the specification.
     =item Described a C<=pod> block nested in another as a group.
 
@@ -2844,6 +2845,8 @@ path:
   B<=end test>
 =end code
 
+=include file:./t/test-blocks.podlite#a-test-and-its-blocks-are-blocks
+
 A test containing no C<=assert> does not pass. An implementation that does not
 recognise a child of C<=test> reports the test as skipped rather than failed; one
 it recognises but cannot satisfy is a failure.
@@ -2865,6 +2868,8 @@ It is still passed to the parser verbatim if an assertion is resolved
 against the fixture. Anything a test requires besides the body is declared as
 C<=resource> and is not written into the body.
 
+=include file:./t/test-blocks.podlite#fixture-body-is-not-markup-of-its-holder
+
 To test another mode from a fixture, the document is declared as a
 C<=resource> and brought in by C<=include>; its mode follows the extension of
 the resource name or a C<:mime-type> on the C<=include>.
@@ -2874,6 +2879,8 @@ the resource name or a C<:mime-type> on the C<=include>.
 A test may contain more than one C<=fixture>. Only another C<=fixture> ends the
 reach of one, and whatever else stands between, child of the test or not, leaves
 it unchanged.
+
+=include file:./t/test-blocks.podlite#fixture-is-read-until-the-next-fixture
 
 =begin defn
 C<=assert>
@@ -2902,6 +2909,8 @@ C<:number> is stated by requiring that none lacks it:
   Invoice[ :!?number ]
 =end code
 
+=include file:./t/test-blocks.podlite#every-block-is-stated-with-absent
+
 =begin defn
 C<=resource>
 
@@ -2915,6 +2924,10 @@ test is read. A reference in that body, or inside a resource reached from it,
 obtains only what the test declares.
 =item How the content is made reachable is not fixed here, and an implementation
 that cannot write to a filesystem is not excluded.
+
+=include file:./t/test-blocks.podlite#resource-of-a-test-is-its-own
+
+=include file:./t/test-blocks.podlite#same-named-resource-of-another-test
 
 A resource is reached from the body of a fixture by the path it declares:
 
@@ -2972,6 +2985,8 @@ C<:absent>
 Written on an C<=assert>, gives the assertion its negative sense.
 =end defn
 
+=include file:./t/test-blocks.podlite#options-of-test-blocks-are-their-configuration
+
 =head4 The document an assertion is resolved against
 
 An assertion that names a source is resolved against that source. An assertion
@@ -2984,6 +2999,8 @@ Which document that is follows three cases in order:
 =item if none is supplied, the body of the C<=fixture> nearest preceding the
 assertion;
 =item if neither is present, the document in which the test sits.
+
+=include file:./t/test-blocks.podlite#assertion-before-any-fixture-reads-the-holding-document
 
 If a document is supplied from outside, the bodies of C<=fixture> are not
 read as the input of the test. That a supplied document happens to be the one
@@ -3000,6 +3017,8 @@ document.
 A relative path in the source of an assertion is resolved against the file the
 test is written in, and not among the declared resources of the test.
 
+=include file:./t/test-blocks.podlite#assertion-source-resolves-against-the-test-file
+
 An assertion whose named source cannot be obtained does not hold, whether or not
 it carries C<:absent>. A missing source is not a document in which nothing
 matched.
@@ -3010,6 +3029,8 @@ If the document an assertion is resolved against is the one containing the
 test, the C<=test> blocks of that document are part of it and a selector reaches
 them: an assertion written over every block of a document matches the tests
 written in it.
+
+=include file:./t/test-blocks.podlite#tests-are-blocks-of-their-document
 
 When an implementation is given a file from which to obtain tests, the C<=test>
 blocks of that file are obtained after its C<=include> directives are resolved.

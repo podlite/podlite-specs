@@ -21,3 +21,180 @@ head1
 =for assert :absent :caption('the implicit wrapper is not a block a selector reaches')
 pod
 =end test
+
+=begin test :id<a-test-and-its-blocks-are-blocks> :caption('a test and the blocks it contains are blocks of the document they are written in')
+=begin resource :name<cases.podlite>
+=begin test :id<inner>
+=for resource :name<part.podlite>
+Part text.
+
+=begin fixture
+=include file:./part.podlite
+=end fixture
+=for assert
+para
+=end test
+=end resource
+=begin fixture
+=include file:./cases.podlite
+=end fixture
+=for assert :caption('the test is a block')
+test[ :id<inner> ]
+=for assert :caption('its fixture is a block')
+fixture
+=for assert :caption('its assertion is a block')
+assert
+=for assert :caption('its resource is a block')
+resource[ :name<part.podlite> ]
+=end test
+
+=begin test :id<fixture-body-is-not-markup-of-its-holder> :caption('the body of a fixture is not markup of the document holding it')
+=begin resource :name<cases.podlite>
+=for head2 :v<outside>
+Outside.
+
+=begin test :id<inner>
+=begin fixture
+=for head2 :v<inside>
+Inside.
+=end fixture
+=for assert
+head2
+=end test
+=end resource
+=begin fixture
+=include file:./cases.podlite
+=end fixture
+=for assert :caption('a heading outside the fixture body is a block')
+head2[ :v<outside> ]
+=for assert :caption('the fixture is a block')
+fixture
+=for assert :absent :caption('a heading inside the fixture body is not')
+head2[ :v<inside> ]
+=end test
+
+=begin test :id<fixture-is-read-until-the-next-fixture> :caption('an assertion reads the nearest fixture before it until another fixture')
+=begin fixture
+=head1 First
+=end fixture
+=for assert :caption('the first fixture is read')
+head1
+=comment Between assertions.
+=for assert :caption('a comment between leaves the first fixture read')
+head1
+=begin fixture
+=head2 Second
+=end fixture
+=for assert :caption('the next fixture is read')
+head2
+=for assert :absent :caption('the first fixture is no longer read')
+head1
+=end test
+
+=begin test :id<every-block-is-stated-with-absent> :caption('that every block meets a condition is stated with :absent over the opposite condition')
+=begin fixture
+=for Invoice :number<1>
+First.
+
+=for Invoice :number<2>
+Second.
+=end fixture
+=for assert :caption('the invoices are there')
+Invoice[ :?number ]
+=for assert :absent :caption('none lacks a number')
+Invoice[ :!?number ]
+
+=begin fixture
+=for Invoice :number<1>
+First.
+
+=for Invoice
+Second.
+=end fixture
+=for assert :caption('one lacking a number is found')
+Invoice[ :!?number ]
+=end test
+
+=begin test :id<resource-of-a-test-is-its-own> :caption('a fixture obtains the resource its own test declares under a name')
+=begin resource :name<part.podlite>
+=for para :v<first>
+First test.
+=end resource
+=begin fixture
+=include file:./part.podlite
+=end fixture
+=for assert :caption('the resource of this test is read')
+para[ :v<first> ]
+=for assert :absent :caption('the resource of the same name in another test is not')
+para[ :v<second> ]
+=end test
+
+=begin test :id<same-named-resource-of-another-test> :caption('a resource declared under the same name by another test is not obtained')
+=begin resource :name<part.podlite>
+=for para :v<second>
+Second test.
+=end resource
+=begin fixture
+=include file:./part.podlite
+=end fixture
+=for assert :caption('the resource of this test is read')
+para[ :v<second> ]
+=for assert :absent :caption('the resource of the same name in another test is not')
+para[ :v<first> ]
+=end test
+
+=begin test :id<options-of-test-blocks-are-their-configuration> :caption('the options of a test and of its blocks are their configuration')
+=begin resource :name<cases.podlite>
+=begin test :id<inner> :caption('what the test is for')
+=for resource :name<includes/part.podlite>
+Part text.
+
+=begin fixture
+=include file:./includes/part.podlite
+=end fixture
+=for assert :caption('the paragraph is reached')
+para
+=for assert :absent :caption('what the assertion is for')
+head1
+=end test
+=end resource
+=begin fixture
+=include file:./cases.podlite
+=end fixture
+=for assert :caption(':id and :caption on a test')
+test[ :id<inner> :caption('what the test is for') ]
+=for assert :caption(':absent and :caption on an assertion')
+assert[ :absent :caption('what the assertion is for') ]
+=for assert :caption(':name on a resource')
+resource[ :name<includes/part.podlite> ]
+=end test
+
+=begin test :id<assertion-before-any-fixture-reads-the-holding-document> :caption('an assertion with no fixture before it reads the document holding the test')
+=for assert :caption('before any fixture, the document holding the test is read')
+test[ :id<assertion-before-any-fixture-reads-the-holding-document> ]
+=begin fixture
+=head1 Body
+=end fixture
+=for assert :caption('after a fixture, its body is read')
+head1
+=for assert :absent :caption('and the document holding the test is not')
+test
+=end test
+
+=begin test :id<assertion-source-resolves-against-the-test-file> :caption('a relative path in the source of an assertion resolves against the file the test is written in')
+=begin resource :name<test-blocks.podlite>
+=head3 Declared
+=end resource
+=begin fixture
+=head1 Body
+=end fixture
+=for assert :caption('the named source is read, not the fixture before the assertion')
+file:./test-blocks.podlite | test[ :id<assertion-source-resolves-against-the-test-file> ]
+=for assert :absent :caption('the declared resource of the same name is not read')
+file:./test-blocks.podlite | head3
+=end test
+
+=begin test :id<tests-are-blocks-of-their-document> :caption('the tests of a document are blocks of it')
+=for assert :caption('the universal pattern reaches the test')
+*[ :id<tests-are-blocks-of-their-document> ]
+=end test
