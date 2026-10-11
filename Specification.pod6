@@ -2776,8 +2776,8 @@ C<./includes> directory are included:
 =include file:./includes/chapter01.pod6
 =end code
 
-A wildcard L<"Selector"|#Selectors> enables inclusion
-of blocks from all the Markdown files:
+A L<"Selector"|#Selectors> with a wildcard source enables inclusion
+of blocks from every matching Markdown file:
 
 =begin code
   =include file:./includes/*.md
