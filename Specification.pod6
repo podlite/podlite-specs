@@ -28,7 +28,7 @@ This file is deliberately specified in Podlite format
     =item Added tests for block configuration, kept in files under C<t/> and included after the rules they check: the notations of a value, empty values, continuation lines, the C<:nested> and C<:lang> options, and the language of a Markdown fence.
     =item Added tests for configuration precedence and for C<=config>, C<=set> and selectors across C<=include>.
     =item Added tests for C<=set> targeting, predicates over configuration, relative paths in selector sources, and tests brought in by C<=include>.
-    =item Added tests for heading levels, the C<:numbered> option, input and output blocks, semantic blocks, pictures and formulas.
+    =item Added tests for heading levels, the C<:numbered> option, input and output blocks, semantic blocks, section boundaries, pictures and formulas.
     =item Added tests for test blocks: the blocks a test contains, their options, and the document an assertion is resolved against.
     =item Added tests for selectors: internal addresses, predicate operators, the universal pattern, empty and absent values, membership, operations in parentheses, combined and non-matching conditions, and wildcard sources of C<=include>.
     =item Added a list of the tests at the end of the specification.
@@ -68,6 +68,9 @@ This file is deliberately specified in Podlite format
     =item Stated that the selector of a table of contents is applied to the document the block is in.
     =item Stated that a C<=toc> block brought in by C<=include> applies its selector to the including document.
     =item Stated that the C<=include> directive is not a block a selector reaches, whether or not it resolves.
+    =item Stated that the C<=boundary> directive is not a block a selector reaches, accepts only C<:caption> of the standard options, and is not affected by C<=config boundary>, with no transition period.
+    =item Stated that C<=include> brings blocks and not a directive outside them, such as a C<=boundary> between blocks that no other block contains, with no transition period.
+    =item Stated that C<=include> of a source with no internal address or pattern brings the same blocks as with C<| *>.
     =item Stated where C<=set> assignments before an C<=include> go when it brings no block or fails to resolve.
     =item Stated that an C<=alias> is scoped to its file and reaches blocks placed there by C<=include>.
     =item Fixed the notification attribute name to C<:notice> where it differed from the rule.
@@ -2737,7 +2740,7 @@ C<=config> and C<=alias>. As a directive, C<=include> references external
 content rather than containing it directly.
 
 The C<=include> directive is followed by a L<"Selector"|#Selectors> that specifies the
-content to be included.
+blocks to be included.
 
 The blocks that the C<=include> directive resolves to take the place of the
 directive in the document that contains it, and selectors applied to that
@@ -2754,17 +2757,27 @@ match the selector. A block contained in another found block is not placed a
 second time: the included content consists of the found blocks that no other
 found block contains, in document order.
 
+An C<=include> brings blocks, whether the selector specifies a source alone,
+a source with an internal address, or patterns. A directive inside a brought
+block comes with it. A directive outside every brought block, such as a
+C<=boundary> between blocks that no other block contains, is not brought in.
+The C<=config>, C<=alias> and C<=set> directives of the source act within
+their own scopes.
+
+An C<=include> of a source with no internal address or pattern brings the
+same blocks as the source followed by C<| *>.
+
 Relative C<file:> sources follow the resolution rule in L<#Selectors>.
 
-In this example, the content of the file C<chapter01.pod6> located in the 
-C<./includes> directory is included:
+In this example, the blocks of the file C<chapter01.pod6> located in the
+C<./includes> directory are included:
 
 =begin code 
 =include file:./includes/chapter01.pod6
 =end code
 
-A wildcard L<"Selector"|#Selectors> enables inclusion 
-of content from all the Markdown files:
+A wildcard L<"Selector"|#Selectors> enables inclusion
+of blocks from all the Markdown files:
 
 =begin code
   =include file:./includes/*.md
@@ -2822,8 +2835,9 @@ document sections such as chapters, parts, or topics. The transition
 is semantic, not presentational.
 
 A C<=boundary> is a directive, not a block. Hence, there is no
-paragraph or delimited form of the C<=boundary> directive. It accepts
-an optional C<:caption> attribute that describes the transition:
+paragraph or delimited form of the C<=boundary> directive. Of the
+L<standard options|#Standard configuration options>, it accepts only an
+optional C<:caption> describing the transition:
 
 =begin code :allow<B R>
 B<=boundary>
@@ -2831,8 +2845,8 @@ B<=boundary>
 B<=boundary> :caption<R<BOUNDARY_DESCRIPTION>>
 =end code
 
-Boundaries are placed between blocks, not within them, at the same
-structural level as the blocks they separate:
+A boundary stands between the blocks it separates, at their structural
+level, whether or not another block contains them. For example:
 
 =begin code :allow<B>
 =head1 Chapter One
@@ -2844,10 +2858,17 @@ B<=boundary>
 Content of chapter two.
 =end code
 
+A C<=boundary> written between two C<=include> directives marks the
+transition between the included parts.
+
+No selector reaches a C<=boundary>, by name or by the universal C<*>.
+
+=include file:./t/section-boundaries.podlite#boundary-is-not-reached-by-a-selector
+
 Rendering is format-specific. Renderers may use page breaks
 (paginated output), thematic breaks (web), or separator lines (plain
 text), and may ignore the directive when boundaries are not supported.
-The C<:caption> attribute is descriptive metadata; renderers may
+The C<:caption> option is descriptive metadata; renderers may
 surface it as a header, navigation entry, or omit it.
 
 
@@ -4243,6 +4264,9 @@ The general syntax for configuration directives is:
 A C<=config> is a directive, not a block. Hence,
 there is no paragraph or delimited form of the C<=config> directive.
 
+A C<=config boundary> does not affect a C<=boundary>: its optional
+C<:caption> is placed on the directive itself.
+
 Each C<=config> specification is lexically scoped to the surrounding
 block or file in which it is specified. It applies to the blocks of its type
 that follow it within that scope, including blocks placed there by
@@ -4571,7 +4595,7 @@ icons that indicate the significance of the content.
     C<=end>             Explicit termination of a C<=begin> block
     C<=for>             Start of an implicitly (blank-line) terminated block
     C<=alias>           Define a Podlite macro
-    C<=include>         Include content from other sources
+    C<=include>         Include blocks from other sources
     C<=boundary>        Marker for a structural section boundary
 
 =end table

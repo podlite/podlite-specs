@@ -1,0 +1,21 @@
+=begin test :id<boundary-is-not-reached-by-a-selector> :caption('no selector reaches a =boundary, and the blocks on either side are found')
+=begin fixture
+=for head1 :id<one>
+Chapter One
+
+=boundary :caption('Part two')
+
+=for head1 :id<two>
+Chapter Two
+=end fixture
+=for assert :caption('the block before the boundary is found')
+head1[ :id<one> ]
+=for assert :caption('the block after the boundary is found')
+head1[ :id<two> ]
+=for assert :caption('the universal pattern finds the block before the boundary')
+*[ :id<one> ]
+=for assert :absent :caption('the directive is not found by its name')
+boundary
+=for assert :absent :caption('the universal pattern does not find the directive, which alone carries :caption')
+*[ :?caption ]
+=end test
