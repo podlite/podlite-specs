@@ -198,3 +198,19 @@ file:./test-blocks.podlite | head3
 =for assert :caption('the universal pattern reaches the test')
 *[ :id<tests-are-blocks-of-their-document> ]
 =end test
+
+=begin test :id<fixture-with-an-unresolved-include-is-a-document> :caption('a fixture whose include fails to resolve is still read by the assertions after it')
+=begin fixture
+=for head1 :id<before>
+Before
+
+=include file:./missing.podlite
+
+=for head1 :id<after>
+After
+=end fixture
+=for assert :caption('the block before the include is found')
+head1[ :id<before> ]
+=for assert :caption('the block after the include is found')
+head1[ :id<after> ]
+=end test
