@@ -55,6 +55,8 @@ table[ :?caption ]
 =begin resource :name<part.podlite>
 =comment note
 =head1 Included
+
+=head2 Second
 =end resource
 =begin fixture
 =set :v<1>
@@ -64,6 +66,10 @@ table[ :?caption ]
 =end fixture
 =for assert :caption('the included heading receives the assignment')
 head1[ :v<1> ]
+=for assert :caption('the second included block is present')
+head2
+=for assert :absent :caption('the second included block does not receive the assignment')
+head2[ :v<1> ]
 =for assert :caption('the block after the include is there')
 para
 =for assert :absent :caption('the next block does not receive it')

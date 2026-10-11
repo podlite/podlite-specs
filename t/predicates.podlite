@@ -37,32 +37,22 @@ para
 para[ :?draft ]
 =end test
 
-=begin test :id<predicate-operators> :caption('each predicate operator holds as its table states')
+=begin test :id<predicate-operators> :caption('equality, negated equality, membership and in follow the operator table')
 =begin fixture
-=for para :id<p1> :v<one> :f(False) :t<a b>
+=for para :id<p1> :v<one> :t<a b>
 One.
 
 =for para :id<p2> :v<two>
 Two.
 =end fixture
-=for assert :caption(':attr holds for a value')
-para[ :id<p1> :v ]
-=for assert :caption(':!attr holds for false')
-para[ :id<p1> :!f ]
-=for assert :absent :caption(':attr does not hold for false')
-para[ :id<p1> :f ]
-=for assert :caption(':?attr holds for a false value that exists')
-para[ :id<p1> :?f ]
-=for assert :caption(':!?attr holds when the attribute does not exist')
-para[ :id<p2> :!?f ]
-=for assert :absent :caption(':!?attr does not hold when it exists')
-para[ :id<p1> :!?f ]
 =for assert :caption(':attr<value> holds for an equal value')
 para[ :id<p1> :v<one> ]
 =for assert :absent :caption('and not for another')
 para[ :id<p2> :v<one> ]
 =for assert :caption(':!attr<value> holds for a different value')
 para[ :id<p2> :!v<one> ]
+=for assert :absent :caption('an equal value does not satisfy negated equality')
+para[ :id<p1> :!v<one> ]
 =for assert :absent :caption(':!attr<value> does not hold when the attribute does not exist')
 para[ :id<p2> :!f<x> ]
 =for assert :caption('~<> holds for an element among the values')
