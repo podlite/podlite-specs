@@ -59,3 +59,38 @@ head1
 =for assert :caption('the heading of the second file is brought in')
 head2
 =end test
+
+=begin test :id<includes-of-the-same-document-select-from-one-state> :caption('includes of the same document select from one state of it: its includes of other sources resolved, its own left as written')
+=begin resource :name<meta.podlite>
+=for VERSION :m<1>
+2.0.0
+=end resource
+=begin fixture
+=set :a<1>
+=include VERSION
+
+=set :b<1>
+=include VERSION
+
+=VERSION 1.0.0
+=end fixture
+=for assert :caption('the first include brings a copy, which receives the assignment before it')
+VERSION[ :a<1> ]
+=for assert :caption('the second include brings a copy of its own')
+VERSION[ :b<1> ]
+=for assert :absent :caption('the second include does not bring the copy the first one placed')
+VERSION[ :a<1> :b<1> ]
+
+=begin fixture
+=set :c<1>
+=include VERSION[ :m<1> ]
+
+=VERSION 1.0.0
+
+=include file:./meta.podlite
+=end fixture
+=for assert :caption('a block brought from another source is seen, wherever that include is written')
+VERSION[ :m<1> :c<1> ]
+=for assert :absent :caption('the assignment does not pass on to the written block, since the include brought one')
+VERSION[ :c<1> :!?m ]
+=end test

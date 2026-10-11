@@ -31,6 +31,7 @@ This file is deliberately specified in Podlite format
     =item Added tests for heading levels, the C<:numbered> option, input and output blocks, semantic blocks, section boundaries, pictures and formulas.
     =item Added tests for test blocks: the blocks a test contains, their options, and the document an assertion is resolved against.
     =item Added tests for selectors: internal addresses, predicate operators, the universal pattern, empty and absent values, membership, operations in parentheses, combined and non-matching conditions, and wildcard sources of C<=include>.
+    =item Added tests for includes of the same document: the one state they select from, and a block of another source seen wherever its C<=include> is written.
     =item Added a list of the tests at the end of the specification.
     =item Described a C<=pod> block nested in another as a group.
 
@@ -78,6 +79,7 @@ This file is deliberately specified in Podlite format
     =item Stated that double angles must be balanced within delimiters of double angles.
     =item Stated how a nested markup code ends and when a warning is issued.
     =item Stated how a reserved code is read and rendered when written.
+    =item Stated that an C<=include> with no source selects from one state of the current document, where includes of other sources are resolved and includes with no source are left as written, and that one standing inside a block it would bring fails to resolve, with the failure reported.
     =item Fixed the summary row of C<M<>> to match its section.
     =item Fixed the notification attribute name to C<:notice> where it differed from the rule.
 
@@ -2750,7 +2752,8 @@ blocks to be included.
 
 The blocks that the C<=include> directive resolves to take the place of the
 directive in the document that contains it, and selectors applied to that
-document, including the selector of a table of contents, reach them.
+document, including the selector of a table of contents, reach them. The
+selector of an C<=include> with no source reaches them as described below.
 The directive itself is not a block, and no selector reaches it, whether or
 not it resolves.
 
@@ -2807,6 +2810,18 @@ or, equivalently:
 =VERSION 1.0.0
 =VERSION 1.0.0
 =end code
+
+An C<=include> with no source selects from the current document in one fixed
+state: its includes of other sources resolved, and its includes with no source
+left as written. Every C<=include> with no source selects from this same state,
+so none of them selects a copy that another one has placed. An C<=include> with
+no source inside a brought block comes with it and selects from the same state.
+
+=include file:./t/include-directive.podlite#includes-of-the-same-document-select-from-one-state
+
+An C<=include> with no source fails to resolve when a block it would bring is
+one it stands inside, at any depth, as written or as a copy. It brings no
+blocks, and the failure is reported.
 
 Podlite detects the type of the included file by its extension.
 For example, if the included file has a C<.md> extension, 
