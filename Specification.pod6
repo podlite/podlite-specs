@@ -37,6 +37,7 @@ This file is deliberately specified in Podlite format
 =head3 Changed:
     =item Described how blocks and tests brought in by C<=include> belong to the including document.
     =item Described a selector pattern as a block name or the universal C<*> followed by an optional predicate.
+    =item Aligned the introduction to selectors with their grammar: the source of a selector is not part of its patterns.
     =item Named the kind of a value in the block configuration table.
     =item Distinguished the two hash notations by the keys each admits.
     =item Stated that the separators of an index entry describe one structure.
@@ -691,8 +692,8 @@ See L<#Formatting within code blocks>.
 
 =head2 Selectors
 
-Selectors consist of patterns that help identify and filter specific blocks
-within documents. Each pattern contains optional source of blocks and block names.
+A selector specifies a source, a list of block patterns, or both. A pattern
+matches a block by name or by the universal C<*>, optionally subject to a predicate.
 
 The general syntax is:
 
