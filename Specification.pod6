@@ -61,6 +61,8 @@ This file is deliberately specified in Podlite format
     =item Stated that an included block brings all its content and that a block found inside another found block is included once.
     =item Stated that a predicate tests the block itself and that a selected block keeps its content, with an example of a negated condition.
     =item Stated that the selector of a table of contents is applied to the document the block is in.
+    =item Stated that a C<=toc> block brought in by C<=include> applies its selector to the including document.
+    =item Stated that the C<=include> directive is not a block a selector reaches, whether or not it resolves.
     =item Stated where C<=set> assignments before an C<=include> go when it brings no block or fails to resolve.
     =item Stated that an C<=alias> is scoped to its file and reaches blocks placed there by C<=include>.
     =item Fixed the notification attribute name to C<:notice> where it differed from the rule.
@@ -2605,6 +2607,8 @@ and its structure is determined by the document's organization.
 
 The first non-blank line of C<=toc> content is treated as a L<selector|#Selectors>.
 The selector is applied to the document the block is in; a selector naming a source lists nothing.
+A C<=toc> block brought in by C<=include> applies its selector to the
+including document, not to the file in which it is written.
 
 For example:
 
@@ -2689,6 +2693,10 @@ content to be included.
 The blocks that the C<=include> directive resolves to take the place of the
 directive in the document that contains it, and selectors applied to that
 document, including the selector of a table of contents, reach them.
+The directive itself is not a block, and no selector reaches it, whether or
+not it resolves.
+
+=include file:./t/include-directive.podlite#include-directive-is-not-a-block
 
 A found block brings its content with it, whether or not the blocks within it
 match the selector. A block contained in another found block is not placed a

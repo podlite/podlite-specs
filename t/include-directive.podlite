@@ -1,0 +1,31 @@
+=begin test :id<include-directive-is-not-a-block> :caption('the =include directive is not a block, and no selector reaches it')
+=begin resource :name<part.podlite>
+=for para :v<included>
+Included.
+=end resource
+=begin fixture
+=include file:./part.podlite :mime-type('text/podlite')
+
+=for para :v<own>
+Own.
+=end fixture
+=for assert :caption('the block the include resolves to is reached')
+para[ :v<included> ]
+=for assert :absent :caption('the directive is not reached by its name when it resolves to blocks')
+include
+=for assert :caption('the universal pattern reaches the included block')
+*[ :v<included> ]
+=for assert :absent :caption('the universal pattern does not reach the directive, which alone carries :mime-type')
+*[ :?mime-type ]
+
+=begin fixture
+=include file:./part.podlite | head1
+
+=for para :v<own>
+Own.
+=end fixture
+=for assert :caption('the block after an include that resolves to no block is reached')
+para[ :v<own> ]
+=for assert :absent :caption('the directive is not reached when it resolves to no block')
+include
+=end test
