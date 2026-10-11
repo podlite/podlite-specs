@@ -36,3 +36,170 @@ para
 =for assert :absent :caption('a paragraph tested by the predicate itself is left out')
 para[ :?draft ]
 =end test
+
+=begin test :id<predicate-operators> :caption('each predicate operator holds as its table states')
+=begin fixture
+=for para :id<p1> :v<one> :f(False) :t<a b>
+One.
+
+=for para :id<p2> :v<two>
+Two.
+=end fixture
+=for assert :caption(':attr holds for a value')
+para[ :id<p1> :v ]
+=for assert :caption(':!attr holds for false')
+para[ :id<p1> :!f ]
+=for assert :absent :caption(':attr does not hold for false')
+para[ :id<p1> :f ]
+=for assert :caption(':?attr holds for a false value that exists')
+para[ :id<p1> :?f ]
+=for assert :caption(':!?attr holds when the attribute does not exist')
+para[ :id<p2> :!?f ]
+=for assert :absent :caption(':!?attr does not hold when it exists')
+para[ :id<p1> :!?f ]
+=for assert :caption(':attr<value> holds for an equal value')
+para[ :id<p1> :v<one> ]
+=for assert :absent :caption('and not for another')
+para[ :id<p2> :v<one> ]
+=for assert :caption(':!attr<value> holds for a different value')
+para[ :id<p2> :!v<one> ]
+=for assert :absent :caption(':!attr<value> does not hold when the attribute does not exist')
+para[ :id<p2> :!f<x> ]
+=for assert :caption('~<> holds for an element among the values')
+para[ :id<p1> :t~<b> ]
+=for assert :caption('in holds for any operand')
+para[ :id<p2> :v(in 'one','two') ]
+=end test
+
+=begin test :id<predicates-are-case-sensitive> :caption('predicates are case-sensitive')
+=begin fixture
+=for para :v<Draft>
+Text.
+=end fixture
+=for assert :caption('the value as written matches')
+para[ :v<Draft> ]
+=for assert :absent :caption('another case does not')
+para[ :v<draft> ]
+=end test
+
+=begin test :id<empty-and-absent-values> :caption('a value, false, an empty value and no declaration give the outcomes the table states')
+=begin fixture
+=for para :id<value> :a<v>
+.
+
+=for para :id<false> :a(False)
+.
+
+=for para :id<empty> :a<>
+.
+
+=for para :id<empty-parens> :a()
+.
+
+=for para :id<empty-string> :a('')
+.
+
+=for para :id<none>
+.
+=end fixture
+=for assert :caption(':attr holds for a value')
+para[ :id<value> :a ]
+=for assert :absent :caption('and not for false or no declaration')
+para[ :id<false> :a ], para[ :id<none> :a ]
+=for assert :caption(':!attr holds for false')
+para[ :id<false> :!a ]
+=for assert :absent :caption('and not for a value or no declaration')
+para[ :id<value> :!a ], para[ :id<none> :!a ]
+=for assert :caption(':?attr holds for a value')
+para[ :id<value> :?a ]
+=for assert :caption('and for false')
+para[ :id<false> :?a ]
+=for assert :absent :caption('and not for no declaration')
+para[ :id<none> :?a ]
+=for assert :caption(':!?attr holds only for no declaration')
+para[ :id<none> :!?a ]
+=for assert :absent :caption('and not for a value, false or an empty value of any notation')
+para[ :id<value> :!?a ], para[ :id<false> :!?a ], para[ :id<empty> :!?a ], para[ :id<empty-parens> :!?a ], para[ :id<empty-string> :!?a ]
+=end test
+
+=begin test :id<membership> :caption('membership holds when every element of the operand is among the values')
+=begin fixture
+=for para :id<A> :tags<draft review>
+.
+
+=for para :id<B> :tags<draft review urgent>
+.
+
+=for para :id<C> :tags<draft>
+.
+
+=for para :id<D> :tags<'draft review'>
+.
+
+=for para :id<E> :tags<specification>
+.
+
+=for para :id<F> :h{draft => 1}
+.
+=end fixture
+=for assert :caption('both elements are among the values')
+para[ :id<A> :tags~<draft review> ]
+=for assert :caption('a further value does not affect the outcome')
+para[ :id<B> :tags~<draft review> ]
+=for assert :absent :caption('one element alone, or one string holding both words, does not suffice')
+para[ :id<C> :tags~<draft review> ], para[ :id<D> :tags~<draft review> ]
+=for assert :caption('quotation marks make the operand one element')
+para[ :id<D> :tags~<'draft review'> ]
+=for assert :absent :caption('two separate values are not that element')
+para[ :id<A> :tags~<'draft review'> ]
+=for assert :absent :caption('not a substring')
+para[ :tags~<spec> ]
+=for assert :caption('the whole value is an element')
+para[ :tags~<specification> ]
+=for assert :absent :caption('a hash yields no match')
+para[ :h~<draft> ]
+=for assert :caption('the hash attribute exists')
+para[ :?h ]
+=end test
+
+=begin test :id<in-holds-when-a-value-equals-an-operand> :caption('in holds when a value of the attribute equals an operand')
+=begin fixture
+=for para :id<a> :tags<approved secret>
+A.
+
+=for para :id<b> :tags<draft>
+B.
+=end fixture
+=for assert :caption('other values of the attribute do not affect the outcome')
+para[ :id<a> :tags(in 'approved') ]
+=for assert :caption('any of several operands suffices')
+para[ :id<b> :tags(in 'issued','draft') ]
+=for assert :absent :caption('no value equals an operand')
+para[ :id<b> :tags(in 'approved') ]
+=end test
+
+=begin test :id<in-selector-operand> :caption('a selector operand of in supplies the values')
+=begin resource :name<vocabulary.podlite>
+=defn draft
+A draft.
+
+=defn issued
+Issued.
+
+=para paid
+=end resource
+=begin resource :name<invoices.podlite>
+=for Invoice :id<a> :type<draft>
+A.
+
+=for Invoice :id<b> :type<paid>
+B.
+=end resource
+=begin fixture
+=include file:./invoices.podlite | Invoice[ :type(in file:./vocabulary.podlite | defn, para) ]
+=end fixture
+=for assert :caption('a value among the terms is selected')
+Invoice[ :id<a> ]
+=for assert :absent :caption('a value outside them, written only in a block with no single value, is not')
+Invoice[ :id<b> ]
+=end test

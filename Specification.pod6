@@ -30,6 +30,7 @@ This file is deliberately specified in Podlite format
     =item Added tests for C<=set> targeting, predicates over configuration, relative paths in selector sources, and tests brought in by C<=include>.
     =item Added tests for heading levels, the C<:numbered> option, input and output blocks, semantic blocks, pictures and formulas.
     =item Added tests for test blocks: the blocks a test contains, their options, and the document an assertion is resolved against.
+    =item Added tests for selectors: internal addresses, predicate operators, the universal pattern, empty and absent values, membership, operations in parentheses, combined and non-matching conditions, and wildcard sources of C<=include>.
     =item Added a list of the tests at the end of the specification.
     =item Described a C<=pod> block nested in another as a group.
 
@@ -792,6 +793,8 @@ whitespace, carries none of the characters that structure a selection, and is
 never empty. A path containing a C<#> cannot be written there, and no escape is
 provided.
 
+=include file:./t/selectors.podlite#address-ends-at-whitespace
+
 If the scheme is omitted, it is read as C<file:>. The vertical bar required
 before a selection is then what tells a source from a block name:
 
@@ -799,6 +802,8 @@ before a selection is then what tells a source from a block name:
 =include file:./guide.podlite#Overview
 =include article.podlite | head1
 =end code
+
+=include file:./t/selectors.podlite#omitted-scheme-is-file
 
 Within a link markup code the address is bounded by what ends the code. Three
 rules bound it, and they apply in this order:
@@ -838,6 +843,8 @@ draft	Draft
 | Invoice[ :status(in data:statuses#value) ]
 =end code
 
+=include file:./t/selectors.podlite#column-address-in-data
+
 =head3 Predicates
 
 A pattern may carry a D<predicate>. The predicate is written in square brackets
@@ -865,7 +872,11 @@ same thing in a declaration and in a predicate.
  C«[ :attr~<element> ]»   the operand occurs among the values
  C«[ :attr(in V,W) ]»     a value of the attribute is any of the operands
 
+=include file:./t/predicates.podlite#predicate-operators
+
 Predicates are case-sensitive. No adjustment to case is provided.
+
+=include file:./t/predicates.podlite#predicates-are-case-sensitive
 
 A predicate tests the block it is applied to, not the blocks within it. A
 selected block keeps all of its content, and a negated condition does not remove
@@ -905,11 +916,15 @@ is by configuration rather than by name:
 =include file:./guide.podlite | *[ :platform<arm> ]
 =end code
 
+=include file:./t/selectors.podlite#universal-pattern-selects-by-configuration
+
 C<*> is not a valid identifier start, so a pattern and a block name cannot be
 confused.
 
 A universal pattern without a predicate selects every block and filters
 nothing.
+
+=include file:./t/selectors.podlite#universal-pattern-without-predicate
 
 Within a single selection, one attribute may be encountered as several kinds
 of value, because a universal pattern matches blocks of every name. Every
@@ -931,6 +946,8 @@ states the outcome for each predicate:
  C«:attr()»         false          false           true            false
  C«:attr('')»       false          false           true            false
  not declared       false          false           false           true
+
+=include file:./t/predicates.podlite#empty-and-absent-values
 
 No predicate distinguishes an empty list from an empty string. An empty list
 holds no values. An empty string is one value of zero length. Both are false
@@ -971,6 +988,8 @@ value.
 Addressing the keys of a hash is not defined. Applied to a hash, C«~<>» yields
 no match.
 
+=include file:./t/predicates.podlite#membership
+
 =head3 Operations in parentheses
 
 The operation is named, and its operands follow the name inside parentheses:
@@ -1007,6 +1026,8 @@ operand. Other values do not affect the outcome, as in:
 | note[ :tags(in 'approved') ]      # holds
 =end code
 
+=include file:./t/predicates.podlite#in-holds-when-a-value-equals-an-operand
+
 A literal operand is a number or a value in quotation marks. Alternatively,
 a L<selector|#Selectors> supplies the values and is the sole operand. If the
 operand is a selector, the condition holds when a value of the attribute
@@ -1019,6 +1040,8 @@ is one the selector yields:
 The term is taken from a definition, as
 L<definition lists|#Definition lists> state. Nothing is taken from a block
 whose kind defines no single value.
+
+=include file:./t/predicates.podlite#in-selector-operand
 
 A source is resolved and read before a condition carrying a selector reports
 a match or a non-match. Failure to resolve a source is an
@@ -1038,12 +1061,16 @@ by quotation marks belongs to the condition it appears in.
 code[ :lang<python> :numbered ]
 =end code
 
+=include file:./t/selectors.podlite#whitespace-joins-conditions
+
 A comma separates whole patterns, and a block is selected when it matches any
 of them:
 
 =begin code
 head1, head2, code[ :lang<python> ]
 =end code
+
+=include file:./t/selectors.podlite#comma-joins-patterns
 
 The result is a set in document order. A block that matches more than one
 pattern appears once.
@@ -1053,9 +1080,13 @@ pattern appears once.
 A condition naming an attribute that no block declares holds for no block. No
 diagnostic is required.
 
+=include file:./t/selectors.podlite#undeclared-attribute
+
 A value whose kind does not admit the test is reported as a non-match. The
 selection is not interrupted, which the universal pattern requires. Under it,
 values of unexpected kinds are encountered by construction.
+
+=include file:./t/selectors.podlite#kinds-of-value-do-not-interrupt
 
 =head2 Block types
 
@@ -2738,6 +2769,8 @@ of content from all the Markdown files:
   =include file:./includes/*.md
 =end code
 
+=include file:./t/include-directive.podlite#wildcard-source
+
 It is possible to include blocks from the same document.
 This feature proves valuable when reusing parts of existing content.
 
@@ -3834,6 +3867,8 @@ and creating links. An identifier that occurs twice in a document is an error.
 
 In this example, the link reference to the header block identified by "intro"
 rather than the name "Introduction" and to the paragrapth block with identifier "id1".
+
+=include file:./t/selectors.podlite#address-names-a-block-by-id
 
 Normally a link is presented as some rendered version of the link
 specification itself. However, you can specify an alternate

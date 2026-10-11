@@ -43,3 +43,19 @@ para
 =for assert :caption('the included test is reached by a selector')
 test[ :id<inner> ]
 =end test
+
+=begin test :id<wildcard-source> :caption('a wildcard source reads every matching file')
+=begin resource :name<includes/a.md>
+# A
+=end resource
+=begin resource :name<includes/b.md>
+## B
+=end resource
+=begin fixture
+=include file:./includes/*.md
+=end fixture
+=for assert :caption('the heading of the first file is brought in')
+head1
+=for assert :caption('the heading of the second file is brought in')
+head2
+=end test
