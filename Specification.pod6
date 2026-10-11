@@ -74,6 +74,11 @@ This file is deliberately specified in Podlite format
     =item Stated that a C<=fixture> whose C<=include> fails to resolve remains a document, that assertions are resolved against it as read, and that the failure is reported separately.
     =item Stated where C<=set> assignments before an C<=include> go when it brings no block or fails to resolve.
     =item Stated that an C<=alias> is scoped to its file and reaches blocks placed there by C<=include>.
+    =item Stated that closing angles close what is open, nearest first, and that the rule on longer sequences applies only to a sequence closing nothing.
+    =item Stated that double angles must be balanced within delimiters of double angles.
+    =item Stated how a nested markup code ends and when a warning is issued.
+    =item Stated how a reserved code is read and rendered when written.
+    =item Fixed the summary row of C<M<>> to match its section.
     =item Fixed the notification attribute name to C<:notice> where it differed from the rule.
 
 =head2 v2.0
@@ -3371,6 +3376,13 @@ the delimiters I<can> be used, but they must be balanced. For example:
     C<  $foo<bar>   >
     C<< $foo<<bar>> >>
 
+A sequence of closing angles closes, nearest first, whatever is still open:
+a balanced sequence the same length as the delimiters, a nested markup code,
+or the markup code itself. The rule on sequences longer than the delimiters
+applies only to a sequence that closes nothing.
+
+Double angles must likewise be balanced within delimiters of double angles.
+
 If an unbalanced angle is needed, either use different delimiters:
 
 =begin code :allow<B>
@@ -3392,6 +3404,19 @@ and abbreviated blocks, ending with blank a line). Podlite parsers are
 required to issue a warning whenever a markup code is terminated by
 the end of an outer block rather than by its own delimiter (unless the
 user explicitly disables the warning).
+
+A nested markup code ends at its own matching delimiter. An unbalanced
+closing delimiter of the enclosing markup code inside it is part of its own
+contents. If the nested code has no matching delimiter before the end of the
+enclosing block, the angle brackets it leaves unbalanced are treated as part
+of the contents of the enclosing markup code, opening ones too. The nested
+code then ends at the end of the enclosing markup code. Podlite parsers are
+required to issue a warning in both cases.
+
+The markup codes C<Q<>> and C<Y<>> are reserved and are not written in
+documents. One that is written is read as a markup code, its contents are
+formatted normally, and it is rendered with its letter and delimiters around
+the contents; a warning is issued.
 
 
 =head3 Significance indicators
@@ -4660,7 +4685,7 @@ icons that indicate the significance of the content.
     C<J<...>>             Subscript
     C<K<...>>             Keyboard input (typically rendered fixed-width)
     C<L<...|...>>         Link (C<L<R<display text>|R<destination URI>>>)
-    C<M<...:...>>         Module-defined code (C<M<R<scheme>:R<contents>>>)
+    C<M<...|...>>         Module-defined code (C<M<R<content text>|R<module name>>>)
     C<N<...>>             Note (not rendered inline)
     C<O<...>>             Strikethrough
     C<P<...>>             Inline eqivalent for C<=picture> block
