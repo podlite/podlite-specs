@@ -16,3 +16,120 @@ head1[ :w<inner> ]
 =for assert :caption('the included heading receives the value outer for the key set before =include')
 head1[ :x<outer> ]
 =end test
+
+=begin test :id<later-set-outranks-carried-set> :caption('a =set after an empty include overrides the carried one')
+=begin resource :name<part.podlite>
+=para Only.
+=end resource
+=begin fixture
+=set :v<1>
+=include file:./part.podlite | head1
+=set :v<2>
+
+=head2 After
+=end fixture
+=for assert :caption('the later value wins')
+head2[ :v<2> ]
+=for assert :absent :caption('the carried value is overridden')
+head2[ :v<1> ]
+=end test
+
+=begin test :id<directives-and-comments-are-transparent-to-set> :caption('directives and comments between =set and a block do not take the assignment')
+=begin fixture
+=set :caption Renewable energy sources
+=config table :width<100%>
+=alias COMPANY Acme Corp
+=comment Approved
+=begin table
+Source      Type
+=========   ==========
+Solar       photovoltaic
+Wind        turbine
+=end table
+=end fixture
+=for assert :caption('the table receives the caption')
+table[ :?caption ]
+=end test
+
+=begin test :id<set-reaches-first-included-block> :caption('=set before =include goes to the first included block that is not transparent')
+=begin resource :name<part.podlite>
+=comment note
+=head1 Included
+=end resource
+=begin fixture
+=set :v<1>
+=include file:./part.podlite
+
+=para After.
+=end fixture
+=for assert :caption('the included heading receives the assignment')
+head1[ :v<1> ]
+=for assert :caption('the block after the include is there')
+para
+=for assert :absent :caption('the next block does not receive it')
+para[ :v<1> ]
+=end test
+
+=begin test :id<empty-selection-passes-set-on> :caption('an include that resolves to nothing passes =set on to the next block')
+=begin resource :name<part.podlite>
+=para Only.
+=end resource
+=begin fixture
+=set :v<1>
+=include file:./part.podlite | head1
+
+=head2 After
+=end fixture
+=for assert :caption('the next block receives the assignment')
+head2[ :v<1> ]
+=end test
+
+=begin test :id<comments-only-file-passes-set-on> :caption('an included file holding only comments passes =set on')
+=begin resource :name<notes.podlite>
+=comment first
+=comment second
+=end resource
+=begin fixture
+=set :v<1>
+=include file:./notes.podlite
+
+=head2 After
+=end fixture
+=for assert :caption('the next block receives the assignment')
+head2[ :v<1> ]
+=end test
+
+=begin test :id<included-set-does-not-leak> :caption('=set at the end of an included file does not reach the parent')
+=begin resource :name<part.podlite>
+=head1 Included
+
+=set :v<1>
+=end resource
+=begin fixture
+=include file:./part.podlite
+
+=para After.
+=end fixture
+=for assert :caption('the block after the include is there')
+para
+=for assert :absent :caption('it does not receive the assignment')
+para[ :v<1> ]
+=end test
+
+=begin test :id<carried-set-stays-in-its-block> :caption('=set carried past an empty include does not leave the containing block')
+=begin resource :name<part.podlite>
+=para Only.
+=end resource
+=begin fixture
+=begin nested
+=set :v<1>
+=include file:./part.podlite | head1
+=end nested
+
+=para After.
+=end fixture
+=for assert :caption('the block after the container is there')
+para
+=for assert :absent :caption('it does not receive the assignment')
+para[ :v<1> ], nested[ :v<1> ]
+=end test

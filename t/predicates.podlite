@@ -1,0 +1,38 @@
+=begin test :id<include-selection-sees-set-of-its-file> :caption('the selection of an include sees =set of the file it reads')
+=begin resource :name<part.podlite>
+=set :v<1>
+=para Assigned.
+
+=head1 Other
+=end resource
+=begin fixture
+=include file:./part.podlite | *[ :v<1> ]
+=end fixture
+=for assert :caption('the assigned paragraph is selected')
+para
+=for assert :absent :caption('the block without the assignment is not')
+head1
+=end test
+
+=begin test :id<negated-predicate-keeps-content> :caption('a negated predicate does not remove blocks within a selected block')
+=begin resource :name<part.podlite>
+=begin pod
+=for para :draft
+Unfinished text.
+
+=para Finished text.
+=end pod
+=end resource
+=begin fixture
+=include file:./part.podlite | *[ :!?draft ]
+=end fixture
+=for assert :caption('the draft paragraph comes with the block that holds it')
+para[ :?draft ]
+=begin fixture
+=include file:./part.podlite | para[ :!?draft ]
+=end fixture
+=for assert :caption('a paragraph without the option is selected')
+para
+=for assert :absent :caption('a paragraph tested by the predicate itself is left out')
+para[ :?draft ]
+=end test

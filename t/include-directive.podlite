@@ -29,3 +29,17 @@ para[ :v<own> ]
 =for assert :absent :caption('the directive is not reached when it resolves to no block')
 include
 =end test
+
+=begin test :id<included-test-is-a-block-of-the-document> :caption('a test brought by an include is a block of the document')
+=begin resource :name<cases.podlite>
+=begin test :id<inner>
+=for assert
+para
+=end test
+=end resource
+=begin fixture
+=include file:./cases.podlite
+=end fixture
+=for assert :caption('the included test is reached by a selector')
+test[ :id<inner> ]
+=end test

@@ -149,3 +149,33 @@ para[ :v~<a> ]
 =for assert :absent :caption('the including value b is not retained in the included paragraph')
 para[ :v~<b> ]
 =end test
+
+=begin test :id<written-attribute-outranks-set-across-include> :caption('an attribute written on an included block outranks =set before the include')
+=begin resource :name<part.podlite>
+=for head1 :v<own>
+Included
+=end resource
+=begin fixture
+=set :v<set>
+=include file:./part.podlite
+=end fixture
+=for assert :caption('the written value stays')
+head1[ :v<own> ]
+=for assert :absent :caption('the assignment does not replace it')
+head1[ :v<set> ]
+=end test
+
+=begin test :id<set-outranks-config-of-included-file> :caption('=set before =include overrides =config of the included file')
+=begin resource :name<part.podlite>
+=config head1 :v<config>
+=head1 Included
+=end resource
+=begin fixture
+=set :v<set>
+=include file:./part.podlite
+=end fixture
+=for assert :caption('the assignment wins')
+head1[ :v<set> ]
+=for assert :absent :caption('the default of the included file yields')
+head1[ :v<config> ]
+=end test

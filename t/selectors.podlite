@@ -32,3 +32,22 @@ para[ :v<part> ]
 =for assert :absent :caption('the value book from the including document does not replace the value part')
 para[ :v<book> ]
 =end test
+
+=begin test :id<relative-path-from-the-file-it-is-written-in> :caption('a relative path resolves against the file it is written in')
+=begin resource :name<includes/guide.podlite>
+=include file:./part.podlite
+=end resource
+=begin resource :name<includes/part.podlite>
+=head2 Inner
+=end resource
+=begin resource :name<part.podlite>
+=head3 Wrong
+=end resource
+=begin fixture
+=include file:./includes/guide.podlite
+=end fixture
+=for assert :caption('the file beside the including file is reached')
+head2
+=for assert :absent :caption('the file beside the parent is not')
+head3
+=end test

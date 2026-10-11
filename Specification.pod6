@@ -27,6 +27,7 @@ This file is deliberately specified in Podlite format
     =item Added tests for the block frame, kept in files under C<t/> and included after the rules they check: the three forms of a block, where a block ends, the virtual margin, and indentation as code.
     =item Added tests for block configuration, kept in files under C<t/> and included after the rules they check: the notations of a value, empty values, continuation lines, the C<:nested> and C<:lang> options, and the language of a Markdown fence.
     =item Added tests for configuration precedence and for C<=config>, C<=set> and selectors across C<=include>.
+    =item Added tests for C<=set> targeting, predicates over configuration, relative paths in selector sources, and tests brought in by C<=include>.
     =item Added a list of the tests at the end of the specification.
     =item Described a C<=pod> block nested in another as a group.
 
@@ -761,6 +762,8 @@ which that source is written, not the parent including document. This also
 applies to a selector used as an operand of C<in>. Within tests, the rules in
 L<#Test blocks> also apply.
 
+=include file:./t/selectors.podlite#relative-path-from-the-file-it-is-written-in
+
 A selector whose source is another file is applied without the configuration
 in effect in the document containing the selector.
 
@@ -842,6 +845,8 @@ them from options written on the block. A block is
 selected when its name matches the pattern and every condition of the
 predicate holds.
 
+=include file:./t/predicates.podlite#include-selection-sees-set-of-its-file
+
 Conditions are written in the syntax of the
 L<block configuration table|#configuration_syntax>, so an operator means the
 same thing in a declaration and in a predicate.
@@ -878,6 +883,8 @@ Unfinished text.
 =begin code
 =include file:./part.podlite | *[ :!?draft ]
 =end code
+
+=include file:./t/predicates.podlite#negated-predicate-keeps-content
 
 A value containing whitespace is written in quotation marks, as it is in a
 L<declaration|#configuration_syntax>:
@@ -2698,6 +2705,8 @@ not it resolves.
 
 =include file:./t/include-directive.podlite#include-directive-is-not-a-block
 
+=include file:./t/include-directive.podlite#included-test-is-a-block-of-the-document
+
 A found block brings its content with it, whether or not the blocks within it
 match the selector. A block contained in another found block is not placed a
 second time: the included content consists of the found blocks that no other
@@ -4196,6 +4205,10 @@ For example, a code block can override a preconfigured language:
 
 =include file:./t/block-pre-configuration.podlite#block-set-config-precedence
 
+=include file:./t/block-pre-configuration.podlite#written-attribute-outranks-set-across-include
+
+=include file:./t/block-pre-configuration.podlite#set-outranks-config-of-included-file
+
 =include file:./t/block-pre-configuration.podlite#config-reaches-markdown
 
 =include file:./t/block-pre-configuration.podlite#included-config-outranks-including-config
@@ -4234,6 +4247,8 @@ the same lexical scope. Like C<=config>, it sets attributes for a
 block; unlike C<=config>, it targets a single block instance rather
 than all blocks of a type. Attribute values may include multiline
 content with inline markup codes.
+
+=include file:./t/block-attribute-assignment-with-set.podlite#carried-set-stays-in-its-block
 
 The directive has two syntax variants. Configuration syntax uses
 standard delimited attribute values, for example:
@@ -4287,6 +4302,8 @@ The table receives all three attributes (C<:id>, C<:folded>, C<:caption>).
 When multiple C<=set> directives assign the same attribute key, the last
 assignment wins, regardless of syntax variant.
 
+=include file:./t/block-attribute-assignment-with-set.podlite#later-set-outranks-carried-set
+
 Directives (C<=set>, C<=config>, C<=alias>, C<=include>, C<=boundary>)
 and C<=comment> blocks are transparent to C<=set> targeting and do not
 consume the assignment, except an C<=include> directive that fails to
@@ -4308,9 +4325,17 @@ Wind        turbine
 The C<=table> block receives the C<:caption> attribute despite the
 intervening directives and C<=comment>.
 
+=include file:./t/block-attribute-assignment-with-set.podlite#directives-and-comments-are-transparent-to-set
+
 For C<=include>, attributes apply to the first block of the resolved
 included content, under the same rules of transparency. If there is no such
 block, they pass on to the next block after the C<=include> directive.
+
+=include file:./t/block-attribute-assignment-with-set.podlite#set-reaches-first-included-block
+
+=include file:./t/block-attribute-assignment-with-set.podlite#empty-selection-passes-set-on
+
+=include file:./t/block-attribute-assignment-with-set.podlite#comments-only-file-passes-set-on
 
 If the C<=include> directive fails to resolve, for any reason, the attributes are not applied.
 Their non-application is reported with that failure, instead of a warning that
@@ -4321,6 +4346,8 @@ and do not leak to the parent file. On the first included block, assignments
 from that file override those accumulated before C<=include> for the same key.
 
 =include file:./t/block-attribute-assignment-with-set.podlite#included-set-outranks-including-set
+
+=include file:./t/block-attribute-assignment-with-set.podlite#included-set-does-not-leak
 
 If no block follows before the end of the containing block or file,
 parsers issue a warning that the C<=set> directive has no target.
