@@ -196,14 +196,16 @@ code[ :lang<python> ]
 code[ :lang<perl> ], para
 =end test
 
-=begin test :id<undeclared-attribute> :caption('a condition naming an attribute no block declares holds for no block')
+=begin test :id<undeclared-attribute> :caption('predicates on an attribute no block declares follow the table')
 =begin fixture
 =para Text.
 =end fixture
 =for assert :caption('the paragraph is there')
 para
-=for assert :absent :caption('a condition on an undeclared attribute selects nothing')
-para[ :nosuch ], para[ :?nosuch ]
+=for assert :absent :caption(':attr, :!attr and :?attr do not hold')
+para[ :nosuch ], para[ :!nosuch ], para[ :?nosuch ]
+=for assert :caption(':!?attr holds')
+para[ :!?nosuch ]
 =end test
 
 =begin test :id<kinds-of-value-do-not-interrupt> :caption('a value of a kind the test does not admit is a non-match and the selection goes on')

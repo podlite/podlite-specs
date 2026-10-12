@@ -1081,8 +1081,8 @@ The result is a set in document order.
 
 =head3 Non-matching conditions
 
-A condition naming an attribute that no block declares holds for no block. No
-diagnostic is required.
+No diagnostic is required for a condition naming an attribute that no block
+declares.
 
 =include file:./t/selectors.podlite#undeclared-attribute
 
