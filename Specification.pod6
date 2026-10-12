@@ -740,14 +740,13 @@ For example:
 
 =end table
 
-Please note that while the Selector blocks provide a way to query and filter specific elements 
-within Markdown files, Markdown itself doesn't have formal named blocks like the Podlite syntax. 
-Instead, Markdown uses a lightweight markup to structure content. The above table provides a mapping
-between Podlite block names and their corresponding Markdown elements.
+Selectors also apply to Markdown files, which have no formal named blocks and
+use lightweight markup for structure. The following table maps Podlite block
+names to Markdown elements.
 
 =begin table :nested :caption("A table of correspondences for some Podlite blocks and markdown blocks")
 
-    Podlite                                             Markdown                Describtion
+    Podlite                                             Markdown                Description
     _______________________________________         ______________          _____________________________________
     C<=head1>, C<=head2>, ...                                 #, ##, ...            Heading level 1,2...
 
