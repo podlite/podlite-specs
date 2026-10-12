@@ -740,7 +740,7 @@ For example:
 
 =end table
 
-Selectors also apply to Markdown files, which have no formal named blocks and
+Selectors also apply to Markdown files, which have no formal block names and
 use lightweight markup for structure. The following table maps Podlite block
 names to Markdown elements.
 
@@ -1925,10 +1925,10 @@ Columns are separated by two or more consecutive whitespace characters
 (double-space),
 or by a vertical line (C<|>) or a border intersection (C<+>), either of
 which must be separated from any content by at least one whitespace
-character.  Note that only one column separator type is allowed in a single line,
+character. Only one column separator type is allowed in a single line,
 but different lines are allowed to use different visible column separator types
-(that style is not recommended).  Using a mixture of visible and non-visible
-column separator types in a table is an error.
+(that style is not recommended). A mixture of visible and non-visible column
+separator types in a table produces a warning (L<#Error Recovery>).
 
 In a simple table, a C<|>, a C<+> or whitespace enclosed by a markup code
 whose delimiters are on one line belongs to the cell (L<#Markup codes>).
