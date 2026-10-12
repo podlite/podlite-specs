@@ -81,6 +81,7 @@ This file is deliberately specified in Podlite format
     =item Stated that an C<=include> with no source selects from one state of the current document, where includes of other sources are resolved and includes with no source are left as written, and that one standing inside a block it would bring fails to resolve, with the failure reported.
     =item Fixed the summary row of C<M<>> to match its section.
     =item Fixed the notification attribute name to C<:notice> where it differed from the rule.
+    =item Stated that a C<|>, a C<+> or whitespace enclosed by a markup code whose delimiters are on one line belongs to the table cell, with no transition period.
 
 =head2 v2.0
 
@@ -725,16 +726,16 @@ For example:
 
     Selector                                        Description
     _______________________________________         ___________________________________________________
-    head1, head2, item1                             all head1, head2 and item1 blocks from document
+    C<head1, head2, item1>                          all head1, head2 and item1 blocks from document
 
-    file:article.pod6 | head1, head2                all head1 and head2 blocks from article.pod6 file
+    C<file:article.pod6 | head1, head2>             all head1 and head2 blocks from article.pod6 file
 
-    file:./includes/*.pod6 | head1, head2           all head1 and head2 blocks from pod6 files placed 
+    C<file:./includes/*.pod6 | head1, head2>        all head1 and head2 blocks from pod6 files placed 
                                                     in includes directory
 
-    doc:Data::Dumper | code                         all code blocks from a module documentation
+    C<doc:Data::Dumper | code>                      all code blocks from a module documentation
 
-    file:/docs/**/*.md | head1                      search headers with first level for all ".md" files 
+    C<file:/docs/**/*.md | head1>                   search headers with first level for all ".md" files 
                                                     within the "docs" directory and its subdirectories.
 
 =end table
@@ -1930,6 +1931,9 @@ but different lines are allowed to use different visible column separator types
 (that style is not recommended).  Using a mixture of visible and non-visible
 column separator types in a table is an error.
 
+In a simple table, a C<|>, a C<+> or whitespace enclosed by a markup code
+whose delimiters are on one line belongs to the cell (L<#Markup codes>).
+
 Rows can be specified in one of two ways: either one row per line, with
 no separators; or multiple lines per row with explicit horizontal
 separators (whitespace, intersections (C<+>), or horizontal lines: C<->,
@@ -2170,9 +2174,11 @@ For loading external CSV or TSV data into tables, use C<=data-table>
 
 =head4 Error Recovery
 
-The column separator type is determined per line. If visible separators
-(C<|> or C<+>) are present, they are used; otherwise, sequences of two
-or more consecutive whitespace characters serve as separators. Mixed
+The column separator type is determined per line, from the separators
+outside markup codes whose delimiters are on that line. If visible
+separators (C<|> or C<+>) are present, they are used; otherwise,
+sequences of two or more consecutive whitespace characters serve as
+separators. Mixed
 separator types across lines produce a warning; the table is not
 rejected.
 
