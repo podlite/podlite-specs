@@ -76,7 +76,6 @@ This file is deliberately specified in Podlite format
     =item Stated where C<=set> assignments before an C<=include> go when it brings no block or fails to resolve.
     =item Stated that an C<=alias> is scoped to its file and reaches blocks placed there by C<=include>.
     =item Stated that closing angles close what is open, nearest first, and that the rule on longer sequences applies only to a sequence closing nothing.
-    =item Stated that double angles must be balanced within delimiters of double angles.
     =item Stated how a nested markup code ends and when a warning is issued.
     =item Stated how a reserved code is read and rendered when written.
     =item Stated that an C<=include> with no source selects from one state of the current document, where includes of other sources are resolved and includes with no source are left as written, and that one standing inside a block it would bring fails to resolve, with the failure reported.
@@ -886,7 +885,7 @@ same thing in a declaration and in a predicate.
 
 =include file:./t/predicates.podlite#predicate-operators
 
-Predicates are case-sensitive. No adjustment to case is provided.
+Predicates are case-sensitive.
 
 =include file:./t/predicates.podlite#predicates-are-case-sensitive
 
@@ -930,12 +929,6 @@ is by configuration rather than by name:
 
 =include file:./t/selectors.podlite#universal-pattern-selects-by-configuration
 
-C<*> is not a valid identifier start, so a pattern and a block name cannot be
-confused.
-
-A universal pattern without a predicate selects every block and filters
-nothing.
-
 =include file:./t/selectors.podlite#universal-pattern-without-predicate
 
 Within a single selection, one attribute may be encountered as several kinds
@@ -962,9 +955,8 @@ states the outcome for each predicate:
 =include file:./t/predicates.podlite#empty-and-absent-values
 
 No predicate distinguishes an empty list from an empty string. An empty list
-holds no values. An empty string is one value of zero length. Both are false
-and both satisfy the tests above in the same way. The distinction is preserved
-in the document tree.
+holds no values. An empty string is one value of zero length. The distinction
+is preserved in the document tree.
 
 =head3 Membership
 
@@ -1065,9 +1057,9 @@ L<#Internal addresses>.
 
 =head3 Combining conditions
 
-Whitespace separates one condition from the next. A block is selected only
-when every condition holds. Whitespace enclosed by brackets, by parentheses or
-by quotation marks belongs to the condition it appears in.
+Whitespace separates one condition from the next. Whitespace enclosed by
+brackets, by parentheses or by quotation marks belongs to the condition it
+appears in.
 
 =begin code
 code[ :lang<python> :numbered ]
@@ -1084,8 +1076,7 @@ head1, head2, code[ :lang<python> ]
 
 =include file:./t/selectors.podlite#comma-joins-patterns
 
-The result is a set in document order. A block that matches more than one
-pattern appears once.
+The result is a set in document order.
 
 =head3 Non-matching conditions
 
@@ -3102,8 +3093,7 @@ test is written in, and not among the declared resources of the test.
 =include file:./t/test-blocks.podlite#assertion-source-resolves-against-the-test-file
 
 An assertion whose named source cannot be obtained does not hold, whether or not
-it carries C<:absent>. A missing source is not a document in which nothing
-matched.
+it carries C<:absent>.
 
 =head4 A document containing tests
 
@@ -3395,8 +3385,6 @@ A sequence of closing angles closes, nearest first, whatever is still open:
 a balanced sequence the same length as the delimiters, a nested markup code,
 or the markup code itself. The rule on sequences longer than the delimiters
 applies only to a sequence that closes nothing.
-
-Double angles must likewise be balanced within delimiters of double angles.
 
 If an unbalanced angle is needed, either use different delimiters:
 
