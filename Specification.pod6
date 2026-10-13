@@ -82,8 +82,10 @@ This file is deliberately specified in Podlite format
     =item Fixed the summary row of C<M<>> to match its section.
     =item Fixed the notification attribute name to C<:notice> where it differed from the rule.
     =item Stated that a C<|>, a C<+> or whitespace enclosed by a markup code whose delimiters are on one line belongs to the table cell, with no transition period.
+    =item Stated that markup codes in a string value are read only if C<=set> assigns it, with no transition period.
 
-=head2 v2.0
+=for head2 :folded
+v2.0
 
 =head3 Added:
     =item Attributes on Markdown fenced code blocks,
@@ -302,7 +304,8 @@ All option keys and values are constants: Podlite is a specification
 language, not a programming language. An option value cannot be a closure.
 
 Whitespace surrounding a value is not significant and is removed. The
-delimiters that enclose a value determine how it is read.
+delimiters that enclose a value determine how it is read. Markup codes in a
+string value are read only if C<=set> assigns it.
 
 A single word enclosed in angle brackets is not converted to another type. A
 comma is retained as part of the value, so C<< :key<a,b> >> is read as the
@@ -3179,7 +3182,7 @@ In the delimited form of C<=picture>, multiple text blocks can be included:
 =end code
 
 All inline markup codes supported by L<ordinary paragraph blocks|#Ordinary paragraph blocks>
-can be used within picture captions.
+can be used within the caption that follows the source.
 
 A caption can also be defined using the C<:caption> attribute:
 
@@ -4396,8 +4399,7 @@ B<=set> :lang<en> :numbered
 =end table
 =end code
 
-Alias syntax permits multiline values with inline markup codes, for
-example:
+Alias syntax permits multiline values, for example:
 
 =begin code :allow<B>
 B<=set> :caption Selected B<chemical> elements with their
