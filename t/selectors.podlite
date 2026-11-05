@@ -97,7 +97,7 @@ para[ :id<first> ]
 head2
 =end test
 
-=begin test :id<column-address-in-data> :caption('a column of a data source is addressed by its declared heading')
+=begin test :id<column-address-in-data> :caption('a column of a data source is addressed by its heading')
 =begin fixture
 =begin data :key<statuses> :mime-type('text/tab-separated-values; header=present')
 value	label

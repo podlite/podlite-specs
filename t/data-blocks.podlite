@@ -1,0 +1,196 @@
+=begin test :id<tsv-header-is-present-by-default> :caption('without the header parameter, the first row of TSV names the columns')
+=begin fixture
+=begin data :key<d> :mime-type('text/tab-separated-values')
+value	label
+draft	Draft
+=end data
+
+=for Invoice :id<a> :status<draft>
+A.
+=end fixture
+=for assert :caption('the column is addressed by the heading in the first row')
+Invoice[ :id<a> :status(in data:d#value) ]
+=end test
+
+=begin test :id<csv-header-is-present-by-default> :caption('without the header parameter, the first row of CSV names the columns')
+=begin fixture
+=begin data :key<d> :mime-type('text/csv')
+value,label
+draft,Draft
+=end data
+
+=for Invoice :id<a> :status<draft>
+A.
+=end fixture
+=for assert :caption('the column is addressed by the heading in the first row')
+Invoice[ :id<a> :status(in data:d#value) ]
+=end test
+
+=begin test :id<header-row-supplies-no-values> :caption('the row that names the columns supplies no values')
+=begin fixture
+=begin data :key<d> :mime-type('text/csv; header=present')
+paid
+open
+=end data
+
+=for Invoice :id<a> :status<open>
+A.
+
+=for Invoice :id<b> :status<paid>
+B.
+=end fixture
+=for assert :caption('the column named by the first row holds the value of the second')
+Invoice[ :id<a> :status(in data:d#paid) ]
+=for assert :absent :caption('the heading is not a value of its column')
+Invoice[ :id<b> :status(in data:d#paid) ]
+=for assert :caption('the block with the heading as its value is in the document')
+Invoice[ :id<b> :status<paid> ]
+=end test
+
+=begin test :id<tsv-quote-belongs-to-field> :caption('a quotation mark in TSV is part of the field')
+=begin fixture
+=begin data :key<d> :mime-type('text/tab-separated-values; header=present')
+value	label
+"draft"	Draft
+=end data
+
+=for Invoice :id<a> :status('"draft"')
+A.
+
+=for Invoice :id<b> :status<draft>
+B.
+=end fixture
+=for assert :caption('the value holds the quotation marks')
+Invoice[ :id<a> :status(in data:d#value) ]
+=for assert :absent :caption('the value without them is not in the column')
+Invoice[ :id<b> :status(in data:d#value) ]
+=for assert :caption('the block with the other value is in the document')
+Invoice[ :id<b> :status<draft> ]
+=end test
+
+=begin test :id<tsv-empty-field-is-retained> :caption('an empty field in TSV keeps the fields after it in their columns')
+=begin fixture
+=begin data :key<d> :mime-type('text/tab-separated-values; header=present')
+value	label
+	Draft
+=end data
+
+=for Invoice :id<a> :status<Draft>
+A.
+=end fixture
+=for assert :caption('the second field stays in the second column')
+Invoice[ :id<a> :status(in data:d#label) ]
+=for assert :absent :caption('and does not move into the first')
+Invoice[ :id<a> :status(in data:d#value) ]
+=end test
+
+=begin test :id<field-edge-spaces-are-part-of-the-value> :caption('spaces at the edges of a field are part of its value')
+=begin fixture
+=begin data :key<d> :mime-type('text/csv; header=present')
+value,label
+draft ,Draft
+=end data
+
+=for Invoice :id<a> :status('draft ')
+A.
+
+=for Invoice :id<b> :status<draft>
+B.
+=end fixture
+=for assert :caption('the value keeps its trailing space')
+Invoice[ :id<a> :status(in data:d#value) ]
+=for assert :absent :caption('the trimmed value is not in the column')
+Invoice[ :id<b> :status(in data:d#value) ]
+=for assert :caption('the block with the other value is in the document')
+Invoice[ :id<b> :status<draft> ]
+=end test
+
+=begin test :id<line-of-spaces-is-a-row> :caption('a line of spaces is a row whose field holds those spaces')
+=begin fixture
+=begin data :key<d> :mime-type('text/tab-separated-values; header=present')
+value
+draft
+   
+=end data
+
+=for Invoice :id<a> :status('   ')
+A.
+=end fixture
+=for assert :caption('the spaces are a value of the column')
+Invoice[ :id<a> :status(in data:d#value) ]
+=end test
+
+=begin test :id<indentation-beyond-the-margin-is-data> :caption('whitespace beyond the virtual margin of a data block is part of the data')
+=begin fixture
+=begin data :key<d> :mime-type('text/tab-separated-values; header=present')
+value	label
+  draft	Draft
+=end data
+
+=for Invoice :id<a> :status('  draft')
+A.
+
+=for Invoice :id<b> :status<draft>
+B.
+=end fixture
+=for assert :caption('the value keeps the indentation')
+Invoice[ :id<a> :status(in data:d#value) ]
+=for assert :absent :caption('the value without it is not in the column')
+Invoice[ :id<b> :status(in data:d#value) ]
+=for assert :caption('the block with the other value is in the document')
+Invoice[ :id<b> :status<draft> ]
+=end test
+
+=begin test :id<csv-any-character-belongs-to-a-field> :caption('a non-ASCII character or a tab in CSV is part of the field, quoted or not')
+=begin fixture
+=begin data :key<d> :mime-type('text/csv; header=present')
+value,label
+café,Plain
+dr	aft,Tab
+"é,x",Quoted
+=end data
+
+=for Invoice :id<a> :status<café>
+A.
+
+=for Invoice :id<b> :status('dr	aft')
+B.
+
+=for Invoice :id<c> :status('é,x')
+C.
+
+=for Invoice :id<d> :status<é>
+D.
+=end fixture
+=for assert :caption('the non-ASCII value is in the column')
+Invoice[ :id<a> :status(in data:d#value) ]
+=for assert :caption('the value with a tab is in the column')
+Invoice[ :id<b> :status(in data:d#value) ]
+=for assert :caption('the quoted value with a comma is one value')
+Invoice[ :id<c> :status(in data:d#value) ]
+=for assert :absent :caption('its first part is not a value')
+Invoice[ :id<d> :status(in data:d#value) ]
+=for assert :caption('the block with the other value is in the document')
+Invoice[ :id<d> :status<é> ]
+=end test
+
+=begin test :id<no-break-space-at-field-edge-is-part-of-the-value> :caption('a no-break space at the edge of a field is part of its value')
+=begin fixture
+=begin data :key<d> :mime-type('text/csv; header=present')
+value,label
+ draft,Draft
+=end data
+
+=for Invoice :id<a> :status(' draft')
+A.
+
+=for Invoice :id<b> :status<draft>
+B.
+=end fixture
+=for assert :caption('the value keeps the no-break space')
+Invoice[ :id<a> :status(in data:d#value) ]
+=for assert :absent :caption('the trimmed value is not in the column')
+Invoice[ :id<b> :status(in data:d#value) ]
+=for assert :caption('the block with the other value is in the document')
+Invoice[ :id<b> :status<draft> ]
+=end test
