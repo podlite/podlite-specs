@@ -83,6 +83,7 @@ This file is deliberately specified in Podlite format
     =item Fixed the notification attribute name to C<:notice> where it differed from the rule.
     =item Stated that a C<|>, a C<+> or whitespace enclosed by a markup code whose delimiters are on one line belongs to the table cell, with no transition period.
     =item Stated that markup codes in a string value are read only if C<=set> assigns it, with no transition period.
+    =item Stated that whitespace between two cells of a table is one separator, whatever its width, and that an empty cell is written with visible separators or with C<=row> and C<=cell>, with no transition period.
 
 =for head2 :folded
 v2.0
@@ -1943,6 +1944,9 @@ C<=>, C<_>) between I<every> row. Either style can also have an
 explicitly separated header row at the top. If rows are using the
 two-whitespace-character separator, the row cells should be carefully
 aligned to ensure the table is interpreted as the user intended.
+Whitespace between two cells is one separator, whatever its width; an
+empty cell is written with visible separators (C<|> or C<+>) or with
+C<=row> and C<=cell>.
 
 Each individual table cell is separately formatted, as if it were a
 nested C<=para>. Note that table rows are expected to have the same number
