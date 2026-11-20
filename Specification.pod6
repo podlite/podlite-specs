@@ -4040,7 +4040,7 @@ For example:
   You could also write the code
   L<B<in Latin |> doc:Lingua::Romana::Perligata>
 
-  His L<B<lexiphanic|>defn:lexiphania>> tendencies were, alas, incurable.
+  His L<B<lexiphanic|>defn:lexiphania> tendencies were, alas, incurable.
 =end code
 
 
