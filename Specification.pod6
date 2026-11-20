@@ -301,7 +301,7 @@ any of:
  String with spaces       C«:key('str with spaces')»   C«:key("str with spaces")» C«:key'str with spaces'» C«:key｢str with spaces｣»
  List                     C«:key<a b>»                 C«:key('a','b')»
  Hash, identifier keys    C«:key{:a<x>, :b(42), :c}»   C«:key{a=>1, b=>'str', c=>True}»
- Hash, other keys         C«:key{1=>'x', 2=>'y'}»
+ Hash, other keys         C«:key{1=>'x', 2=>'y'}»      Z<>
 
 =include file:./t/delimited-blocks.podlite#whitespace-in-angles-makes-a-list
 
