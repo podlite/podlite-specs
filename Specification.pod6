@@ -32,6 +32,7 @@ This file is deliberately specified in Podlite format
     =item Added tests for test blocks: the blocks a test contains, their options, and the document an assertion is resolved against.
     =item Added tests for selectors: internal addresses, predicate operators, the universal pattern, empty and absent values, membership, operations in parentheses, combined and non-matching conditions, and wildcard sources of C<=include>.
     =item Added tests for includes of the same document: the one state they select from, and a block of another source seen wherever its C<=include> is written.
+    =item Added tests for data blocks: the default of C<header>, the header row supplying no values, the characters of a CSV and a TSV field, empty TSV fields, spaces at the edges of a field, a line of spaces, and indentation beyond the virtual margin.
     =item Added a list of the tests at the end of the specification.
     =item Described a C<=pod> block nested in another as a group.
 
@@ -84,6 +85,12 @@ This file is deliberately specified in Podlite format
     =item Stated that a C<|>, a C<+> or whitespace enclosed by a markup code whose delimiters are on one line belongs to the table cell, with no transition period.
     =item Stated that markup codes in a string value are read only if C<=set> assigns it, with no transition period.
     =item Stated that whitespace between two cells of a table is one separator, whatever its width, and that an empty cell is written with visible separators or with C<=row> and C<=cell>, with no transition period.
+    =item Described how CSV and TSV rows are read, and that spaces in a field and indentation beyond the virtual margin are data, with no transition period.
+    =item Changed the default of C<header> from C<absent> to C<present> for C<text/csv> and C<text/tab-separated-values> and made any other value an error, with no transition period; explicit C<header=absent> keeps the first row as data.
+    =item Removed the references to RFC 4180 §3, which defines the C<header> parameter for C<text/csv> only.
+    =item Stated that a MIME type inferred from a file extension has no parameters, and that an explicit C<:mime-type> replaces an inferred one with its parameters.
+    =item Stated that a blank line in the body of C<=data-table> is inline body content and an error beside C<:src>, with no transition period.
+    =item Stated that any character other than U+000D, a newline, C<"> or a comma belongs to a CSV field, quoted or not.
 
 =for head2 :folded
 v2.0
@@ -843,11 +850,11 @@ None of the three yields an empty result. A condition carrying a selector
 reports a match or a non-match only if resolution, column selection and
 decoding all succeed.
 
-If a C<data:> source reads one column, the address names it by the heading its
-MIME type declares present. If none is declared, no column has a name. Such an
+If a C<data:> source reads one column, the address names it by its heading
+(L<#Data blocks>). With C<header=absent>, no column has a name. Such an
 address is read only if the content is tabular: C<data:> reaches content of any
 kind, and against an image it does not resolve. For example, a column addressed
-by a declared heading:
+by its heading:
 
 =begin code
 =begin data :key<statuses> :mime-type('text/tab-separated-values; header=present')
@@ -1169,7 +1176,7 @@ Overview
 Details
 =end nested
 
-2.2: Design
+2.2. Design
 =end nested
 
 3. The Implementation
@@ -2199,9 +2206,10 @@ mismatched cell counts produce a warning.
 For tables sourced from C<file:> or C<data:> references, three levels
 of error are defined. If the source cannot be resolved, an error is
 issued and the table is rendered as an empty block. If the source
-cannot be interpreted as CSV, the content is rendered as a C<=code>
-block. If the CSV contains rows with unequal field counts, parsing
-proceeds with padding for missing fields, and a warning is issued.
+cannot be interpreted as CSV or TSV, the content is rendered as a
+C<=code> block. If the CSV or TSV content contains rows with unequal
+field counts, parsing proceeds with padding for missing fields, and a
+warning is issued.
 
 =for head3 :id('Custom blocks')
 Named or modular custom blocks
@@ -2259,9 +2267,9 @@ The inline body form embeds the source data:
 
 =begin code
   =begin data-table :mime-type('text/csv; header=present')
-    name,age,city
-    Alice,30,London
-    Bob,25,Paris
+  name,age,city
+  Alice,30,London
+  Bob,25,Paris
   =end data-table
 =end code
 
@@ -2270,6 +2278,7 @@ option, as in:
 
 =begin code
   =for data-table :src<file:./planets.csv>
+  =    :mime-type('text/csv; header=present')
   =    :columns<name radius_km>
   =    :caption('Inner planets')
 =end code
@@ -2285,8 +2294,38 @@ The reference form refers to a named C<=data> block:
   =for data-table :src<data:sales> :columns<quarter revenue>
 =end code
 
-The body is verbatim and is parsed per C<:mime-type> using RFC 4180
-for C<text/csv> or RFC 4180 §3 for C<text/tab-separated-values>.
+The body is verbatim. In a delimited block, it is read from the virtual
+margin of the block (L<#Data blocks>). The body, or the content
+referenced by C<:src>, is parsed per C<:mime-type>. A line ends at a
+newline (U+000A), whether or not U+000D precedes it.
+
+Rows and fields of C<text/csv> content are read as RFC 4180 §2 defines
+them, with the line ending stated above in place of the CRLF of the RFC.
+Inside a quoted field, a newline belongs to the field. Any character
+other than U+000D, a newline, C<"> or a comma belongs to a field, quoted
+or not.
+
+=include file:./t/data-blocks.podlite#csv-any-character-belongs-to-a-field
+
+=include file:./t/data-blocks.podlite#no-break-space-at-field-edge-is-part-of-the-value
+
+Each line of C<text/tab-separated-values> content is a row, and every tab
+separates two of its fields, either of which may be empty. There is no
+quoting: every other character, including C<">, belongs to a field.
+
+=include file:./t/data-blocks.podlite#tsv-quote-belongs-to-field
+
+=include file:./t/data-blocks.podlite#tsv-empty-field-is-retained
+
+A final newline does not start a row, and empty content has no rows.
+Outside a quoted CSV field, no line is skipped: an empty line is a row
+with one empty field, and a line of spaces (U+0020) is a row whose field
+holds those spaces.
+
+=include file:./t/data-blocks.podlite#line-of-spaces-is-a-row
+
+The C<header> parameter (L<#Data blocks>) determines whether the first
+row names the columns.
 
 =begin nested :notice<warning>
 A CSV field with a literal newline followed by C<=end data-table> at
@@ -2297,6 +2336,14 @@ requires the external file form.
 The standard C<:allow> option enables markup codes within each cell;
 listed codes are interpreted after the cell is parsed from CSV or
 TSV. Without C<:allow>, cell content is plain text.
+
+Leading and trailing spaces of a parsed field are part of its value. The
+spaces are retained in the table cell built from the field and in the
+values a selector reads from a column; C<:allow> codes are interpreted
+after the cell is built. Whitespace in a cell is squeezed only in
+rendering, as in any table cell (L<#Ordinary paragraph blocks>).
+
+=include file:./t/data-blocks.podlite#field-edge-spaces-are-part-of-the-value
 
 The C<:mime-type> option declares the format. With C<:src<data:X>>,
 the format is taken from the referenced block unless a C<:mime-type>
@@ -2309,7 +2356,8 @@ C<:mime-type> may be omitted and is inferred from the HTTP
 C<Content-Type> response header. For inline body, C<:mime-type> is
 required.
 
-Error recovery follows C<=table> rules (L<#Error Recovery>).
+Error recovery follows C<=table> rules (L<#Error Recovery>), except that
+separator recovery does not apply to CSV or TSV.
 
 Each C<=data-table> block can include the following attributes:
 
@@ -2333,7 +2381,9 @@ the directive, not the parent including document. For a URI supplied by
 C<=config>, this is the file declaring that C<=config>.
 
 The C<:src> option and inline body content are mutually exclusive;
-declaring both produces an error at parse time.
+declaring both produces an error at parse time. A blank line in the body
+is inline body content and produces that error when the block has a
+C<:src> option.
 
 =end defn
 
@@ -2374,8 +2424,8 @@ indices, to display strings. For example:
 =end code
 
 Only columns appearing as hash keys receive overrides; other columns
-retain their source name when C<header=present> or numeric index
-when C<header=absent>.
+retain their source name when the C<header> value in effect is
+C<present>, or numeric index when it is C<absent>.
 
 Hash keys referring to columns absent from C<:columns> (or from the
 source when C<:columns> is omitted) produce an error.
@@ -2419,10 +2469,10 @@ use the following syntax:
 
 =begin code :allow<B>
 
-  =begin data :key<sales_data> :mime-type<text/csv>
-    name,month,amount
-    John Doe,January,1000
-    Jane Doe,February,1500
+  =begin data :key<sales_data> :mime-type('text/csv; header=present')
+  name,month,amount
+  John Doe,January,1000
+  Jane Doe,February,1500
   =end data
 
 =end code
@@ -2432,16 +2482,27 @@ of any C<=data> block with a key are addressable via
 the C<data:> schema. For example:
 
 =begin code :allow<B>
-  =begin data B<:key<employee_data>> :mime-type<text/csv>
-    id,name,position,department
-    1,John Doe,Manager,Marketing
-    2,Jane Smith,Developer,Engineering
-    3,Bob Brown,Designer,Product
+  =begin data B<:key<employee_data>> :mime-type('text/csv; header=present')
+  id,name,position,department
+  1,John Doe,Manager,Marketing
+  2,Jane Smith,Developer,Engineering
+  3,Bob Brown,Designer,Product
   =end data
 
   =table B<data:employee_data>
 
 =end code
+
+Tabular content of a C<=data> block is read by the rules of
+L<#Data-table blocks>, whether C<=data-table> or C<=table> reads it or a
+selector reads one of its columns.
+
+In a delimited C<=data> or C<=data-table> block, the body is read from
+the virtual margin of the block (L<#General syntactic structure>).
+Whitespace beyond that margin is part of the data. The data is indented
+in the source by indenting the whole block, including its C<=end> line.
+
+=include file:./t/data-blocks.podlite#indentation-beyond-the-margin-is-data
 
 Each C<=data> block can include several attributes to provide additional information
 about the contained data:
@@ -2460,37 +2521,65 @@ C<:mime-type>
 This option indicates the MIME type of the data, such as C<image/png> for PNG images,
 which helps determine how the data should be interpreted and processed.
 
-The C<header> MIME parameter (per RFC 4180 §3) is recognised on
-C<:mime-type> for CSV and TSV content. It accepts C<present> or
-C<absent>, with default C<absent>. When C<header=present>, the
-renderer treats the first row as column labels in C<=table data:X>:
+The C<header> parameter of C<:mime-type> states whether the first row of
+CSV or TSV content names the columns. The parameter is written
+C<present> or C<absent>; any other value is an error. If the parameter
+is omitted, its value is C<present>.
+
+With C<header=present>, the first row, if any, is the header row of a
+table built from the content. That row supplies the column names used by
+C<:columns>, by C<:rename> and by a C<data:> column address
+(L<#Internal addresses>), and supplies no values to any column. For
+example, a header declared explicitly:
 
 =begin code :allow<B>
   =begin data :key<planets> B<:mime-type('text/csv; header=present')>
-    name,radius_km,moons
-    Mercury,2440,0
-    Venus,6052,0
-    Earth,6371,1
-    Mars,3390,2
+  name,radius_km,moons
+  Mercury,2440,0
+  Venus,6052,0
+  Earth,6371,1
+  Mars,3390,2
   =end data
 
   =for table :caption('Inner planets')
   data:planets
 =end code
 
-For C<=data-table> blocks, the C<:mime-type> option may be omitted
-when the format can be inferred from the source. With
-C<:src<file:X.ext>>, the format is inferred from the file extension
-via the MIME extension table below; matching is case-insensitive and
-multi-dot filenames use the last extension component. With
-C<:src<http:>> or C<:src<https:>>, the format is inferred from the
-HTTP C<Content-Type> response header. For a C<data:> source, see
+=include file:./t/data-blocks.podlite#tsv-header-is-present-by-default
+
+=include file:./t/data-blocks.podlite#csv-header-is-present-by-default
+
+=include file:./t/data-blocks.podlite#header-row-supplies-no-values
+
+With C<header=absent>, every row is data and no column has a name. For
+example, a CSV list of one column:
+
+=begin code :allow<B>
+  =begin data :key<statuses> B<:mime-type('text/csv; header=absent')>
+  paid
+  =end data
+
+  =table data:statuses
+=end code
+
+When CSV or TSV content is exchanged with other software, the C<header>
+parameter should be written explicitly.
+
+For C<=data-table> blocks, the C<:mime-type> option may be omitted when
+the format can be inferred from the source. With C<:src<file:X.ext>>,
+the format is inferred from the file extension via the MIME extension
+table below; matching is case-insensitive and multi-dot filenames use
+the last extension component. The MIME type inferred from a file
+extension has no parameters. With C<:src<http:>> or C<:src<https:>>, the
+MIME type is inferred, with its parameters, from the HTTP
+C<Content-Type> response header. For a C<data:> source, see
 L<#Data-table blocks>.
 
 For inline body and for sources where inference fails (unknown file
 extension, missing or generic HTTP C<Content-Type>, absent file
 extension), C<:mime-type> is required and its omission produces an
-error. An explicit C<:mime-type> always overrides inference.
+error. An explicit C<:mime-type> replaces the inferred MIME type and
+all its parameters.
 
 Here is a list of common MIME types and their corresponding file extensions:
 
