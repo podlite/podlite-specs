@@ -12,11 +12,11 @@ This file is deliberately specified in Podlite format
 =item Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
 =end AUTHORS
 
-=VERSION 2.0
+=VERSION 3.0
 
 =begin CHANGES
 
-=head2 Unreleased
+=head2 v3.0
 
 =head3 Added:
     =item Described operations written in parentheses, the rule telling an operation from a value, and the C<in> operator with its operands.
