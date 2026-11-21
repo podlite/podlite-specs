@@ -41,7 +41,8 @@ This file is deliberately specified in Podlite format
     =item C<:mime-type> on C<=data-table> for C<data:> sources,
     =item summary row of C<M<>>,
     =item notification examples: C<:notify> corrected to C<:notice> in v2.0.1,
-    =item rules that change how existing documents are read: C<=config> across C<=include>, C<=boundary>, markup in string values, tables, CSV and TSV.
+    =item picture source and caption: C<:src> on C<=picture>, its content read as caption ahead of C<:caption>,
+    =item rules that change how existing documents are read: C<=config> across C<=include>, C<=boundary>, markup in string values, tables, CSV and TSV, the source of a picture.
 
 =for head2 :folded
 v2.0
@@ -2154,7 +2155,7 @@ For example:
   =end row
 
   =begin row
-    =picture spacecraft_in_orbit.jpg
+    =for picture :src<spacecraft_in_orbit.jpg>
     =para
     A vehicle designed for space travel
   =end row
@@ -2640,7 +2641,7 @@ Example of storing images in C<=data> blocks:
   /t0HAMBnF2nt5sNRAAAAAElFTkSuQmCC
   =end data
 
-  =picture B<data:Logo>
+  =for picture B<:src<data:Logo>>
 
 =end code
 
@@ -2650,8 +2651,8 @@ access time, and edit time as attributes of the C<=data> block.
 
 =include file:./t/data-blocks.podlite#data-keeps-its-metadata
 
-The image can then be referenced using the C<=picture> block with the scheme
-C<data:> and the block name C<Logo>.
+The image can then be referenced by the C<:src> option of the C<=picture> block,
+with the scheme C<data:> and the block name C<Logo>.
 
 
 The C<=data> blocks are just regular Podlite blocks and may appear anywhere
@@ -3249,13 +3250,13 @@ Podlite allows to include images using a C<=picture> block with an inline versio
 represented as C<P<alternative text|source of the image>>:
 
 =begin code :allow<B>
- B<=picture astronaut.png>
+ B<=for picture :src<astronaut.png>>
  =para In the vast expanse of the cosmos, an intrepid B<P<astronaut|astronaut.png>>
  floats weightlessly above the Earth.
 =end code
 
-The first non-blank line of content within the C<=picture> block specifies the
-source of the image, and the remaining content is treated as caption.
+The C<:src> option of the C<=picture> block specifies the source of the image as
+a single URI. The content of the block is treated as caption.
 
 This source can be either local or remote, and it can be
 specified using different schemas: C<https:> for remote images, C<file:> for
@@ -3263,50 +3264,59 @@ local ones, or C<data:> for L<embedded images|#Data blocks> in the document.
 If no schema is provided, C<file:> is used as default. For example:
 
 =begin code :allow<B>
- =picture https://example.com/image.jpg
- =picture file:/local/image.png
- =picture /local/image.png
- =picture data:Logo
+ =for picture :src<https://example.com/image.jpg>
+ =for picture :src<file:/local/image.png>
+ =for picture :src</local/image.png>
+ =for picture :src<data:Logo>
 =end code
 
 In C<=picture> and C<P<>>, a relative C<file:> path resolves against the file
 in which the image reference is written, not the parent including document:
 
 =begin code :allow<B>
- =picture ../image.png
+ =for picture :src<../image.png>
 =end code
 
-Following the source line, it possible to include an image caption.
+In C<=picture>, content can be given together with C<:src>, and no line of the
+content supplies the source. In C<=data-table>, the C<:src> option and
+inline body content are mutually exclusive. Abbreviated blocks cannot specify
+configuration information, so an abbreviated C<=picture> block takes its source
+only from C<=set> or C<=config>. For example, a caption in the paragraph form:
 
 =begin code 
- =picture astronaut.png
+ =for picture :src<astronaut.png>
  In the vast expanse of the cosmos, an intrepid B<astronaut>
  floats weightlessly above the Earth.
 =end code
+
+=include file:./t/pictures.podlite#picture-content-is-caption
+
+=include file:./t/pictures.podlite#abbreviated-picture-source
 
 In the delimited form of C<=picture>, multiple text blocks can be included:
 
 =begin code 
- =begin picture
- astronaut.png
- 
+ =begin picture :src<astronaut.png>
  In the vast expanse of the cosmos, an intrepid B<astronaut>
  floats weightlessly above the Earth.
 
  This astronaut explores the vastness of space.
- 
  =end picture
 =end code
 
 All inline markup codes supported by L<ordinary paragraph blocks|#Ordinary paragraph blocks>
-can be used within the caption that follows the source.
+can be used within the caption.
 
-A caption can also be defined using the C<:caption> attribute:
+The C<:caption> option supplies the caption only if the block has no content
+other than blank lines. As on any block, the option assigns a title to the
+block, which a L<table of contents|#Table of contents> uses as the entry for the
+picture. For example, a caption defined by the C<:caption> option:
 
 =begin code :allow<B>
- =for picture B<:caption<diagram>>
- diag01.png
+ =for picture :src<diag01.png> B<:caption<diagram>>
 =end code
+
+=include file:./t/pictures.podlite#picture-caption-option-and-body
 
 =include file:./t/pictures.podlite#picture-block-and-its-caption
 

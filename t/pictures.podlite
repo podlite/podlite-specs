@@ -1,14 +1,55 @@
 =begin test :id<picture-block-and-its-caption> :caption('=picture is a block, and :caption on it is an option of the block')
 =begin fixture
+=for picture :src<astronaut.png>
+=end fixture
+=for assert :caption('the picture block with its source is recognized')
+picture[ :src<astronaut.png> ]
+
+=begin fixture
+=for picture :src<diag01.png> :caption<diagram>
+=end fixture
+=for assert :caption('the caption written as an option is an option of the picture block')
+picture[ :src<diag01.png> :caption<diagram> ]
+=end test
+
+=begin test :id<picture-content-is-caption> :caption('with :src the content of a picture is caption, even a line that reads as an address')
+=begin fixture
+=begin picture :src<orbit.svg>
+data:Logo
+
+The B<second> paragraph.
+=end picture
+=end fixture
+=for assert :caption('the source is the option, not the first line of the content')
+picture[ :src<orbit.svg> ]
+=end test
+
+=begin test :id<abbreviated-picture-source> :caption('an abbreviated picture writes no options, so without =set or =config it has no source')
+=begin fixture
 =picture astronaut.png
 =end fixture
 =for assert :caption('the abbreviated picture block is recognized')
 picture
 
+=for assert :absent :caption('the line after the typename gives no source option')
+picture[ :?src ]
+
 =begin fixture
-=for picture :caption<diagram>
-diag01.png
+=set :src<astronaut.png>
+=picture The station at its highest point.
 =end fixture
-=for assert :caption('the caption written as an attribute is an option of the picture block')
-picture[ :caption<diagram> ]
+=for assert :caption('=set supplies the source of an abbreviated picture')
+picture[ :src<astronaut.png> ]
+=end test
+
+=begin test :id<picture-caption-option-and-body> :caption('a picture may carry both a :caption option and a caption in its body')
+=begin fixture
+=begin picture :src<orbit.png> :caption('Orbit')
+The station at its highest point, with B<markup>.
+
+A second paragraph.
+=end picture
+=end fixture
+=for assert :caption('the source and the title are options of the picture alongside its body')
+picture[ :src<orbit.png> :caption<Orbit> ]
 =end test
