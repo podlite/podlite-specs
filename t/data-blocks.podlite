@@ -47,6 +47,81 @@ Invoice[ :id<b> :status(in data:d#paid) ]
 Invoice[ :id<b> :status<paid> ]
 =end test
 
+=begin test :id<header-absent-names-no-column> :caption('with header=absent, no column has a name')
+=begin fixture
+=begin data :key<d> :mime-type('text/csv; header=absent')
+k
+ok
+=end data
+
+=set :pending
+=include Invoice[ :v(in data:d#k) ]
+
+=head2 After
+
+=for Invoice :v<ok>
+X
+=end fixture
+=for assert :caption('the invoice is read')
+Invoice
+=for assert :caption('the address of a heading does not resolve, so the next block does not receive the assignment')
+head2[ :!?pending ]
+=for assert :absent :caption('and no copy is brought')
+Invoice[ :pending ]
+
+=begin fixture
+=begin data :key<d> :mime-type('text/csv; header=present')
+k
+ok
+=end data
+
+=set :pending
+=include Invoice[ :v(in data:d#k) ]
+
+=head2 After
+
+=for Invoice :v<ok>
+X
+=end fixture
+=for assert :caption('with header=present the same address names the column, and the copy receives the assignment')
+Invoice[ :pending ]
+=end test
+
+=begin test :id<data-may-follow-its-use> :caption('a =data block may come after the point where its content is used')
+=begin fixture
+=set :copy
+=include Invoice[ :v(in data:d#k) ]
+
+=for Invoice :v<ok>
+X
+
+=begin data :key<d> :mime-type('text/csv; header=present')
+k
+ok
+=end data
+=end fixture
+=for assert :caption('the include selects by the data declared after it')
+Invoice[ :copy :v<ok> ]
+=end test
+
+=begin test :id<masked-data-keeps-its-content> :caption('a masked block keeps its original content in the document model')
+=begin fixture
+=begin data :key<d> :masked :mime-type('text/csv; header=present')
+k
+original
+=end data
+
+=for Invoice :v<original>
+X
+=end fixture
+=for assert :caption('the data block is masked')
+data[ :masked ]
+=for assert :caption('the invoice is read')
+Invoice
+=for assert :caption('the original value is read through the masked block')
+Invoice[ :v(in data:d#k) ]
+=end test
+
 =begin test :id<tsv-quote-belongs-to-field> :caption('a quotation mark in TSV is part of the field')
 =begin fixture
 =begin data :key<d> :mime-type('text/tab-separated-values; header=present')
@@ -85,10 +160,14 @@ Invoice[ :id<a> :status(in data:d#value) ]
 =end test
 
 =begin test :id<field-edge-spaces-are-part-of-the-value> :caption('spaces at the edges of a field are part of its value')
+Leading and trailing spaces of a field are retained in the values a selector
+reads from its column.
+
 =begin fixture
 =begin data :key<d> :mime-type('text/csv; header=present')
 value,label
 draft ,Draft
+ lead,Lead
 =end data
 
 =for Invoice :id<a> :status('draft ')
@@ -96,13 +175,25 @@ A.
 
 =for Invoice :id<b> :status<draft>
 B.
+
+=for Invoice :id<c> :status(' lead')
+C.
+
+=for Invoice :id<d> :status<lead>
+D.
 =end fixture
 =for assert :caption('the value keeps its trailing space')
 Invoice[ :id<a> :status(in data:d#value) ]
-=for assert :absent :caption('the trimmed value is not in the column')
+=for assert :absent :caption('the value without it is not in the column')
 Invoice[ :id<b> :status(in data:d#value) ]
 =for assert :caption('the block with the other value is in the document')
 Invoice[ :id<b> :status<draft> ]
+=for assert :caption('the value keeps its leading space')
+Invoice[ :id<c> :status(in data:d#value) ]
+=for assert :absent :caption('the value without it is not in the column')
+Invoice[ :id<d> :status(in data:d#value) ]
+=for assert :caption('the block with the other value is in the document')
+Invoice[ :id<d> :status<lead> ]
 =end test
 
 =begin test :id<line-of-spaces-is-a-row> :caption('a line of spaces is a row whose field holds those spaces')
@@ -118,6 +209,42 @@ A.
 =end fixture
 =for assert :caption('the spaces are a value of the column')
 Invoice[ :id<a> :status(in data:d#value) ]
+=end test
+
+=begin test :id<empty-line-is-a-row> :caption('an empty line of CSV is a row with one empty field')
+=begin fixture
+=begin data :key<d> :mime-type('text/csv; header=present')
+k
+
+draft
+=end data
+
+=for Invoice :id<a> :v('unused','')
+A.
+
+=for Invoice :id<b> :v<draft>
+B.
+=end fixture
+=for assert :caption('the column is read')
+Invoice[ :id<b> :v(in data:d#k) ]
+=for assert :caption('the empty line gives an empty value')
+Invoice[ :id<a> :v(in data:d#k) ]
+=end test
+
+=begin test :id<final-newline-starts-no-row> :caption('a final newline does not start a row')
+=begin fixture
+=begin data :key<d> :mime-type('text/csv; header=present')
+k
+ok
+=end data
+
+=for Invoice :v('unused','') :good<ok>
+X
+=end fixture
+=for assert :caption('the column is read')
+Invoice[ :good(in data:d#k) ]
+=for assert :absent :caption('no empty value follows the last line')
+Invoice[ :v(in data:d#k) ]
 =end test
 
 =begin test :id<indentation-beyond-the-margin-is-data> :caption('whitespace beyond the virtual margin of a data block is part of the data')
@@ -172,6 +299,58 @@ Invoice[ :id<c> :status(in data:d#value) ]
 Invoice[ :id<d> :status(in data:d#value) ]
 =for assert :caption('the block with the other value is in the document')
 Invoice[ :id<d> :status<é> ]
+=end test
+
+=begin test :id<data-table-body-is-verbatim> :caption('a directive-looking line in a data-table body creates no heading block')
+=begin fixture
+=begin data-table :id<grid> :mime-type('text/csv')
+k
+=head2 Literal
+=end data-table
+=end fixture
+=for assert :caption('the data table is read')
+*[ :id<grid> ]
+=for assert :absent :caption('the line in its body is not a block of the document')
+head2
+=end test
+
+=begin test :id<data-table-keeps-columns-and-rename> :caption('the selected block carries :src, both projected column names and a :rename option')
+=begin fixture
+=begin data :key<d> :mime-type('text/csv; header=present')
+a,b
+1,2
+=end data
+
+=for data-table :id<t> :src<data:d> :columns<b a> :rename{b=>'B'}
+=end fixture
+=for assert :caption('the configuration is read')
+*[ :id<t> :src<data:d> :columns~<a> :columns~<b> :?rename ]
+=end test
+
+=begin test :id<data-keeps-its-metadata> :caption('a =data block keeps its file name, MIME type, times and encoding')
+=begin fixture
+=begin data :key<d> :filename<x.png> :mime-type('image/png')
+= :access-time<2022-01-01T00:00:00Z> :modify-time<2022-01-02T10:00:00Z>
+= :encoding<base64>
+AA==
+=end data
+=end fixture
+=for assert :caption('the attributes are read as written')
+data[ :key<d> :filename<x.png> :mime-type('image/png') :access-time<2022-01-01T00:00:00Z> :modify-time<2022-01-02T10:00:00Z> :encoding<base64> ]
+=end test
+
+=begin test :id<csv-doubled-quote-is-one-quote> :caption('a doubled quote inside a quoted CSV field is one quote')
+=begin fixture
+=begin data :key<d> :mime-type('text/csv; header=present')
+k
+"a""b"
+=end data
+
+=for Invoice :v('a"b')
+X
+=end fixture
+=for assert :caption('the field holds one quote')
+Invoice[ :v(in data:d#k) ]
 =end test
 
 =begin test :id<no-break-space-at-field-edge-is-part-of-the-value> :caption('a no-break space at the edge of a field is part of its value')

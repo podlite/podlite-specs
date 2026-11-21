@@ -72,6 +72,17 @@ para[ :v<Draft> ]
 para[ :v<draft> ]
 =end test
 
+=begin test :id<attribute-names-are-case-sensitive> :caption('the name of an attribute in a predicate is case-sensitive')
+=begin fixture
+=for para :Tag<v>
+X
+=end fixture
+=for assert :caption('the name as written matches')
+para[ :Tag<v> ]
+=for assert :absent :caption('the name in another case does not')
+para[ :tag<v> ]
+=end test
+
 =begin test :id<empty-and-absent-values> :caption('a value, false, an empty value and no declaration give the outcomes the table states')
 =begin fixture
 =for para :id<value> :a<v>
@@ -110,9 +121,20 @@ para[ :id<none> :?a ]
 para[ :id<none> :!?a ]
 =for assert :absent :caption('and not for a value, false or an empty value of any notation')
 para[ :id<value> :!?a ], para[ :id<false> :!?a ], para[ :id<empty> :!?a ], para[ :id<empty-parens> :!?a ], para[ :id<empty-string> :!?a ]
+=for assert :caption(':?attr holds for an empty value in angle brackets')
+para[ :id<empty> :?a ]
+=for assert :caption('and in parentheses')
+para[ :id<empty-parens> :?a ]
+=for assert :caption('and for an empty string')
+para[ :id<empty-string> :?a ]
+=for assert :absent :caption('neither :attr nor :!attr holds for an empty value of any notation')
+para[ :id<empty> :a ], para[ :id<empty-parens> :a ], para[ :id<empty-string> :a ], para[ :id<empty> :!a ], para[ :id<empty-parens> :!a ], para[ :id<empty-string> :!a ]
 =end test
 
 =begin test :id<membership> :caption('membership holds when every element of the operand is among the values')
+Whitespace inside the operand separates a list, and quotation marks produce
+one element that may contain whitespace.
+
 =begin fixture
 =for para :id<A> :tags<draft review>
 .
@@ -136,6 +158,8 @@ para[ :id<value> :!?a ], para[ :id<false> :!?a ], para[ :id<empty> :!?a ], para[
 para[ :id<A> :tags~<draft review> ]
 =for assert :caption('a further value does not affect the outcome')
 para[ :id<B> :tags~<draft review> ]
+=for assert :caption('the block with one element holds it')
+para[ :id<C> :tags~<draft> ]
 =for assert :absent :caption('one element alone, or one string holding both words, does not suffice')
 para[ :id<C> :tags~<draft review> ], para[ :id<D> :tags~<draft review> ]
 =for assert :caption('quotation marks make the operand one element')

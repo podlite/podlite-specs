@@ -24,3 +24,17 @@ The Problem
 =for assert :caption('the heading written with :numbered is selected by the option')
 head1[ :numbered ]
 =end test
+
+=begin test :id<hash-word-numbers-a-heading> :caption('a heading whose first word is a single # is numbered, and a word that only starts with # is not')
+=begin fixture
+=head2 # Start
+
+=head3 #tag
+=end fixture
+=for assert :caption('a single # gives the option')
+head2[ :numbered ]
+=for assert :caption('the heading starting with a longer word is read')
+head3
+=for assert :absent :caption('and is not numbered')
+head3[ :numbered ]
+=end test

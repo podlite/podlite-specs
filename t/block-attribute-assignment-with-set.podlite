@@ -34,6 +34,33 @@ head2[ :v<2> ]
 head2[ :v<1> ]
 =end test
 
+=begin test :id<set-variants-mix-across-continuation-lines> :caption('configuration and alias syntax of =set may be mixed across continuation lines')
+=begin fixture
+=set :id<special-table>
+=   :folded<true>
+=set :caption Product Metrics
+=          with detailed analysis
+
+=begin table
+A  B
+=end table
+=end fixture
+=for assert :caption('the table receives all three attributes')
+table[ :id<special-table> :folded<true> :?caption ]
+=for assert :absent :caption('the caption is not cut at the end of its first line')
+table[ :caption('Product Metrics') ]
+=end test
+
+=begin test :id<last-set-wins-across-variants> :caption('the last =set of a key wins, whatever its syntax variant')
+=begin fixture
+=set :caption<old>
+=set :caption New
+=head1 Heading
+=end fixture
+=for assert :caption('the later assignment is taken')
+head1[ :caption<New> ]
+=end test
+
 =begin test :id<directives-and-comments-are-transparent-to-set> :caption('directives and comments between =set and a block do not take the assignment')
 =begin fixture
 =set :caption Renewable energy sources
@@ -49,6 +76,16 @@ Wind        turbine
 =end fixture
 =for assert :caption('the table receives the caption')
 table[ :?caption ]
+=end test
+
+=begin test :id<boundary-is-transparent-to-set> :caption('a =boundary between =set and a block does not take the assignment')
+=begin fixture
+=set :caption<next>
+=boundary
+=head1 Chapter
+=end fixture
+=for assert :caption('the block after the boundary receives the assignment')
+head1[ :caption<next> ]
 =end test
 
 =begin test :id<set-reaches-first-included-block> :caption('=set before =include goes to the first included block that is not transparent')
@@ -105,6 +142,17 @@ head2[ :v<1> ]
 head2[ :v<1> ]
 =end test
 
+=begin test :id<unresolved-include-takes-the-set> :caption('an include that fails to resolve takes the assignment, and the next block does not receive it')
+=begin fixture
+=set :pending
+=include file:./missing.podlite
+
+=head2 After
+=end fixture
+=for assert :caption('the next block is read and does not receive the assignment')
+head2[ :!?pending ]
+=end test
+
 =begin test :id<included-set-does-not-leak> :caption('=set at the end of an included file does not reach the parent')
 =begin resource :name<part.podlite>
 =head1 Included
@@ -136,6 +184,8 @@ para[ :v<1> ]
 =end fixture
 =for assert :caption('the block after the container is there')
 para
-=for assert :absent :caption('it does not receive the assignment')
+=for assert :caption('the container is there')
+nested
+=for assert :absent :caption('neither receives the assignment')
 para[ :v<1> ], nested[ :v<1> ]
 =end test

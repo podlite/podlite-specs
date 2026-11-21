@@ -1,0 +1,112 @@
+=begin test :id<hash-word-numbers-an-item> :caption('an item whose first word is a single # is numbered, unless it is marked unnumbered')
+=begin fixture
+=item1 # A
+
+=for item2 :!numbered
+# B
+=end fixture
+=for assert :caption('a single # gives the option')
+item1[ :numbered ]
+=for assert :caption('an explicit :!numbered keeps the item unnumbered')
+item2[ :!numbered ]
+=end test
+
+=begin test :id<verbatim-hash-starts-an-unnumbered-item> :caption('an item starting with a verbatim # is not numbered')
+=begin fixture
+=item1 V<#> introduces a comment
+=end fixture
+=for assert :caption('the item is read')
+item1
+=for assert :absent :caption('and is not numbered')
+item1[ :numbered ]
+=end test
+
+=begin test :id<brackets-mark-a-task> :caption('[ ] at the start of an item gives :!checked, and [x] gives :checked')
+=begin fixture
+=item1 [ ] Open
+
+=item2 [x] Done
+=end fixture
+=for assert :caption('empty brackets give a false :checked')
+item1[ :!checked ]
+=for assert :caption('brackets with x give :checked')
+item2[ :checked ]
+=end test
+
+=begin test :id<item-levels> :caption('items of levels 1 to 3 are read, with =item read as a level-1 item')
+=begin fixture
+=item First
+
+=item2 Second
+
+=item3 Third
+=end fixture
+=for assert :caption('=item is read as a level-1 item')
+item, item1
+=for assert :caption('the level-2 item is read')
+item2
+=for assert :caption('the level-3 item is read')
+item3
+=end test
+
+=begin test :id<items-of-a-list-are-not-nested> :caption('items of one list are not physically nested')
+=begin resource :name<list.podlite>
+=item1 A
+
+=item2 B
+=end resource
+=begin fixture
+=include file:./list.podlite
+=end fixture
+=for assert :caption('the level-2 item is read')
+item2
+
+=begin fixture
+=include file:./list.podlite | item1
+=end fixture
+=for assert :caption('the level-1 item is selected')
+item1
+=for assert :absent :caption('the level-2 item does not come with it')
+item2
+=end test
+
+=begin test :id<plain-item-has-no-flags> :caption('an item written without # or brackets is not numbered and has no :checked')
+=begin fixture
+=item1 Plain
+=end fixture
+=for assert :caption('the item is read')
+item1
+=for assert :absent :caption('it is not numbered')
+item1[ :numbered ]
+=for assert :absent :caption('and not checked')
+item1[ :?checked ]
+=end test
+
+=begin test :id<delimited-item-holds-several-paragraphs> :caption('a delimited item holds several paragraphs')
+=begin resource :name<item.podlite>
+=begin item :id<one>
+=set :first
+Alpha
+
+Beta
+=end item
+=end resource
+=begin fixture
+=include file:./item.podlite#one
+=end fixture
+=for assert :caption('the first paragraph receives the assignment')
+para[ :first ]
+=for assert :caption('a second paragraph follows in the same item')
+para[ :!?first ]
+=end test
+
+=begin test :id<hash-word-numbers-a-definition> :caption('a definition whose first word is a single # is numbered')
+=begin fixture
+=defn # SUCCESS
+A result.
+=end fixture
+=for assert :caption('the definition is read')
+defn
+=for assert :caption('the # gives the option')
+defn[ :numbered ]
+=end test

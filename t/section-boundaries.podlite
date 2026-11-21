@@ -1,4 +1,6 @@
 =begin test :id<boundary-is-not-reached-by-a-selector> :caption('no selector reaches a =boundary, and the blocks on either side are found')
+No selector reaches a C<=boundary>, by name or by the universal C<*>.
+
 =begin fixture
 =for head1 :id<one>
 Chapter One

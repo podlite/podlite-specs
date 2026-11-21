@@ -1,0 +1,16 @@
+=begin test :id<indentation-does-not-decide-nesting> :caption('nesting blocks written at one indentation still nest')
+=begin resource :name<quote.podlite>
+=begin nested :id<outer>
+=begin nested :id<inner>
+=head3 Heading
+=end nested
+=end nested
+=end resource
+=begin fixture
+=include file:./quote.podlite#outer
+=end fixture
+=for assert :caption('the inner block comes with the outer one')
+nested[ :id<inner> ]
+=for assert :caption('and so does its content')
+head3
+=end test

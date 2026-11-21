@@ -8,6 +8,8 @@
 =end fixture
 =for assert :caption('the indented directive is recognised')
 nested[ :v<1> ]
+=for assert :caption('its text is a paragraph')
+para
 =for assert :absent :caption('text at the virtual margin is not indented and forms no code block')
 code
 
@@ -76,5 +78,44 @@ para[ :v<1> ]
 =for assert :absent :caption('no paragraph arises outside the nested block')
 para[ :!?v ]
 =for assert :absent :caption('and no code block arises')
+code
+=end test
+
+=begin test :id<identifier-takes-unicode-and-inner-signs> :caption('a block name may hold Unicode letters, an underscore, and an apostrophe or hyphen followed by a letter')
+=begin fixture
+=for Éтап_2 :id<unicode>
+Text
+
+=for Part-Deux :id<hyphen>
+Text
+
+=for Part'Deux :id<apostrophe>
+Text
+=end fixture
+=for assert :caption('Unicode letters, an underscore and a digit')
+Éтап_2[ :id<unicode> ]
+=for assert :caption('a hyphen followed by a letter')
+Part-Deux[ :id<hyphen> ]
+=for assert :caption('an apostrophe followed by a letter')
+Part'Deux[ :id<apostrophe> ]
+=end test
+
+=begin test :id<directive-starts-its-line> :caption('a = that is not the first non-whitespace character of its line does not start a directive')
+=begin fixture
+prefix =head2 Wrong
+=end fixture
+=for assert :caption('the line is a paragraph')
+para
+=for assert :absent :caption('no heading is read')
+head2
+=end test
+
+=begin test :id<tab-aligns-to-a-tabstop> :caption('with $?TABSTOP not set, a leading tab aligns to the next multiple of 8')
+=begin fixture
+        =begin nested
+	 x
+        =end nested
+=end fixture
+=for assert :caption('the line lies one column right of the margin and is code')
 code
 =end test

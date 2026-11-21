@@ -90,6 +90,20 @@ para[ :v<part> ]
 para[ :v<book> ]
 =end test
 
+=begin test :id<nearest-config-takes-precedence> :caption('of two =config in one file, the one nearer to the block takes precedence')
+=begin fixture
+=config para :v<before>
+=config para :v<after>
+=para X
+=end fixture
+=for assert :caption('the block is read')
+para
+=for assert :caption('the nearer setting is taken')
+para[ :v<after> ]
+=for assert :absent :caption('the farther one is not')
+para[ :v<before> ]
+=end test
+
 =begin test :id<config-reaches-markdown> :caption('=config applies to included Markdown blocks and supplies the language of a code fence')
 =begin resource :name<part.md>
 Text.

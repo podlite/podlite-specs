@@ -1,0 +1,11 @@
+=begin test :id<unclosed-code-ends-with-its-block> :caption('a heading after a paragraph with an unclosed markup code is read')
+=begin fixture
+=para B<unclosed
+
+=head2 Next
+=end fixture
+=for assert :caption('the paragraph is read')
+para
+=for assert :caption('the next block is not taken into the code')
+head2
+=end test

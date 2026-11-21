@@ -17,6 +17,8 @@ Title
 Text on the next line.
 =end pod
 =end fixture
+=for assert :caption('the heading is read')
+head2
 =for assert :absent :caption('without the blank line the text is part of the contents of the heading and no para block arises')
 para
 =end test
@@ -89,11 +91,25 @@ code
 
 =begin test :id<indented-line-continues-a-paragraph> :caption('the first line decides an ordinary paragraph, and an indented line continues it')
 =begin fixture
+=set :first
 Plain text of a paragraph
     continued on an indented line.
 =end fixture
 =for assert :caption('the text is a paragraph')
-para
+para[ :first ]
+=for assert :absent :caption('the indented line does not start a second paragraph')
+para[ :!?first ]
 =for assert :absent :caption('the indented line does not start a code block')
 code
+=end test
+
+=begin test :id<directive-ends-a-paragraph> :caption('a directive ends an ordinary paragraph')
+=begin fixture
+Plain
+=head2 Heading
+=end fixture
+=for assert :caption('the text is a paragraph')
+para
+=for assert :caption('the directive on the next line starts a block')
+head2
 =end test

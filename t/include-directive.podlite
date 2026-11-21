@@ -28,6 +28,16 @@ Own.
 para[ :v<own> ]
 =for assert :absent :caption('the directive is not reached when it resolves to no block')
 include
+
+=begin fixture
+=include file:./missing.podlite
+
+=head2 After
+=end fixture
+=for assert :caption('the block after an include that fails to resolve is reached')
+head2
+=for assert :absent :caption('the directive is not reached when it fails to resolve')
+include
 =end test
 
 =begin test :id<included-test-is-a-block-of-the-document> :caption('a test brought by an include is a block of the document')
@@ -61,6 +71,9 @@ head2
 =end test
 
 =begin test :id<includes-of-the-same-document-select-from-one-state> :caption('includes of the same document select from one state of it: its includes of other sources resolved, its own left as written')
+An C<=include> with no source does not select a copy that another such
+C<=include> has placed.
+
 =begin resource :name<meta.podlite>
 =for VERSION :m<1>
 2.0.0
@@ -93,4 +106,69 @@ VERSION[ :a<1> :b<1> ]
 VERSION[ :m<1> :c<1> ]
 =for assert :absent :caption('the assignment does not pass on to the written block, since the include brought one')
 VERSION[ :c<1> :!?m ]
+=end test
+
+=begin test :id<include-inside-a-brought-block-comes-with-it> :caption('an include with no source inside a brought block comes with it and selects from the same state')
+=begin resource :name<part.podlite>
+=set :copy
+=include nested
+
+=begin nested
+=include VERSION
+=end nested
+
+=VERSION One
+=end resource
+=begin fixture
+=include file:./part.podlite | nested[ :copy ]
+=end fixture
+=for assert :caption('the marked copy is brought')
+nested[ :copy ]
+=for assert :caption('the include inside the copy brings its block')
+VERSION
+
+=begin resource :name<states.podlite>
+=set :extra
+=include VERSION
+
+=set :copy
+=include nested
+
+=begin nested
+=set :seen
+=include VERSION[ :?extra ]
+
+=head2 After
+=end nested
+
+=VERSION One
+=end resource
+=begin fixture
+=include file:./states.podlite | nested[ :copy ]
+=end fixture
+=for assert :caption('the marked copy is brought')
+nested[ :copy ]
+=for assert :caption('in the fixed state no marked version exists, so the assignment passes to the heading')
+head2[ :seen ]
+=for assert :absent :caption('the copy placed by another include is not selected')
+VERSION[ :extra ]
+=end test
+
+=begin test :id<self-include-brings-no-blocks> :caption('an include with no source that would bring a block it stands inside brings no blocks')
+=begin fixture
+=begin nested
+=set :picked
+=include nested, head2
+
+=para After
+=end nested
+
+=head2 Outside
+=end fixture
+=for assert :caption('the block after the include is read and does not receive the assignment')
+para[ :!?picked ]
+=for assert :caption('the heading the selector also matches is read and does not receive it')
+head2[ :!?picked ]
+=for assert :absent :caption('the include brings no block, not even the one outside it')
+*[ :picked ]
 =end test

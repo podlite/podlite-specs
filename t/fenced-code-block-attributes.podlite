@@ -21,3 +21,15 @@ fn main() {}
 =for assert
 code[ :lang<rust> ]
 =end test
+
+=begin test :id<fence-language-survives-extended-attributes> :caption('a fence with attributes after the language keeps the language')
+=begin fixture
+=begin markdown
+```python :caption<Demo>
+x
+```
+=end markdown
+=end fixture
+=for assert :caption('the language becomes :lang')
+code[ :lang<python> ]
+=end test

@@ -19,6 +19,28 @@ code
 para
 =end test
 
+=begin test :id<directive-ends-implicit-code> :caption('a directive ends an implicit code block')
+=begin fixture
+    sample
+=head3 End
+=end fixture
+=for assert :caption('the indented text is code')
+code
+=for assert :caption('the directive on the next line starts a block')
+head3
+=end test
+
+=begin test :id<allow-holds-a-list-of-codes> :caption(':allow on a code block holds a list of markup code names')
+=begin fixture
+=for code :allow<B I>
+B<x> I<y>
+=end fixture
+=for assert :caption('the first name is in the list')
+code[ :allow~<B> ]
+=for assert :caption('the second name is in the list')
+code[ :allow~<I> ]
+=end test
+
 =begin test :id<indented-text-in-item-and-defn-forms-is-text> :caption('indented text in the abbreviated and paragraph forms of =item and =defn is text')
 =begin fixture
 =for item
@@ -43,6 +65,16 @@ code
     The column at which a block's directive starts.
 =end fixture
 =for assert :caption('the definition is a paragraph')
+para
+=for assert :absent :caption('and not a code block')
+code
+
+=begin fixture
+=for defn
+Term
+    Definition.
+=end fixture
+=for assert :caption('the definition of =for defn is a paragraph')
 para
 =for assert :absent :caption('and not a code block')
 code

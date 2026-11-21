@@ -52,6 +52,43 @@ head2
 head3
 =end test
 
+=begin test :id<relative-path-in-an-in-operand> :caption('a relative path in a selector operand of in resolves against the file it is written in')
+=begin resource :name<lib/part.podlite>
+=include file:../records/rows.podlite | Invoice[ :v(in file:./terms.podlite | defn) ]
+=end resource
+=begin resource :name<records/terms.podlite>
+=defn rows
+Rows term.
+=end resource
+=begin resource :name<records/rows.podlite>
+=for Invoice :v<local>
+Local row.
+
+=for Invoice :v<parent>
+Parent row.
+
+=for Invoice :v<rows>
+Rows row.
+=end resource
+=begin resource :name<lib/terms.podlite>
+=defn local
+Local term.
+=end resource
+=begin resource :name<terms.podlite>
+=defn parent
+Parent term.
+=end resource
+=begin fixture
+=include file:./lib/part.podlite
+=end fixture
+=for assert :caption('the terms beside the file holding the selector are read')
+Invoice[ :v<local> ]
+=for assert :absent :caption('the terms beside the parent are not')
+Invoice[ :v<parent> ]
+=for assert :absent :caption('nor the terms beside the file of the selected rows')
+Invoice[ :v<rows> ]
+=end test
+
 =begin test :id<address-names-a-block-by-id> :caption('an internal address in an include source names a block by its :id')
 =begin resource :name<part.podlite>
 =for para :id<first>
@@ -84,6 +121,36 @@ Second.
 para[ :id<second> ]
 =for assert :absent :caption('the other block of the file is not brought in')
 para[ :id<first> ]
+=end test
+
+=begin test :id<unknown-address-is-not-an-empty-result> :caption('an address that does not resolve is not an empty result')
+=begin resource :name<part.podlite>
+=for head1 :id<real>
+Real
+=end resource
+=begin fixture
+=include file:./part.podlite#real
+=end fixture
+=for assert :caption('the source resolves, and a known address brings its block')
+head1[ :id<real> ]
+
+=begin fixture
+=set :pending
+=include file:./part.podlite#missing
+
+=head2 After
+=end fixture
+=for assert :caption('an unknown address fails to resolve, so the next block does not receive the assignment')
+head2[ :!?pending ]
+
+=begin fixture
+=set :pending
+=include file:./part.podlite | head3
+
+=head2 After
+=end fixture
+=for assert :caption('patterns matching nothing are an empty result, which passes the assignment on')
+head2[ :pending ]
 =end test
 
 =begin test :id<omitted-scheme-is-file> :caption('a source written without a scheme is read as file:')
@@ -169,8 +236,28 @@ y
 =end fixture
 =for assert :caption('both conditions hold')
 code[ :id<both> :lang<python> :numbered ]
+=for assert :caption('the block meeting one condition is read')
+code[ :id<one> :lang<python> ]
 =for assert :absent :caption('one condition does not suffice')
 code[ :id<one> :lang<python> :numbered ]
+=end test
+
+=begin test :id<space-in-a-quoted-operand-belongs-to-it> :caption('a space inside a quoted operand belongs to the condition')
+=begin resource :name<people.podlite>
+=for para :id<a> :author<John>
+A.
+
+=for para :id<b> :author('John Doe')
+B.
+=end resource
+=begin fixture
+=set :pick
+=include file:./people.podlite | para[ :author('John Doe') ]
+=end fixture
+=for assert :caption('the block with the whole value is selected')
+para[ :id<b> :pick ]
+=for assert :absent :caption('the block with the first word only is not')
+para[ :id<a> ]
 =end test
 
 =begin test :id<comma-joins-patterns> :caption('a block is selected when it matches any of the patterns')
@@ -194,6 +281,36 @@ head1
 code[ :lang<python> ]
 =for assert :absent :caption('a block matching neither is not selected')
 code[ :lang<perl> ], para
+=end test
+
+=begin test :id<selection-is-in-document-order> :caption('blocks matched by several patterns come in document order, not in the order of the patterns')
+=begin resource :name<part.podlite>
+=head2 First
+=head1 Second
+=end resource
+=begin fixture
+=set :first
+=include file:./part.podlite | head1, head2
+=end fixture
+=for assert :caption('the block written first receives the assignment')
+head2[ :first ]
+=for assert :caption('the block matched by the first pattern does not')
+head1[ :!?first ]
+=end test
+
+=begin test :id<block-matching-two-patterns-is-selected-once> :caption('a block that matches two patterns is selected once')
+=begin resource :name<part.podlite>
+=for head2 :tag
+Only
+=end resource
+=begin fixture
+=set :first
+=include file:./part.podlite | head2, *[ :tag ]
+=end fixture
+=for assert :caption('the block is brought and receives the assignment')
+head2[ :tag :first ]
+=for assert :absent :caption('no unassigned copy of the matching heading is brought')
+head2[ :tag :!?first ]
 =end test
 
 =begin test :id<undeclared-attribute> :caption('predicates on an attribute no block declares follow the table')

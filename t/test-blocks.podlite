@@ -73,7 +73,7 @@ fixture
 head2[ :v<inside> ]
 =end test
 
-=begin test :id<fixture-is-read-until-the-next-fixture> :caption('an assertion reads the nearest fixture before it until another fixture')
+=begin test :id<fixture-is-read-until-the-next-fixture> :caption('without a supplied document or a named source, an assertion reads the nearest fixture before it until another fixture')
 =begin fixture
 =head1 First
 =end fixture
@@ -169,8 +169,8 @@ assert[ :absent :caption('what the assertion is for') ]
 resource[ :name<includes/part.podlite> ]
 =end test
 
-=begin test :id<assertion-before-any-fixture-reads-the-holding-document> :caption('an assertion with no fixture before it reads the document holding the test')
-=for assert :caption('before any fixture, the document holding the test is read')
+=begin test :id<assertion-before-any-fixture-reads-the-holding-document> :caption('with no supplied document, named source or preceding fixture, an assertion reads the document holding the test')
+=for assert :caption('with no supplied document, named source or preceding fixture, the document holding the test is read')
 test[ :id<assertion-before-any-fixture-reads-the-holding-document> ]
 =begin fixture
 =head1 Body
@@ -213,4 +213,41 @@ After
 head1[ :id<before> ]
 =for assert :caption('the block after the include is found')
 head1[ :id<after> ]
+=end test
+
+=begin test :id<ordinary-paragraph-in-a-test> :caption('an ordinary paragraph written inside a =test is a block of the test, beside its assertions')
+=begin resource :name<inner.podlite>
+=begin test :id<inner>
+Explanation.
+
+=assert test
+=end test
+=end resource
+=begin fixture
+=include file:./inner.podlite | test
+=end fixture
+=for assert :caption('the test is brought')
+test[ :id<inner> ]
+=for assert :caption('the paragraph comes with it')
+para
+=for assert :caption('and so does the assertion')
+assert
+=end test
+
+=begin test :id<unused-resource-is-not-markup> :caption('the body of a resource no fixture uses is not markup of the document holding the test')
+=begin resource :name<inner.podlite>
+=begin test :id<inner>
+ =begin resource :name<x.podlite>
+ =head3 Hidden
+ =end resource
+=assert test
+=end test
+=end resource
+=begin fixture
+=include file:./inner.podlite | test
+=end fixture
+=for assert :caption('the resource is brought with its test')
+resource[ :name<x.podlite> ]
+=for assert :absent :caption('its body is not read as blocks')
+head3
 =end test

@@ -1,13 +1,15 @@
 =begin test :id<nested-pod-is-a-group> :caption('a =pod block nested in another is a group with its own margin and scope')
+A C<=pod> block written in a file is a block that a selector reaches.
+
 =begin fixture
-=begin pod
+=begin pod :id<explicit>
 =config para :x<1>
 Text inside the group.
 =end pod
 Text after the group.
 =end fixture
 =for assert :caption('the group is a block that a selector reaches')
-pod
+pod[ :id<explicit> ]
 =for assert :caption('the configuration inside the group reaches its paragraph')
 para[ :x<1> ]
 =for assert :caption('after the group the configuration no longer applies')
@@ -54,6 +56,8 @@ para
 =begin fixture
 # Title
 =end fixture
+=for assert :caption('in pod mode the line is a paragraph')
+para
 =for assert :absent :caption('in pod mode the same line is not a heading')
 head1
 =end test
@@ -74,6 +78,44 @@ ambient
 para
 =end test
 
+=begin test :id<mode-reverts-to-ambient-after-pod> :caption('after a =pod block the parser reverts to ambient mode')
+=begin resource :name<doc.txt>
+=begin pod
+Inside
+=end pod
+Outside
+=end resource
+=begin fixture
+=include file:./doc.txt
+=end fixture
+=for assert :caption('the text inside the =pod block is a paragraph')
+para
+=for assert :caption('the text after it is ambient')
+ambient
+=end test
+
+=begin test :id<pod6-and-markdown-extensions> :caption('a .pod6 file is read in pod mode and a .markdown file in Markdown mode')
+=begin resource :name<doc.pod6>
+Plain
+=end resource
+=begin resource :name<doc.markdown>
+## Heading
+=end resource
+=begin fixture
+=include file:./doc.pod6
+=end fixture
+=for assert :caption('text in a .pod6 file is a paragraph')
+para
+=for assert :absent :caption('and not ambient')
+ambient
+
+=begin fixture
+=include file:./doc.markdown
+=end fixture
+=for assert :caption('a Markdown heading in a .markdown file is a heading block')
+head2
+=end test
+
 =begin test :id<mime-type-overrides-the-extension> :caption('a :mime-type on =include decides the mode instead of the extension')
 =begin resource :name<doc.txt>
 # Title
@@ -87,6 +129,32 @@ head1
 =begin fixture
 =include file:./doc.txt
 =end fixture
+=for assert :caption('read by its extension, in default mode, the line is ambient')
+ambient
 =for assert :absent :caption('read by its extension, in default mode, the line is not a heading')
 head1
+=end test
+
+=begin test :id<markdown-quote-is-a-nested-block> :caption('a quotation in a =markdown block is a nested block, and the block ends Markdown')
+=begin resource :name<quote.podlite>
+=begin markdown
+> Quotation
+=end markdown
+=end resource
+=begin fixture
+=include file:./quote.podlite | nested
+=end fixture
+=for assert :caption('the quotation is a nested block')
+nested
+=for assert :caption('its text comes with it')
+para
+
+=begin fixture
+=begin markdown
+> Quotation
+=end markdown
+=head3 After
+=end fixture
+=for assert :caption('a directive after the block is read as Podlite')
+head3
 =end test

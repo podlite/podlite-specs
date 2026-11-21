@@ -45,6 +45,30 @@ para[ :k~<a b> ]
 para[ :k<'a b'> ]
 =end test
 
+=begin test :id<also-accepted-forms-of-a-value> :caption('a fraction, a parenthesised boolean and quoted strings are accepted')
+=begin fixture
+=for para :id<forms> :n(2.3) :flag(True) :s｢a b｣ :t"a b" :u'a b'
+Text
+
+=for para :id<string> :flag('True')
+Text
+=end fixture
+=for assert :caption('a number with a fraction')
+para[ :id<forms> :n(2.3) ]
+=for assert :caption('a boolean written in parentheses equals the boolean')
+para[ :id<forms> :flag(True) ]
+=for assert :absent :caption('and not the string True')
+para[ :id<forms> :flag('True') ]
+=for assert :caption('the string True written in quotation marks is a string')
+para[ :id<string> :flag('True') ]
+=for assert :caption('a string in corner brackets')
+para[ :id<forms> :s('a b') ]
+=for assert :caption('a string in double quotes')
+para[ :id<forms> :t('a b') ]
+=for assert :caption('a string in single quotes')
+para[ :id<forms> :u('a b') ]
+=end test
+
 =begin test :id<comma-in-angles-stays-in-the-value> :caption('a comma inside angle brackets is part of the value')
 =begin fixture
 =for para :k<a,b>
@@ -65,6 +89,28 @@ text
 para[ :k('a b') ]
 =for assert :absent :caption('the space does not separate elements')
 para[ :k~<a> ]
+=end test
+
+=begin test :id<markup-in-a-written-string-is-not-read> :caption('markup codes in a string value written on a block are not read')
+=begin fixture
+=for para :v('E<65>')
+Text
+=end fixture
+=for assert :caption('the value keeps the code as written')
+para[ :v('E<65>') ]
+=for assert :absent :caption('the code is not read as the character it names')
+para[ :v<A> ]
+=end test
+
+=begin test :id<word-in-angles-keeps-its-type-and-guillemets> :caption('a word in angle brackets stays a string, and guillemets stay in the value')
+=begin fixture
+=for para :word<False> :g<«q»>
+Text
+=end fixture
+=for assert :caption('the word False is a string')
+para[ :word('False') ]
+=for assert :caption('the guillemets are part of the value')
+para[ :g('«q»') ]
 =end test
 
 =begin test :id<empty-values-exist-and-are-empty> :caption('an empty delimiter carries the empty value of its kind')
@@ -113,4 +159,39 @@ text
 para[ :ok<b> ]
 =for assert :absent :caption('the unclosed value is discarded with its attribute')
 para[ :?k ]
+=end test
+
+=begin test :id<unreadable-value-is-discarded> :caption('a value that cannot be read is discarded with its attribute, and the block goes on')
+=begin fixture
+=for para :bad(unquoted) :ok<yes>
+Text
+=end fixture
+=for assert :caption('the block and the next attribute are read')
+para[ :ok<yes> ]
+=for assert :absent :caption('the attribute with the unreadable value is not')
+para[ :?bad ]
+=end test
+
+=begin test :id<hash-continues-on-the-next-line> :caption('the hash attribute and the option after it survive the continuation')
+=begin fixture
+=begin para :h{1=>'x',
+= 2=>'y'} :ok<yes>
+Text
+=end para
+=end fixture
+=for assert :caption('the hash and the attribute after it are read')
+para[ :?h :ok<yes> ]
+=end test
+
+=begin test :id<quoted-value-ends-with-its-line> :caption('a value in quotation marks ends with its line')
+=begin fixture
+=begin para :bad"open
+= :ok<yes>
+Text
+=end para
+=end fixture
+=for assert :caption('the continuation line is read as configuration')
+para[ :ok<yes> ]
+=for assert :absent :caption('the unclosed value is discarded with its attribute')
+para[ :?bad ]
 =end test
