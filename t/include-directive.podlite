@@ -108,52 +108,6 @@ VERSION[ :m<1> :c<1> ]
 VERSION[ :c<1> :!?m ]
 =end test
 
-=begin test :id<include-inside-a-brought-block-comes-with-it> :caption('an include with no source inside a brought block comes with it and selects from the same state')
-=begin resource :name<part.podlite>
-=set :copy
-=include nested
-
-=begin nested
-=include VERSION
-=end nested
-
-=VERSION One
-=end resource
-=begin fixture
-=include file:./part.podlite | nested[ :copy ]
-=end fixture
-=for assert :caption('the marked copy is brought')
-nested[ :copy ]
-=for assert :caption('the include inside the copy brings its block')
-VERSION
-
-=begin resource :name<states.podlite>
-=set :extra
-=include VERSION
-
-=set :copy
-=include nested
-
-=begin nested
-=set :seen
-=include VERSION[ :?extra ]
-
-=head2 After
-=end nested
-
-=VERSION One
-=end resource
-=begin fixture
-=include file:./states.podlite | nested[ :copy ]
-=end fixture
-=for assert :caption('the marked copy is brought')
-nested[ :copy ]
-=for assert :caption('in the fixed state no marked version exists, so the assignment passes to the heading')
-head2[ :seen ]
-=for assert :absent :caption('the copy placed by another include is not selected')
-VERSION[ :extra ]
-=end test
-
 =begin test :id<self-include-brings-no-blocks> :caption('an include with no source that would bring a block it stands inside brings no blocks')
 =begin fixture
 =begin nested

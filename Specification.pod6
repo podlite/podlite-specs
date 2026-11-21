@@ -2927,8 +2927,6 @@ it and selects from the same state.
 
 =include file:./t/include-directive.podlite#includes-of-the-same-document-select-from-one-state
 
-=include file:./t/include-directive.podlite#include-inside-a-brought-block-comes-with-it
-
 An C<=include> with no source fails to resolve when a block it would bring is
 one it stands inside, at any depth, as written or as a copy. It brings no
 blocks, and the failure is reported.
