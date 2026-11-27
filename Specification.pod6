@@ -12,11 +12,40 @@ This file is deliberately specified in Podlite format
 =item Aliaksandr Zahatski <L<C<zag@cpan.org>|mailto:zag@cpan.org>>
 =end AUTHORS
 
-=VERSION 2.0
+=VERSION 3.0
 
 =begin CHANGES
 
-=head2 v2.0
+=head2 v3.0
+
+=head3 Added:
+    =item predicates in selectors,
+    =item operations in parentheses: C<in>,
+    =item universal pattern: C<*>,
+    =item internal addresses: in selectors and links, columns of C<data:> sources,
+    =item test blocks: C<=test>, C<=fixture>, C<=assert> with selector expressions, C<=resource>,
+    =item tests of the specification: files under C<t/>, tests beside their rules, list of tests at the end,
+    =item nested C<=pod> blocks as groups.
+
+=head3 Changed:
+    =item test execution and fixtures,
+    =item rule details moved into paragraphs of tests,
+    =item attribute values and configuration precedence,
+    =item C<=alias> scope,
+    =item default language of a code block,
+    =item relative paths in sources, images and links,
+    =item block selection: C<=include> of a source with no internal address or pattern as C<| *>,
+    =item block and markup code syntax,
+    =item virtual margin ending with its block,
+    =item names of documents for C<doc:>,
+    =item C<:mime-type> on C<=data-table> for C<data:> sources,
+    =item summary row of C<M<>>,
+    =item notification examples: C<:notify> corrected to C<:notice> in v2.0.1,
+    =item picture source and caption: C<:src> on C<=picture>, its content read as caption ahead of C<:caption>,
+    =item rules that change how existing documents are read: C<=config> across C<=include>, C<=boundary>, markup in string values, tables, CSV and TSV, the source of a picture.
+
+=for head2 :folded
+v2.0
 
 =head3 Added:
     =item Attributes on Markdown fenced code blocks,
@@ -109,26 +138,42 @@ is consistently treated as alphabetic. Additionally, an identifier
 can include isolated apostrophes or hyphens, given that the subsequent
 character is alphabetic.
 
+=include file:./t/general-syntactic-structure.podlite#identifier-takes-unicode-and-inner-signs
+
 Directives that start with C<=> can be indented like the code they
 interleave, but their initial C<=> must still be the first non-whitespace
 character on their line.
+
+=include file:./t/general-syntactic-structure.podlite#directive-starts-its-line
 
 An indented Podlite block is considered to have a I<virtual left margin>,
 determined by the indentation of its opening delimiter.
 
 In other words, if a directive is indented from the left margin, the
 column at which the first character of its opening delimiter appears is
-thereafter considered the first column of the entire block's contents.
+considered the first column of the entire block's contents until the block
+ends, when the virtual margin of the enclosing block applies again.
+
+=include file:./t/general-syntactic-structure.podlite#indented-directive-sets-the-virtual-margin
+
+=include file:./t/general-syntactic-structure.podlite#margin-ends-with-its-block
+
+A non-blank line other than a directive that starts left of its block's virtual
+margin is read as starting at that margin; Podlite parsers may issue a warning.
+
+=include file:./t/general-syntactic-structure.podlite#line-left-of-the-margin-stays-in-the-block
 
 The virtual margin treats leading tabs as aligning to tabstops spaced 
 every C<($?TABSTOP // 8)> characters.
+
+=include file:./t/general-syntactic-structure.podlite#tab-aligns-to-a-tabstop
 
 =head2 Podlite blocks
 
 The content of a document is specified within one or more D<blocks|block>.
 Every Podlite block may be declared in any of three forms:
-I<L<delimited style|#Delimited blocks>>, I<L<paragraph style|#Paragraph
-blocks>>, or I<L<abbreviated style|#Abbreviated blocks>>.
+I<L<delimited style|#Delimited blocks>>, I<L<paragraph style|#Paragraph blocks>>,
+or I<L<abbreviated style|#Abbreviated blocks>>.
 All of these forms are equivalent.
 
 Anything in a document that is neither a Podlite directive nor contained
@@ -140,8 +185,10 @@ will I<usually> ignore such blocks.
 This is the D<default mode|Default mode; parser modes> of the parser.
 
 All directives have a defined terminator and the Podlite parser always reverts to
-D<"ambient"|Ambient mode; parser modes> at the end of each Podlite directive or 
-block.
+the mode of the enclosing block, or to D<"ambient"|Ambient mode; parser modes>
+outside any block, at the end of each Podlite directive or block.
+
+=include file:./t/podlite-blocks.podlite#mode-reverts-to-ambient-after-pod
 
 The C<=pod> block puts the parser in D<"pod" mode|Pod mode; parser modes>, 
 treating all text between blocks as implicit paragraph Podlite, even if 
@@ -162,16 +209,35 @@ in a C<=pod> block:
   B<=end pod>
 =end code
 
+A C<=pod> block nested in another groups the blocks it contains: the parser
+stays in "pod" mode, the group has its own virtual margin and scope, and it adds
+no formatting.
+
+=include file:./t/podlite-blocks.podlite#nested-pod-is-a-group
+
 The contents of files with the extensions C<.podlite> and C<.pod6> are 
 implicitly wrapped in a C<=pod> directive.
+
+The implicit wrapper establishes the mode of parsing and is not a block that a
+selector reaches. A selector applied to such a file finds only the blocks written
+in it, so C<file:./part.podlite | pod> selects nothing when the file contains no
+explicit C<=pod> block.
 
 For C<.md> and C<.markdown> files, the parser operates in D<"Markdown" 
 mode|Markdown mode; parser modes> for the entire file, treating all 
 text as markdown even if it is not inside an C<=markdown> block.
 
+=include file:./t/podlite-blocks.podlite#markdown-file-is-read-in-markdown-mode
+
+=include file:./t/podlite-blocks.podlite#pod6-and-markdown-extensions
+
 Any other file extension puts the parser in default mode. The L<C<=include>
 directive|#Include directive> provides a mechanism to override this behavior
 by using the C<:mime-type> attribute for the included files.
+
+=include file:./t/podlite-blocks.podlite#other-extension-is-read-in-default-mode
+
+=include file:./t/podlite-blocks.podlite#mime-type-overrides-the-extension
 
 
 =head3 Delimited blocks
@@ -188,31 +254,88 @@ different ways by different types of blocks, but is always specified using
 any of:
 
 =for table :nested :caption("Block configuration syntax") :id<configuration_syntax>
- Value is...              Specify with...              Or with...                   Also valid
- ======================   ==========================   ==========================   ==============
- Boolean (true)           C«:key»                      C«:key(1)»
- Boolean (false)          C«:!key»                     C«:key(0)»
- Integer                  C«:key(N)»
- String (single word)     C«:key<str>»                 C«:key('str')»               C«:key'str'» C«:key｢str｣» C«:key"str"»
- String (with spaces)     C«:key('str with spaces')»   C«:key("str with spaces")»   C«:key'str with spaces'» C«:key｢str with spaces｣» C«:key"str with spaces"»
- List                     C«:key<val1 val2>»           C«:key[val1,val2]»
- Hash                     C«:key{a=>1, b=>2}»
+ Value                    Written as                   Also accepted
+ ======================   ==========================   ==========================================
+ Boolean                  C«:key» C«:!key»             C«:key(True)» C«:key(False)»
+ Number                   C«:key(42)»                  C«:key(2.3)»
+ String                   C«:key<str>»                 C«:key('str')» C«:key"str"» C«:key'str'» C«:key｢str｣»
+ String with spaces       C«:key('str with spaces')»   C«:key("str with spaces")» C«:key'str with spaces'» C«:key｢str with spaces｣»
+ List                     C«:key<a b>»                 C«:key('a','b')»
+ Hash, identifier keys    C«:key{:a<x>, :b(42), :c}»   C«:key{a=>1, b=>'str', c=>True}»
+ Hash, other keys         C«:key{1=>'x', 2=>'y'}»      Z<>
 
-All option keys and values must, of course, be constants since Podlite is a
-specification language, not a programming language. Specifically, option
-values cannot be closures.
+=include file:./t/delimited-blocks.podlite#whitespace-in-angles-makes-a-list
+
+=include file:./t/delimited-blocks.podlite#also-accepted-forms-of-a-value
+
+The first column of the table names the kind of the value. A rule that refers
+to the kind of a value refers to these names.
+
+All option keys and values are constants: Podlite is a specification
+language, not a programming language. An option value cannot be a closure.
+
+Whitespace surrounding a value is not significant and is removed. The
+delimiters that enclose a value determine how it is read. Markup codes in a
+string value are read only if C<=set> assigns it.
+
+=include file:./t/delimited-blocks.podlite#markup-in-a-written-string-is-not-read
+
+A single word enclosed in angle brackets is not converted to another type. A
+comma is retained as part of the value, so C<< :key<a,b> >> is read as the
+string C<a,b>. Quotation marks delimit a string and suppress separation by
+whitespace, which makes C<< :key<'a b'> >> a string. Guillemets are not
+quotation marks and are retained as part of the value.
+
+=include file:./t/delimited-blocks.podlite#comma-in-angles-stays-in-the-value
+
+=include file:./t/delimited-blocks.podlite#quotes-make-one-string
+
+=include file:./t/delimited-blocks.podlite#word-in-angles-keeps-its-type-and-guillemets
+
+A delimiter with nothing inside it carries the empty value of its kind, so
+C<< :key<> >> and C<:key()> are an empty list and C<:key{}> is an empty hash.
+An empty string is written with quotation marks, as C<:key('')>.
+
+=include file:./t/delimited-blocks.podlite#empty-values-exist-and-are-empty
+
+Apart from C<True> and C<False>, an unquoted word is not a valid element of a
+parenthesised list or value of a hash entry. Inside braces an option is read
+as on the marker line: with no value it denotes the boolean true, and negated
+it denotes the boolean false. The key of an option is an identifier.
+
+A value that cannot be read is discarded together with its attribute, and
+parsing of the block continues. Podlite parsers issue a warning that
+identifies the position of the discarded value.
+
+=include file:./t/delimited-blocks.podlite#unreadable-value-is-discarded
 
 The configuration section may be extended over subsequent lines by
 starting those lines with an C<=> in the first (virtual) column followed
-by a whitespace character.
+by a whitespace character. A value in parentheses or braces may continue on
+such a line. A value in angle brackets or in quotation marks ends with its
+line.
+
+=include file:./t/delimited-blocks.podlite#continuation-line-carries-configuration
+
+=include file:./t/delimited-blocks.podlite#value-in-parentheses-continues
+
+=include file:./t/delimited-blocks.podlite#hash-continues-on-the-next-line
+
+=include file:./t/delimited-blocks.podlite#angle-value-ends-with-its-line
+
+=include file:./t/delimited-blocks.podlite#quoted-value-ends-with-its-line
 
 The lines following the opening delimiter and configuration are the
 data or contents of the block, which continue until the block's matching
 C<=end> marker line. For most block types, these contents may be
-indented if you wish, without them being treated as L<code blocks|#Code
-blocks>. Indented text is only treated as code within
-C<=pod>, L<C<=nested>|#Nesting blocks>, L<C<=item>|#Lists>, C<=code>,
+indented if you wish, without them being treated as
+L<code blocks|#Code blocks>. Indented text is only treated as code within
+C<=pod>, L<C<=nested>|#Nesting blocks>, L<C<=item>|#Lists>,
+L<C<=defn>|#Definition lists>, C<=code>,
 and L<semantic|#Semantic blocks> blocks.
+
+=include file:./t/delimited-blocks.podlite#indented-text-in-para-is-not-code
+=include file:./t/delimited-blocks.podlite#indented-text-in-delimited-defn-is-code
 
 The general syntax is:
 
@@ -257,6 +380,7 @@ blank lines as delimiters, rather than empty lines, to minimize unpleasant
 surprises when stray spaces or tabs mysteriously turn up in hitherto
 empty lines.
 
+=include file:./t/abbreviated-blocks.podlite#line-of-whitespace-is-blank
 
 =head3 Paragraph blocks
 
@@ -264,7 +388,13 @@ Paragraph blocks are introduced by a C<=for> marker and terminated by
 the next Podlite directive or the first blank line (which is I<not>
 considered to be part of the block's contents). The C<=for> marker is
 followed by the name of the block and optional configuration
-information. The general syntax is:
+information.
+
+=include file:./t/paragraph-blocks.podlite#blank-line-ends-a-for-block
+
+=include file:./t/paragraph-blocks.podlite#for-marker-carries-configuration
+
+The general syntax is:
 
 =begin code :allow< R >
      =for R<BLOCK_TYPE>  R<OPTIONAL CONFIG INFO>
@@ -297,8 +427,11 @@ Abbreviated blocks are introduced by an C<'='> sign in the
 first column, which is followed immediately by the typename of the
 block. The rest of the line is treated as block data, rather than as
 configuration. The content terminates at the next Podlite directive or the
-first blank line (which is not part of the block data). The general
-syntax is:
+first blank line (which is not part of the block data).
+
+=include file:./t/abbreviated-blocks.podlite#blank-line-ends-an-abbreviated-block
+
+The general syntax is:
 
 =begin code :allow< R >
      =R<BLOCK_TYPE>  R<BLOCK DATA>
@@ -323,6 +456,8 @@ For example:
 Note that abbreviated blocks cannot specify configuration information. If
 configuration is required, use a C<=for> or C<=begin>/C<=end> instead.
 
+=include file:./t/abbreviated-blocks.podlite#abbreviated-line-is-data
+
 
 =head3 Block equivalence
 
@@ -332,6 +467,8 @@ It is possible to choose the form is most convenient for a particular
 documentation task. In the descriptions that follow, the abbreviated
 form will generally be used, but should be read as standing for all
 three forms equally.
+
+=include file:./t/block-equivalence.podlite#three-forms-yield-one-block-name
 
 For example, although L<#Headings> shows only:
 
@@ -437,6 +574,8 @@ Note that C<:!nested> could also be used for this purpose:
 
 =end defn
 
+=include file:./t/standard-configuration-options.podlite#nested-takes-a-level
+
 =begin defn
 C<:numbered>
 
@@ -448,7 +587,8 @@ The numbering conventions for headings and lists are specified in those
 sections, but it is up to individual renderers to decide how to display
 any numbering associated with other types of blocks.
 
-Note that numbering is never explicit; it is always implied by context.
+Note that numbering is never explicit; it is always implied by context. For a
+block placed by C<=include>, the context is the document it is placed in.
 
 =end defn
 
@@ -503,11 +643,14 @@ visual means such as sidebar placement or reduced emphasis.
 
 =end defn
 
+=include file:./t/standard-configuration-options.podlite#zero-and-false-values-are-kept
+
 =begin defn
 C<:lang>
 
-This option is used to L<provide information|#Assign programming language to 
-code blocks> about the programming language used in a specific code block.
+This option is used to
+L<provide information|#Assign programming language to code blocks>
+about the programming language used in a specific code block.
 This helps ensure that the code is displayed and interpreted correctly
 by rendering engines or syntax highlighters.
 
@@ -528,8 +671,8 @@ values for the C<:lang> attribute:
 
 =end table
 
-If the language is not specified, the default language is used based 
-on the file extension or mime type of the current document.
+If the language is not specified, the default language is used based on the
+file extension or MIME type of the file in which the block is written.
 
 =end defn
 
@@ -540,15 +683,15 @@ This option expects a list of markup codes that are to be recognized
 within any C<V<>> codes that appear in (or are implicitly applied to)
 the current block. The option is most often used on C<=code> blocks to
 allow mark-up within those otherwise verbatim blocks, though it can be
-used in I<any> block that contains verbatim text. See L<#Formatting
-within code blocks>.
+used in I<any> block that contains verbatim text.
+See L<#Formatting within code blocks>.
 
 =end defn
 
 =head2 Selectors
 
-Selectors consist of patterns that help identify and filter specific blocks
-within documents. Each pattern contains optional source of blocks and block names.
+A selector specifies a source, a list of block patterns, or both. A pattern
+matches a block by name or by the universal C<*>, optionally subject to a predicate.
 
 The general syntax is:
 
@@ -561,7 +704,8 @@ or
 ...where
 
 =item EXTERNAL_SOURCE - optional source of blocks for filtering, default current document,
-=item BLOCK_SELECTOR - list of block names, filter for
+=item BLOCK_SELECTOR - list of patterns; a pattern is a block name or the
+universal C<*>, optionally followed by a L<predicate|#Predicates>
 
 For example:
 
@@ -569,28 +713,27 @@ For example:
 
     Selector                                        Description
     _______________________________________         ___________________________________________________
-    head1, head2, item1                             all head1, head2 and item1 blocks from document
+    C<head1, head2, item1>                          all head1, head2 and item1 blocks from document
 
-    file:article.pod6 | head1, head2                all head1 and head2 blocks from article.pod6 file
+    C<file:article.pod6 | head1, head2>             all head1 and head2 blocks from article.pod6 file
 
-    file:./includes/*.pod6 | head1, head2           all head1 and head2 blocks from pod6 files placed 
+    C<file:./includes/*.pod6 | head1, head2>        all head1 and head2 blocks from pod6 files placed 
                                                     in includes directory
 
-    doc:Data::Dumper | code                         all code blocks from a module documentation
+    C<doc:Data::Dumper | code>                      all code blocks from a module documentation
 
-    file:/docs/**/*.md | head1                      search headers with first level for all ".md" files 
+    C<file:/docs/**/*.md | head1>                   search headers with first level for all ".md" files 
                                                     within the "docs" directory and its subdirectories.
 
 =end table
 
-Please note that while the Selector blocks provide a way to query and filter specific elements 
-within Markdown files, Markdown itself doesn't have formal named blocks like the Podlite syntax. 
-Instead, Markdown uses a lightweight markup to structure content. The above table provides a mapping
-between Podlite block names and their corresponding Markdown elements.
+Selectors also apply to Markdown files, which have no formal block names and
+use lightweight markup for structure. The following table maps Podlite block
+names to Markdown elements.
 
 =begin table :nested :caption("A table of correspondences for some Podlite blocks and markdown blocks")
 
-    Podlite                                             Markdown                Describtion
+    Podlite                                             Markdown                Description
     _______________________________________         ______________          _____________________________________
     C<=head1>, C<=head2>, ...                                 #, ##, ...            Heading level 1,2...
 
@@ -614,6 +757,324 @@ between Podlite block names and their corresponding Markdown elements.
 
 The most common use of Selectors is to create L<table of contents|#Table of contents> and
 in the L<include directive|#Include directive>.
+
+A relative path in a C<file:> source of a selector resolves against the file in
+which that source is written, not the parent including document. Within
+tests, the rules in L<#Test blocks> also apply.
+
+=include file:./t/selectors.podlite#relative-path-from-the-file-it-is-written-in
+
+=include file:./t/selectors.podlite#relative-path-in-an-in-operand
+
+A selector whose source is another file is applied without the configuration
+in effect in the document containing the selector.
+
+=include file:./t/selectors.podlite#include-selector-reads-the-source
+
+=include file:./t/selectors.podlite#selector-reads-nested-includes
+
+=head3 Internal addresses
+
+An internal address follows a C<#>, or the separator a scheme requires in its
+place. It names a section or block in a document, a column in a table, or a
+position or range in audio or video. Three parts of the reading are separate:
+
+=item the syntax separates the address at the C<#>, and reads no further;
+=item the scheme resolves the source into content;
+=item the format of that content reads the address.
+
+A scheme may define the structure of its own address, and must then state so in
+its own description. If no such definition is given, the format reads the
+address.
+
+Within a selector operand the separator is the C<#>. The address is bounded by
+whitespace, carries none of the characters that structure a selection, and is
+never empty. A path containing a C<#> cannot be written there, and no escape is
+provided.
+
+=include file:./t/selectors.podlite#address-ends-at-whitespace
+
+If the scheme is omitted, it is read as C<file:>. The vertical bar required
+before a selection is then what tells a source from a block name:
+
+=begin code
+=include file:./guide.podlite#Overview
+=include article.podlite | head1
+=end code
+
+=include file:./t/selectors.podlite#omitted-scheme-is-file
+
+Within a link markup code the address is bounded by what ends the code. Three
+rules bound it, and they apply in this order:
+
+=item the vertical bar separates the link text;
+=item the first whitespace immediately followed by C<:> begins the configuration;
+=item the matching closing angle bracket or brackets end the code.
+
+What remains is the address: in C«L<the introduction|#intro :new>» it is C<#intro>.
+
+An address the format does not recognise does not resolve, and the outcome is
+told from two others:
+
+=for table :nested :caption('When an internal address does not resolve') :id<address_outcomes>
+ What happened                     What is reported
+ ===============================   ============================
+ the source did not resolve        an error of resolution
+ the format is unknown             an error of format
+ no such address for that format   the address does not resolve
+
+None of the three yields an empty result. A condition carrying a selector
+reports a match or a non-match only if resolution, column selection and
+decoding all succeed.
+
+=include file:./t/selectors.podlite#unknown-address-is-not-an-empty-result
+
+If a C<data:> source reads one column, the address names it by its heading
+(L<#Data blocks>). Such an address is read only if the content is tabular:
+C<data:> reaches content of any kind, and against an image it does not
+resolve. For example, a column addressed by its heading:
+
+=begin code
+=begin data :key<statuses> :mime-type('text/tab-separated-values; header=present')
+value	label
+draft	Draft
+=end data
+
+| Invoice[ :status(in data:statuses#value) ]
+=end code
+
+=include file:./t/selectors.podlite#column-address-in-data
+
+=head3 Predicates
+
+A pattern may carry a D<predicate>. The predicate is written in square brackets
+after the block name. It tests the configuration in effect for a block,
+including options supplied by C<=config> and C<=set>, and does not distinguish
+them from options written on the block. A block is
+selected when its name matches the pattern and every condition of the
+predicate holds.
+
+=include file:./t/predicates.podlite#include-selection-sees-set-of-its-file
+
+Conditions are written in the syntax of the
+L<block configuration table|#configuration_syntax>, so an operator means the
+same thing in a declaration and in a predicate.
+
+=for table :nested :caption("Predicate operators") :id<predicate_operators>
+ Written as               Holds when
+ ======================   ==============================================================
+ C«[ :attr ]»             the attribute exists and its value is neither empty nor false
+ C«[ :!attr ]»            the value is false
+ C«[ :?attr ]»            the attribute exists, whatever its value
+ C«[ :!?attr ]»           the attribute does not exist
+ C«[ :attr<value> ]»      the value equals the operand
+ C«[ :!attr<value> ]»     the attribute exists and its value does not equal the operand
+ C«[ :attr~<element> ]»   the operand occurs among the values
+ C«[ :attr(in V,W) ]»     a value of the attribute is any of the operands
+
+=include file:./t/predicates.podlite#predicate-operators
+
+Predicates are case-sensitive.
+
+=include file:./t/predicates.podlite#predicates-are-case-sensitive
+
+=include file:./t/predicates.podlite#attribute-names-are-case-sensitive
+
+A predicate tests the block it is applied to, not the blocks within it. A
+selected block keeps all of its content. In the following file, the
+C<=pod> block has no C<:draft> option and is selected by C<*[ :!?draft ]>, and
+the draft paragraph is brought in with it:
+
+=begin code
+=begin pod
+=for para :draft
+Unfinished text.
+
+=para Finished text.
+=end pod
+=end code
+
+=begin code
+=include file:./part.podlite | *[ :!?draft ]
+=end code
+
+=include file:./t/predicates.podlite#negated-predicate-keeps-content
+
+A value containing whitespace is written in quotation marks, as it is in a
+L<declaration|#configuration_syntax>:
+
+=begin code
+=include file:./guide.podlite | para[ :author('John Doe') ]
+=end code
+
+=head3 Universal pattern
+
+The character C<*> forms a D<universal pattern>, which matches a block of any
+name and stands in the position of a block name. It is used when the selection
+is by configuration rather than by name:
+
+=begin code
+=include file:./guide.podlite | *[ :platform<arm> ]
+=end code
+
+=include file:./t/selectors.podlite#universal-pattern-selects-by-configuration
+
+=include file:./t/selectors.podlite#universal-pattern-without-predicate
+
+=head3 Empty and absent values
+
+An attribute that exists with an empty value is distinct from an attribute
+that does not exist and from one whose value is false. The following table
+states the outcome for each predicate:
+
+=for table :nested :caption("Predicates over empty and absent values") :id<predicate_empty_values>
+ Declared as        C«[ :attr ]»   C«[ :!attr ]»   C«[ :?attr ]»   C«[ :!?attr ]»
+ ================   ============   =============   =============   ==============
+ C«:attr<value>»    true           false           true            false
+ C«:attr(False)»    false          true            true            false
+ C«:attr<>»         false          false           true            false
+ C«:attr()»         false          false           true            false
+ C«:attr('')»       false          false           true            false
+ not declared       false          false           false           true
+
+=include file:./t/predicates.podlite#empty-and-absent-values
+
+=include file:./t/selectors.podlite#undeclared-attribute
+
+No predicate distinguishes an empty list from an empty string. An empty list
+holds no values. An empty string is one value of zero length. The distinction
+is preserved in the document tree.
+
+=head3 Membership
+
+C«[ :attr~<V> ]» holds when every element of C<V> occurs among the values of
+the attribute.
+
+The D<operand> of C«~<>» is read by the
+L<rule that governs any value|#configuration_syntax>.
+
+=begin code
+=for para :id<A> :tags<draft review>
+=for para :id<B> :tags<draft review urgent>
+=for para :id<C> :tags<draft>
+=for para :id<D> :tags<'draft review'>
+
+| para[ :tags~<draft> ]              # A, B, C
+| para[ :tags~<draft review> ]       # A, B
+| para[ :tags~<'draft review'> ]     # D
+=end code
+
+An empty operand is an error and is reported when the selector is read. An
+empty list occurs among any set of values, so the condition would hold for
+every block and would test nothing.
+
+Membership is not a test for a substring. C«[ :tags~<spec> ]» does not hold for
+C«:tags<specification>».
+
+Addressing the keys of a hash is not defined. Applied to a hash, C«~<>» yields
+no match.
+
+=include file:./t/predicates.podlite#membership
+
+=head3 Operations in parentheses
+
+The operation is named, and its operands follow the name inside parentheses:
+
+=begin code
+| Invoice[ :author('John Doe') ]             # a value
+| Invoice[ :status(in 'draft','issued') ]    # an operation
+=end code
+
+What follows the opening parenthesis is read as a value when it is one of
+the forms of the L<block configuration table|#configuration_syntax>. Every
+other name is the name of an operation. A name in that position which this
+specification does not define is an error and is reported when the selector
+is read.
+
+=for table :nested :caption("Operations in parentheses") :id<paren_operations>
+ Written as                Holds when
+ =======================   ===========================================================
+ C«[ :attr(in V,W) ]»      a value of the attribute is any of the operands
+
+C<in> is written with one or more operands. An absent operand and an empty
+operand are both errors and are reported when the selector is read.
+
+Literal operands are separated by commas, as the L<block configuration
+table|#configuration_syntax> writes a list. Angle brackets instead separate
+values with whitespace.
+
+The condition holds when at least one value of the attribute equals an
+operand, as in:
+
+=begin code
+=for note :tags<approved secret>
+
+| note[ :tags(in 'approved') ]      # holds
+=end code
+
+=include file:./t/predicates.podlite#in-holds-when-a-value-equals-an-operand
+
+A literal operand is a number or a value in quotation marks. Alternatively,
+a L<selector|#Selectors> supplies the values and is the sole operand. If the
+operand is a selector, the condition holds when a value of the attribute
+is one the selector yields:
+
+=begin code
+=include file:./guide.podlite | Invoice[ :type(in file:./vocabulary.podlite | defn) ]
+=end code
+
+The term is taken from a definition, as
+L<definition lists|#Definition lists> state. Nothing is taken from a block
+whose kind defines no single value.
+
+=include file:./t/predicates.podlite#in-selector-operand
+
+A source is resolved and read before a condition carrying a selector reports
+a match or a non-match. Failure to resolve a source is an
+error; the source is not treated as empty.
+
+The rules for an internal address within an operand are stated in
+L<#Internal addresses>.
+
+=head3 Combining conditions
+
+Whitespace separates one condition from the next. Whitespace enclosed by
+brackets, by parentheses or by quotation marks belongs to the condition it
+appears in.
+
+=include file:./t/selectors.podlite#space-in-a-quoted-operand-belongs-to-it
+
+=begin code
+code[ :lang<python> :numbered ]
+=end code
+
+=include file:./t/selectors.podlite#whitespace-joins-conditions
+
+A comma separates whole patterns, and a block is selected when it matches any
+of them:
+
+=begin code
+head1, head2, code[ :lang<python> ]
+=end code
+
+=include file:./t/selectors.podlite#comma-joins-patterns
+
+The result is a set in document order.
+
+=include file:./t/selectors.podlite#selection-is-in-document-order
+
+=include file:./t/selectors.podlite#block-matching-two-patterns-is-selected-once
+
+=head3 Non-matching conditions
+
+No diagnostic is required for a condition naming an attribute that no block
+declares.
+
+A value whose kind does not admit the test is reported as a non-match. The
+selection is not interrupted, which the universal pattern requires. Under it,
+values of unexpected kinds are encountered by construction.
+
+=include file:./t/selectors.podlite#kinds-of-value-do-not-interrupt
 
 =head2 Block types
 
@@ -641,6 +1102,8 @@ I<renderings> of the first four levels of heading (though they may, of
 course, provide more than that). Headings at levels without distinct
 renderings would typically be rendered like the lowest distinctly
 rendered level.
+
+=include file:./t/headings.podlite#heading-levels-are-distinguished
 
 
 =head4 Numbered headings
@@ -687,11 +1150,13 @@ Overview
 Details
 =end nested
 
-2.2: Design
+2.2. Design
 =end nested
 
 3. The Implementation
 =end nested
+
+=include file:./t/headings.podlite#numbered-option-on-a-heading
 
 It is usually better to preset a numbering scheme for each heading
 level, in a series of L<configuration blocks|#Block pre-configuration>:
@@ -724,6 +1189,8 @@ removed and the heading is treated as if it had a C<:numbered> option:
   =head1 # The Implementation
 =end code
 
+=include file:./t/headings.podlite#hash-word-numbers-a-heading
+
 Note that, even though renderers are not required to distinctly render
 more than the first four levels of heading, they I<are> required to
 correctly honour arbitrarily nested numberings. That is:
@@ -746,8 +1213,8 @@ squeezed, lines filled, and any special L<inline mark-up|#Markup codes>
 applied.
 
 Ordinary paragraphs consist of one or more consecutive lines of text,
-each of which starts with a non-whitespace character at (virtual) column
-1. The paragraph is terminated by the first blank line or block
+the first of which starts with a non-whitespace character at (virtual) column
+1. The paragraph is terminated by the first blank line or Podlite
 directive. For example:
 
 =begin code
@@ -764,12 +1231,15 @@ directive. For example:
   the trailing directive on the next line.
     =head2 This is another heading block
   
-    This is yet another ordinary paragraph,
-    at the first virtual column set by the
-    previous directive
+  This is yet another ordinary paragraph,
+  at the virtual margin of the enclosing block
 =end code
 
-Within a C<=pod>, C<=item>, C<=defn>, C<=nested>, or
+=include file:./t/paragraph-blocks.podlite#directive-ends-a-paragraph
+
+=include file:./t/paragraph-blocks.podlite#indented-line-continues-a-paragraph
+
+Within a C<=pod>, C<=item>, C<=defn>, C<=nested>, C<=test>, or
 L<semantic|#Semantic blocks> block, ordinary paragraphs do not require
 an explicit marker or delimiters, but there is also an explicit C<para>
 marker (which may be used anywhere):
@@ -799,6 +1269,12 @@ is used, any whitespace at the start of each line is removed during rendering.
 In addition, within a delimited C<=begin para>/C<=end para> block, any
 blank lines are preserved.
 
+In an abbreviated C<=item>, text that begins on the directive line, together
+with the lines that continue it, is an ordinary paragraph of that item.
+
+=include file:./t/paragraph-blocks.podlite#item-text-is-an-ordinary-paragraph
+=include file:./t/paragraph-blocks.podlite#indented-continuation-in-abbreviated-item
+
 
 =head3 Code blocks
 
@@ -811,9 +1287,9 @@ of code, mark-up, or other textual specifications, and are rendered
 using a fixed-width font.
 
 A code block may be implicitly specified as one or more lines of text,
-each of which starts with a whitespace character at the block's virtual
-left margin. The implicit code block is then terminated by a blank line.
-For example:
+the first of which starts with a whitespace character at the block's virtual
+left margin. The implicit code block is then terminated by a blank line or
+Podlite directive. For example:
 
 =begin code
   This ordinary paragraph introduces a code block:
@@ -822,8 +1298,18 @@ For example:
     $which.is_specified(:by<indenting>);
 =end code
 
+=include file:./t/code-blocks.podlite#line-at-the-margin-continues-code
+
+=include file:./t/code-blocks.podlite#directive-ends-implicit-code
+
 Implicit code blocks may only be used within C<=pod>, C<=item>, C<=defn>,
-C<=nested>, or L<semantic|#Semantic blocks> blocks.
+C<=nested>, or L<semantic|#Semantic blocks> blocks. In the abbreviated and
+paragraph forms of C<=item> and C<=defn>, unlike the delimited form, indented
+text does not start an implicit code block.
+
+=include file:./t/code-blocks.podlite#indented-text-in-nested-is-code
+
+=include file:./t/code-blocks.podlite#indented-text-in-item-and-defn-forms-is-text
 
 There is also an explicit C<=code> block (which can be specified within
 I<any> other block type, not just C<=pod>, C<=item>, etc.):
@@ -881,6 +1367,8 @@ would be rendered:
   }
 =end code
 
+=include file:./t/code-blocks.podlite#allow-holds-a-list-of-codes
+
 Note that the use of the C<:allow> option also makes it possible
 for verbatim L<markup codes|#Markup codes> (such as C<C<>>
 and C<V<>>) to L<contain other codes as well|#Pre-configuring markup codes>.
@@ -891,6 +1379,8 @@ The C<:lang> attribute will be used to provide information about the
 programming language used in a particular block of code. This helps
 in ensuring that the code is correctly rendered and interpreted by the
 renderers or syntax highlighting tools.
+
+=include file:./t/assign-programming-language-to-code-blocks.podlite#lang-names-the-language
 
 For example:
 
@@ -913,6 +1403,8 @@ which should be rendered without rejustification or squeezing of whitespace.
 The C<=output> block is used to specify pre-formatted terminal or file
 output which should also be rendered without rejustification or
 whitespace-squeezing.
+
+=include file:./t/io-blocks.podlite#input-and-output-blocks
 
 Note that, like C<=code> blocks, both C<=input> and C<=output> blocks have an
 implicit level of nesting. They are also like C<=code> blocks in that they
@@ -1019,6 +1511,8 @@ E<ndash> Gas
 =for para :nested(2)
 E<ndash> Chocolate
 
+=include file:./t/lists.podlite#item-levels
+
 Podlite parsers must issue a warning if a "level-R<N+1>" C<=item> block
 (e.g. an C<=item2>, C<=item3>, etc.) appears anywhere except where there
 is a preceding "level-R<N>" C<=item> in the same surrounding block. That
@@ -1050,6 +1544,7 @@ higher-level items:
     =item2 Beer           ==================< Level 2
 =end code
 
+=include file:./t/lists.podlite#items-of-a-list-are-not-nested
 
 =head4 Ordered lists
 
@@ -1130,12 +1625,16 @@ make the octothorpe verbatim:
     =item B<V<#>> introduces a comment
 =end code
 
+=include file:./t/lists.podlite#verbatim-hash-starts-an-unnumbered-item
+
 or explicitly mark the item itself as being unnumbered:
 
 =begin code :allow<B>
     =for item B<:!numbered>
     # introduces a comment
 =end code
+
+=include file:./t/lists.podlite#hash-word-numbers-an-item
 
 The numbering of successive C<=item1> list items increments
 automatically, but is reset to 1 whenever any other kind of non-ambient
@@ -1234,6 +1733,8 @@ For example:
  =itme B<[ ]> Clean the garage 
 =end code
 
+=include file:./t/lists.podlite#brackets-mark-a-task
+
 It possiible to create multilevel to-do lists, which permits the 
 inclusion of various task levels or sub-tasks.
 Here's an example:
@@ -1270,6 +1771,7 @@ E<curren;nbsp;nbsp>'Rithmetic
 As with numbering styles, the bulletting strategy used for different levels
 within a nested list is entirely up to the renderer.
 
+=include file:./t/lists.podlite#plain-item-has-no-flags
 
 =head4 Multi-paragraph list items
 
@@ -1321,6 +1823,7 @@ for breakfast.
 As you can see, folk wisdom is often of dubious value.
 =end nested
 
+=include file:./t/lists.podlite#delimited-item-holds-several-paragraphs
 
 =head4 Definition lists
 
@@ -1358,6 +1861,7 @@ option or a leading C<#>:
     The one unpardonable sin against one's fellows.
 =end code
 
+=include file:./t/lists.podlite#hash-word-numbers-a-definition
 
 =head3 Nesting blocks
 
@@ -1412,6 +1916,7 @@ The preceding example could equally have been specified:
     B<=end nested>
 =end code
 
+=include file:./t/nesting-blocks.podlite#indentation-does-not-decide-nesting
 
 =head3 Tables
 
@@ -1419,14 +1924,19 @@ Simple tables can be specified in Podlite using a C<=table> block.
 The table may be given an associated description or title using the
 C<:caption> option.
 
+=include file:./t/tables.podlite#simple-table-keeps-its-caption
+
 Columns are separated by two or more consecutive whitespace characters
 (double-space),
 or by a vertical line (C<|>) or a border intersection (C<+>), either of
 which must be separated from any content by at least one whitespace
-character.  Note that only one column separator type is allowed in a single line,
+character. Only one column separator type is allowed in a single line,
 but different lines are allowed to use different visible column separator types
-(that style is not recommended).  Using a mixture of visible and non-visible
-column separator types in a table is an error.
+(that style is not recommended). A mixture of visible and non-visible column
+separator types in a table produces a warning (L<#Error Recovery>).
+
+In a simple table, a C<|>, a C<+> or whitespace enclosed by a markup code
+whose delimiters are on one line belongs to the cell (L<#Markup codes>).
 
 Rows can be specified in one of two ways: either one row per line, with
 no separators; or multiple lines per row with explicit horizontal
@@ -1435,6 +1945,9 @@ C<=>, C<_>) between I<every> row. Either style can also have an
 explicitly separated header row at the top. If rows are using the
 two-whitespace-character separator, the row cells should be carefully
 aligned to ensure the table is interpreted as the user intended.
+Whitespace between two cells is one separator, whatever its width; an
+empty cell is written with visible separators (C<|> or C<+>) or with
+C<=row> and C<=cell>.
 
 Each individual table cell is separately formatted, as if it were a
 nested C<=para>. Note that table rows are expected to have the same number
@@ -1476,7 +1989,7 @@ Or:
     Geothermal energy            Low emissions
     Biomass                      Reduces waste
 
-=end table
+ =end table
 =end code
 
 or line-by-line with multi-line headers:
@@ -1642,7 +2155,7 @@ For example:
   =end row
 
   =begin row
-    =picture spacecraft_in_orbit.jpg
+    =for picture :src<spacecraft_in_orbit.jpg>
     =para
     A vehicle designed for space travel
   =end row
@@ -1659,20 +2172,28 @@ For example:
 
 =end code
 
+=include file:./t/tables.podlite#block-in-a-row-is-wrapped-in-a-cell
+
 Cell spanning attributes and nested block content within cells are
 semantic properties of the table document model and are preserved
 in the document tree.
+
+=include file:./t/tables.podlite#header-and-spanning-are-kept
 
 For loading external CSV or TSV data into tables, use C<=data-table>
 (L<#Data-table blocks>).
 
 =head4 Error Recovery
 
-The column separator type is determined per line. If visible separators
-(C<|> or C<+>) are present, they are used; otherwise, sequences of two
-or more consecutive whitespace characters serve as separators. Mixed
+The column separator type is determined per line, from the separators
+outside markup codes whose delimiters are on that line. If visible
+separators (C<|> or C<+>) are present, they are used; otherwise,
+sequences of two or more consecutive whitespace characters serve as
+separators. Mixed
 separator types across lines produce a warning; the table is not
 rejected.
+
+=include file:./t/tables.podlite#mixed-separators-keep-the-table
 
 The expected cell count is established from the header row or, in its
 absence, the row with the most cells. Rows with fewer cells are padded
@@ -1685,9 +2206,10 @@ mismatched cell counts produce a warning.
 For tables sourced from C<file:> or C<data:> references, three levels
 of error are defined. If the source cannot be resolved, an error is
 issued and the table is rendered as an empty block. If the source
-cannot be interpreted as CSV, the content is rendered as a C<=code>
-block. If the CSV contains rows with unequal field counts, parsing
-proceeds with padding for missing fields, and a warning is issued.
+cannot be interpreted as CSV or TSV, the content is rendered as a
+C<=code> block. If the CSV or TSV content contains rows with unequal
+field counts, parsing proceeds with padding for missing fields, and a
+warning is issued.
 
 =for head3 :id('Custom blocks')
 Named or modular custom blocks
@@ -1741,13 +2263,15 @@ data in three forms: inline body, an external file via C<:src>, or
 a referenced C<=data> block. C<:columns> declares column projection;
 C<:rename> declares display name overrides.
 
+=include file:./t/data-blocks.podlite#data-table-keeps-columns-and-rename
+
 The inline body form embeds the source data:
 
 =begin code
   =begin data-table :mime-type('text/csv; header=present')
-    name,age,city
-    Alice,30,London
-    Bob,25,Paris
+  name,age,city
+  Alice,30,London
+  Bob,25,Paris
   =end data-table
 =end code
 
@@ -1756,23 +2280,61 @@ option, as in:
 
 =begin code
   =for data-table :src<file:./planets.csv>
-  =    :columns<name,radius_km>
+  =    :mime-type('text/csv; header=present')
+  =    :columns<name radius_km>
   =    :caption('Inner planets')
 =end code
 
 The reference form refers to a named C<=data> block:
 
 =begin code
-  =begin data :key<sales> :mime-type('text/csv; header=present')
+    =begin data :key<sales> :mime-type('text/csv; header=present')
     quarter,region,revenue
     Q1,EU,120
-  =end data
+    =end data
 
-  =for data-table :src<data:sales> :columns<quarter,revenue>
+  =for data-table :src<data:sales> :columns<quarter revenue>
 =end code
 
-The body is verbatim and is parsed per C<:mime-type> using RFC 4180
-for C<text/csv> or RFC 4180 §3 for C<text/tab-separated-values>.
+The body is verbatim (L<#Data blocks>). The body, or the content referenced by
+C<:src>, is parsed per C<:mime-type>. A line ends at a newline (U+000A),
+whether or not U+000D precedes it.
+
+=include file:./t/data-blocks.podlite#data-table-body-is-verbatim
+
+Rows and fields of C<text/csv> content are read as RFC 4180 §2 defines
+them, with the line ending stated above in place of the CRLF of the RFC.
+Inside a quoted field, a newline belongs to the field. Any character
+other than U+000D, a newline, C<"> or a comma belongs to a field, quoted
+or not.
+
+=include file:./t/data-blocks.podlite#csv-any-character-belongs-to-a-field
+
+=include file:./t/data-blocks.podlite#no-break-space-at-field-edge-is-part-of-the-value
+
+=include file:./t/data-blocks.podlite#csv-doubled-quote-is-one-quote
+
+Each line of C<text/tab-separated-values> content is a row, and every tab
+separates two of its fields, either of which may be empty. There is no
+quoting: every other character, including C<">, belongs to a field.
+
+=include file:./t/data-blocks.podlite#tsv-quote-belongs-to-field
+
+=include file:./t/data-blocks.podlite#tsv-empty-field-is-retained
+
+A final newline does not start a row, and empty content has no rows.
+Outside a quoted CSV field, no line is skipped: an empty line is a row
+with one empty field, and a line of spaces (U+0020) is a row whose field
+holds those spaces.
+
+=include file:./t/data-blocks.podlite#line-of-spaces-is-a-row
+
+=include file:./t/data-blocks.podlite#empty-line-is-a-row
+
+=include file:./t/data-blocks.podlite#final-newline-starts-no-row
+
+The C<header> parameter (L<#Data blocks>) determines whether the first
+row names the columns.
 
 =begin nested :notice<warning>
 A CSV field with a literal newline followed by C<=end data-table> at
@@ -1784,16 +2346,26 @@ The standard C<:allow> option enables markup codes within each cell;
 listed codes are interpreted after the cell is parsed from CSV or
 TSV. Without C<:allow>, cell content is plain text.
 
+Leading and trailing spaces of a parsed field are part of its value. The
+spaces are retained in the table cell built from the field; C<:allow> codes
+are interpreted after the cell is built. Whitespace in a cell is squeezed only
+in rendering, as in any table cell (L<#Ordinary paragraph blocks>).
+
+=include file:./t/data-blocks.podlite#field-edge-spaces-are-part-of-the-value
+
 The C<:mime-type> option declares the format. With C<:src<data:X>>,
-C<:mime-type> is inherited from the referenced block; declaring it
-on C<=data-table> in this case produces an error. With
-C<:src<file:X.ext>>, C<:mime-type> may be omitted and is inferred
+the format is taken from the referenced block unless a C<:mime-type>
+written on C<=data-table> overrides it. A C<:mime-type> supplied by
+C<=config> does not override the referenced format.
+
+With C<:src<file:X.ext>>, C<:mime-type> may be omitted and is inferred
 from the file extension. With C<:src<http:>> or C<:src<https:>>,
 C<:mime-type> may be omitted and is inferred from the HTTP
 C<Content-Type> response header. For inline body, C<:mime-type> is
 required.
 
-Error recovery follows C<=table> rules (L<#Error Recovery>).
+Error recovery follows C<=table> rules (L<#Error Recovery>), except that
+separator recovery does not apply to CSV or TSV.
 
 Each C<=data-table> block can include the following attributes:
 
@@ -1813,10 +2385,13 @@ the default. For example:
 =end code
 
 Relative paths in C<file:> URIs resolve against the file declaring
-the directive, not the parent including document.
+the directive, not the parent including document. For a URI supplied by
+C<=config>, this is the file declaring that C<=config>.
 
 The C<:src> option and inline body content are mutually exclusive;
-declaring both produces an error at parse time.
+declaring both produces an error at parse time. A blank line in the body
+is inline body content and produces that error when the block has a
+C<:src> option.
 
 =end defn
 
@@ -1829,9 +2404,9 @@ column position (1-based) in the source, not row position. For
 example:
 
 =begin code
-  :columns<product,revenue>
-  :columns<1,3,5>
-  :columns<revenue,product>
+  :columns<product revenue>
+  :columns(1,3,5)
+  :columns<revenue product>
 =end code
 
 Output order matches list order; columns absent from the list are
@@ -1851,14 +2426,14 @@ The value is a hash mapping source identifiers, either names or
 indices, to display strings. For example:
 
 =begin code
-  :rename{revenue=>USD}
-  :rename{1=>Time, 2=>Action}
+  :rename{revenue=>'USD'}
+  :rename{1=>'Time', 2=>'Action'}
   :rename{product=>'Product name'}
 =end code
 
 Only columns appearing as hash keys receive overrides; other columns
-retain their source name when C<header=present> or numeric index
-when C<header=absent>.
+retain their source name when the C<header> value in effect is
+C<present>, or numeric index when it is C<absent>.
 
 Hash keys referring to columns absent from C<:columns> (or from the
 source when C<:columns> is omitted) produce an error.
@@ -1902,10 +2477,10 @@ use the following syntax:
 
 =begin code :allow<B>
 
-  =begin data :key<sales_data> :mime-type<text/csv>
-    name,month,amount
-    John Doe,January,1000
-    Jane Doe,February,1500
+  =begin data :key<sales_data> :mime-type('text/csv; header=present')
+  name,month,amount
+  John Doe,January,1000
+  Jane Doe,February,1500
   =end data
 
 =end code
@@ -1915,16 +2490,27 @@ of any C<=data> block with a key are addressable via
 the C<data:> schema. For example:
 
 =begin code :allow<B>
-  =begin data B<:key<employee_data>> :mime-type<text/csv>
-    id,name,position,department
-    1,John Doe,Manager,Marketing
-    2,Jane Smith,Developer,Engineering
-    3,Bob Brown,Designer,Product
+  =begin data B<:key<employee_data>> :mime-type('text/csv; header=present')
+  id,name,position,department
+  1,John Doe,Manager,Marketing
+  2,Jane Smith,Developer,Engineering
+  3,Bob Brown,Designer,Product
   =end data
 
   =table B<data:employee_data>
 
 =end code
+
+Tabular content of a C<=data> block is read by the rules of
+L<#Data-table blocks>, whether C<=data-table> or C<=table> reads it or a
+selector reads one of its columns.
+
+In a delimited C<=data> or C<=data-table> block, the body is read from
+the virtual margin of the block (L<#General syntactic structure>).
+Whitespace beyond that margin is part of the data. The data is indented
+in the source by indenting the whole block, including its C<=end> line.
+
+=include file:./t/data-blocks.podlite#indentation-beyond-the-margin-is-data
 
 Each C<=data> block can include several attributes to provide additional information
 about the contained data:
@@ -1943,37 +2529,67 @@ C<:mime-type>
 This option indicates the MIME type of the data, such as C<image/png> for PNG images,
 which helps determine how the data should be interpreted and processed.
 
-The C<header> MIME parameter (per RFC 4180 §3) is recognised on
-C<:mime-type> for CSV and TSV content. It accepts C<present> or
-C<absent>, with default C<absent>. When C<header=present>, the
-renderer treats the first row as column labels in C<=table data:X>:
+The C<header> parameter of C<:mime-type> states whether the first row of
+CSV or TSV content names the columns. The parameter is written
+C<present> or C<absent>; any other value is an error. If the parameter
+is omitted, its value is C<present>.
+
+With C<header=present>, the first row, if any, is the header row of a
+table built from the content. That row supplies the column names used by
+C<:columns>, by C<:rename> and by a C<data:> column address
+(L<#Internal addresses>), and supplies no values to any column. For
+example, a header declared explicitly:
 
 =begin code :allow<B>
   =begin data :key<planets> B<:mime-type('text/csv; header=present')>
-    name,radius_km,moons
-    Mercury,2440,0
-    Venus,6052,0
-    Earth,6371,1
-    Mars,3390,2
+  name,radius_km,moons
+  Mercury,2440,0
+  Venus,6052,0
+  Earth,6371,1
+  Mars,3390,2
   =end data
 
   =for table :caption('Inner planets')
   data:planets
 =end code
 
-For C<=data-table> blocks, the C<:mime-type> option may be omitted
-when the format can be inferred from the source. With
-C<:src<file:X.ext>>, the format is inferred from the file extension
-via the MIME extension table below; matching is case-insensitive and
-multi-dot filenames use the last extension component. With
-C<:src<http:>> or C<:src<https:>>, the format is inferred from the
-HTTP C<Content-Type> response header. With C<:src<data:X>>, the MIME
-type is inherited from the referenced C<=data> block.
+=include file:./t/data-blocks.podlite#tsv-header-is-present-by-default
+
+=include file:./t/data-blocks.podlite#csv-header-is-present-by-default
+
+=include file:./t/data-blocks.podlite#header-row-supplies-no-values
+
+With C<header=absent>, every row is data and no column has a name. For
+example, a CSV list of one column:
+
+=begin code :allow<B>
+  =begin data :key<statuses> B<:mime-type('text/csv; header=absent')>
+  paid
+  =end data
+
+  =table data:statuses
+=end code
+
+=include file:./t/data-blocks.podlite#header-absent-names-no-column
+
+When CSV or TSV content is exchanged with other software, the C<header>
+parameter should be written explicitly.
+
+For C<=data-table> blocks, the C<:mime-type> option may be omitted when
+the format can be inferred from the source. With C<:src<file:X.ext>>,
+the format is inferred from the file extension via the MIME extension
+table below; matching is case-insensitive and multi-dot filenames use
+the last extension component. The MIME type inferred from a file
+extension has no parameters. With C<:src<http:>> or C<:src<https:>>, the
+MIME type is inferred, with its parameters, from the HTTP
+C<Content-Type> response header. For a C<data:> source, see
+L<#Data-table blocks>.
 
 For inline body and for sources where inference fails (unknown file
 extension, missing or generic HTTP C<Content-Type>, absent file
 extension), C<:mime-type> is required and its omission produces an
-error. An explicit C<:mime-type> always overrides inference.
+error. An explicit C<:mime-type> replaces the inferred MIME type and
+all its parameters.
 
 Here is a list of common MIME types and their corresponding file extensions:
 
@@ -2025,7 +2641,7 @@ Example of storing images in C<=data> blocks:
   /t0HAMBnF2nt5sNRAAAAAElFTkSuQmCC
   =end data
 
-  =picture B<data:Logo>
+  =for picture B<:src<data:Logo>>
 
 =end code
 
@@ -2033,8 +2649,10 @@ In the example above, we have a C<=data> block with C<:key> C<Logo> that stores
 the base64-encoded image data. We also specify the filename, mime type,
 access time, and edit time as attributes of the C<=data> block.
 
-The image can then be referenced using the C<=picture> block with the scheme
-C<data:> and the block name C<Logo>.
+=include file:./t/data-blocks.podlite#data-keeps-its-metadata
+
+The image can then be referenced by the C<:src> option of the C<=picture> block,
+with the scheme C<data:> and the block name C<Logo>.
 
 
 The C<=data> blocks are just regular Podlite blocks and may appear anywhere
@@ -2042,6 +2660,8 @@ within a source file, and as many times as required.
 
 Note that in Podlite, it is possible to specify C<=data> blocks
 I<after> the point in the source where their contents will be used.
+
+=include file:./t/data-blocks.podlite#data-may-follow-its-use
 
 C<=data> blocks are never rendered by the standard Podlite renderers.
 
@@ -2085,6 +2705,8 @@ Standard semantic blocks include:
     =SUMMARY
 =end code
 
+=include file:./t/semantic-blocks.podlite#semantic-block-by-name
+
 The plural forms of each of these keywords are also reserved, and are
 aliases for the singular forms.
 
@@ -2106,6 +2728,8 @@ difference is that, in a C<=head1> block, the heading is the contents of
 the block; whereas, in a semantic block, the heading is derived from the
 typename of the block itself and the block contents are instead treated as
 the C<=para> or C<=code> block(s) belonging to the heading.
+
+=include file:./t/semantic-blocks.podlite#plural-semantic-block-holds-paragraphs-and-code
 
 The use of these special blocks is not required; you can still just write:
 
@@ -2150,6 +2774,9 @@ in a document. The TOC is an index of section titles within the document,
 and its structure is determined by the document's organization. 
 
 The first non-blank line of C<=toc> content is treated as a L<selector|#Selectors>.
+The selector is applied to the document the block is in; a selector naming a source lists nothing.
+A C<=toc> block brought in by C<=include> applies its selector to the
+including document, not to the file in which it is written.
 
 For example:
 
@@ -2191,9 +2818,11 @@ The C<:folded-levels> attribute indicates which levels of the TOC should
 be folded. 
 
 =begin code :allow<B>
- =for toc B<:folded-levels[2,3]> :caption('Table of contents')
+ =for toc B<:folded-levels(2,3)> :caption('Table of contents')
     head1, head2, item1
 =end code
+
+=include file:./t/toc.podlite#toc-keeps-caption-and-folded-levels
 
 If the C<:folded-levels> attribute is provided with a set 
 of key-value pairs, it indicates the folding state of each 
@@ -2229,21 +2858,51 @@ C<=config> and C<=alias>. As a directive, C<=include> references external
 content rather than containing it directly.
 
 The C<=include> directive is followed by a L<"Selector"|#Selectors> that specifies the
-content to be included.
+blocks to be included.
 
-In this example, the content of the file C<chapter01.pod6> located in the 
-C<./includes> directory is included:
+The blocks that the C<=include> directive resolves to take the place of the
+directive in the document that contains it, and selectors applied to that
+document, including the selector of a table of contents, reach them. The
+selector of an C<=include> with no source reaches them as described below.
+The directive itself is not a block, and no selector reaches it, whether or
+not it resolves.
+
+=include file:./t/include-directive.podlite#include-directive-is-not-a-block
+
+=include file:./t/include-directive.podlite#included-test-is-a-block-of-the-document
+
+A found block brings its content with it, whether or not the blocks within it
+match the selector. A block contained in another found block is not placed a
+second time: the included content consists of the found blocks that no other
+found block contains, in document order.
+
+An C<=include> brings blocks, whether the selector specifies a source alone,
+a source with an internal address, or patterns. A directive inside a brought
+block comes with it. A directive outside every brought block, such as a
+C<=boundary> between blocks that no other block contains, is not brought in.
+The C<=config>, C<=alias> and C<=set> directives of the source act within
+their own scopes.
+
+An C<=include> of a source with no internal address or pattern brings the
+same blocks as the source followed by C<| *>.
+
+Relative C<file:> sources follow the resolution rule in L<#Selectors>.
+
+In this example, the blocks of the file C<chapter01.pod6> located in the
+C<./includes> directory are included:
 
 =begin code 
 =include file:./includes/chapter01.pod6
 =end code
 
-A wildcard L<"Selector"|#Selectors> enables inclusion 
-of content from all the Markdown files:
+A L<"Selector"|#Selectors> with a wildcard source enables inclusion
+of blocks from every matching Markdown file:
 
 =begin code
   =include file:./includes/*.md
 =end code
+
+=include file:./t/include-directive.podlite#wildcard-source
 
 It is possible to include blocks from the same document.
 This feature proves valuable when reusing parts of existing content.
@@ -2262,6 +2921,19 @@ or, equivalently:
 =VERSION 1.0.0
 =end code
 
+An C<=include> with no source selects from the current document in one fixed
+state: its includes of other sources resolved, and its includes with no source
+left as written. An C<=include> with no source inside a brought block comes with
+it and selects from the same state.
+
+=include file:./t/include-directive.podlite#includes-of-the-same-document-select-from-one-state
+
+An C<=include> with no source fails to resolve when a block it would bring is
+one it stands inside, at any depth, as written or as a copy. It brings no
+blocks, and the failure is reported.
+
+=include file:./t/include-directive.podlite#self-include-brings-no-blocks
+
 Podlite detects the type of the included file by its extension.
 For example, if the included file has a C<.md> extension, 
 it is treated as a Markdown file.
@@ -2277,7 +2949,10 @@ The C<:mime-type> attribute lets the parser handle files whose extension
 does not match their actual type.
 
 External content can introduce vulnerabilities such as code injection.
-Tools displaying included content should provide warnings.
+Tools displaying included content should provide warnings. For this
+warning, content is external when it comes from a remote source or from a
+file outside the root directory the tool specifies. Blocks of the same
+document are not external. The warning names the source.
 
 C<=set> directives accumulated before C<=include> apply to the first
 block of the resolved included content (resolution-time targeting).
@@ -2292,8 +2967,9 @@ document sections such as chapters, parts, or topics. The transition
 is semantic, not presentational.
 
 A C<=boundary> is a directive, not a block. Hence, there is no
-paragraph or delimited form of the C<=boundary> directive. It accepts
-an optional C<:caption> attribute that describes the transition:
+paragraph or delimited form of the C<=boundary> directive. Of the
+L<standard options|#Standard configuration options>, it accepts only an
+optional C<:caption> describing the transition:
 
 =begin code :allow<B R>
 B<=boundary>
@@ -2301,8 +2977,10 @@ B<=boundary>
 B<=boundary> :caption<R<BOUNDARY_DESCRIPTION>>
 =end code
 
-Boundaries are placed between blocks, not within them, at the same
-structural level as the blocks they separate:
+=include file:./t/section-boundaries.podlite#boundary-is-not-reached-by-a-selector
+
+A boundary stands between the blocks it separates, at their structural
+level, whether or not another block contains them. For example:
 
 =begin code :allow<B>
 =head1 Chapter One
@@ -2314,12 +2992,257 @@ B<=boundary>
 Content of chapter two.
 =end code
 
+A C<=boundary> written between two C<=include> directives marks the
+transition between the included parts.
+
 Rendering is format-specific. Renderers may use page breaks
 (paginated output), thematic breaks (web), or separator lines (plain
 text), and may ignore the directive when boundaries are not supported.
-The C<:caption> attribute is descriptive metadata; renderers may
+The C<:caption> option is descriptive metadata; renderers may
 surface it as a header, navigation entry, or omit it.
 
+
+=head3 Test blocks
+
+=begin defn
+C<=test>
+
+A block stating a piece of source and one or more statements that must hold of
+what a parser makes of it.
+=end defn
+
+The statements are written with L<selectors|#Selectors>. A test contains one or
+more C<=assert> blocks. It may contain C<=fixture> blocks, each a document an
+assertion of it may be resolved against under the rule stated below. It may
+contain C<=resource> blocks if the subject of the test is the resolution of a
+path:
+
+=begin code :allow<B>
+  B<=begin test> :id<heading-carries-its-level>
+
+  B<=begin fixture>
+  =head2 Overview
+  B<=end fixture>
+
+  B<=for assert> :caption('a second-level heading is recognised as such')
+  head2
+
+  B<=end test>
+=end code
+
+=include file:./t/test-blocks.podlite#a-test-and-its-blocks-are-blocks
+
+A test containing no C<=assert> does not pass. An implementation that does not
+recognise a child of C<=test> reports the test as skipped rather than failed; one
+it recognises but cannot satisfy is a failure.
+
+If a test of this specification differs from the rule it checks, the rule governs.
+
+An ordinary paragraph may be written directly inside a C<=test>. It is not an
+assertion and does not cause the test to be reported as skipped.
+
+=include file:./t/test-blocks.podlite#ordinary-paragraph-in-a-test
+
+An ordinary paragraph directly inside a test included by this specification
+has the same status as a paragraph in its main text. Any rule it states
+applies to every document within the scope of that rule. If such a rule
+conflicts with a rule in the main text, the rule in the main text governs.
+
+=head4 The blocks a test contains
+
+=begin defn
+C<=fixture>
+
+A verbatim block whose body is a document in its own right, carried as Podlite
+source and read as a C<.podlite> file.
+=end defn
+
+=include file:./t/test-blocks.podlite#fixture-body-is-read-in-pod-mode
+
+The body of a C<=fixture> is not processed by the document that holds it:
+nothing in it is read as that document's markup and nothing in it is resolved.
+The body of a C<=fixture> is passed to the parser verbatim if an assertion is
+resolved against the fixture. Anything a test requires besides the body is
+declared as C<=resource> and is not written into the body.
+
+=include file:./t/test-blocks.podlite#fixture-body-is-not-markup-of-its-holder
+
+To test another mode from a fixture, the document is declared as a
+C<=resource> and brought in by C<=include>; its mode follows the extension of
+the resource name or a C<:mime-type> on the C<=include>.
+
+A test may contain more than one C<=fixture>.
+
+=include file:./t/test-blocks.podlite#fixture-is-read-until-the-next-fixture
+
+=begin defn
+C<=assert>
+
+A verbatim block carrying a L<selector|#Selectors> expression.
+=end defn
+
+An assertion holds according to whether it carries C<:absent>:
+
+=item Without C<:absent>, the assertion holds when the selector matches at least
+one block, and fails when it matches none.
+=item With C<:absent>, the assertion holds when the selector matches no block,
+and fails when it matches one or more.
+
+If a test contains several C<=assert> blocks, it passes when every assertion
+holds. Their order among themselves carries no meaning; position relative to a
+C<=fixture> decides which document an assertion takes.
+
+If the implementation recognises every child of the test and at least one
+assertion does not hold, the test fails.
+
+An assertion states that something is present somewhere in the document, not
+that it holds for every block. A statement of that kind is written with
+C<:absent> over the opposite condition. That every invoice carries the attribute
+C<:number> is stated by requiring that none lacks it:
+
+=begin code :allow<B>
+  =for assert B<:absent>
+  Invoice[ :!?number ]
+=end code
+
+=include file:./t/test-blocks.podlite#every-block-is-stated-with-absent
+
+=begin defn
+C<=resource>
+
+A verbatim block carrying content the test requires to be reachable by a path.
+=end defn
+
+Two properties are fixed of a declared resource:
+
+=item The name is reachable only while the body of a C<=fixture> of the same
+test is read. A reference in that body, or inside a resource reached from it,
+obtains only what the test declares.
+=item How the content is made reachable is not fixed here, and an implementation
+that cannot write to a filesystem is not excluded.
+
+=include file:./t/test-blocks.podlite#resource-of-a-test-is-its-own
+
+=include file:./t/test-blocks.podlite#same-named-resource-of-another-test
+
+=include file:./t/test-blocks.podlite#unused-resource-is-not-markup
+
+A resource is reached from the body of a fixture by the path it declares:
+
+=begin code :allow<B>
+  =begin test :id<include-reaches-resource>
+
+  B<=begin resource> :name<includes/guide.podlite>
+  =head1 Guide
+  B<=end resource>
+
+  =begin fixture
+  =include file:./includes/guide.podlite
+  =end fixture
+
+  =for assert
+  head1
+
+  =end test
+=end code
+
+A declared name is given relative to the body of the C<=fixture> an assertion is
+resolved against. A directive or markup code in that body resolves its relative
+paths against the file declaring it, and not the parent including document.
+
+=head4 Options
+
+C<:id> and C<:caption> are the L<standard options|#Standard configuration options>
+of those names. C<:id> names a test; C<:caption> records what a test, or a single
+assertion, is for.
+
+=begin code :allow<B>
+  =begin test B<:id<value-comma-stays>> B<:caption('a comma inside a value stays part of it')>
+
+  =begin fixture
+  =for para :one<a,b>
+  text
+  =end fixture
+
+  =for assert B<:caption('the value is one string')>
+  para[ :one<a,b> ]
+
+  =end test
+=end code
+
+=begin defn
+C<:name>
+
+The path under which the content of a C<=resource> is made reachable. Its form
+is the form of the reference that resolves it.
+=end defn
+
+=begin defn
+C<:absent>
+
+Written on an C<=assert>, gives the assertion its negative sense.
+=end defn
+
+=include file:./t/test-blocks.podlite#options-of-test-blocks-are-their-configuration
+
+=head4 The document an assertion is resolved against
+
+An assertion that names a source is resolved against that source. An assertion
+that names none is resolved against the document the implementation has made
+current.
+
+Which document that is follows three cases in order:
+
+=item a document supplied to the implementation from outside;
+=item if none is supplied, the body of the C<=fixture> nearest preceding the
+assertion;
+=item if neither is present, the document in which the test sits.
+
+=include file:./t/test-blocks.podlite#assertion-before-any-fixture-reads-the-holding-document
+
+A document is supplied only if the implementation is told to examine it,
+separately from being told where to find the tests.
+
+A failure against a C<=fixture> is about the implementation: the text is fixed
+and its reading is not. A failure against a supplied document is about the
+document.
+
+A C<=fixture> whose C<=include> fails to resolve remains a document for the
+assertions resolved against it. They are resolved against the document as read,
+and the failure of the C<=include> is reported separately.
+
+=include file:./t/test-blocks.podlite#fixture-with-an-unresolved-include-is-a-document
+
+A relative path in the source of an assertion is resolved against the file the
+test is written in, and not among the declared resources of the test.
+
+=include file:./t/test-blocks.podlite#assertion-source-resolves-against-the-test-file
+
+An assertion whose named source cannot be obtained does not hold, whether or not
+it carries C<:absent>.
+
+=head4 A document containing tests
+
+If the document an assertion is resolved against is the one containing the
+test, the C<=test> blocks of that document are part of it and a selector reaches
+them: an assertion written over every block of a document matches the tests
+written in it.
+
+=include file:./t/test-blocks.podlite#tests-are-blocks-of-their-document
+
+When an implementation is given a file from which to obtain tests, the C<=test>
+blocks of that file are obtained after its C<=include> directives are resolved.
+
+A C<=test> block obtained more than once, from different files given for a single
+execution of the tests, is run once, if each time it is obtained each of its
+assertions is resolved against a C<=fixture> or against a source it names. Blocks
+so obtained are one block if they originate from the same C<=test> block in the
+file in which it is written, under the same configuration in effect.
+Different configurations give distinct blocks, and the test is run under each.
+
+Walking a document does not run the tests found in it. An implementation
+resolves the assertions of the test it was given, and a C<=test> block met while
+walking is not a test to obtain.
 
 =head3 Inserting pictures
  
@@ -2327,58 +3250,75 @@ Podlite allows to include images using a C<=picture> block with an inline versio
 represented as C<P<alternative text|source of the image>>:
 
 =begin code :allow<B>
- B<=picture astronaut.png>
+ B<=for picture :src<astronaut.png>>
  =para In the vast expanse of the cosmos, an intrepid B<P<astronaut|astronaut.png>>
  floats weightlessly above the Earth.
 =end code
 
-The first non-blank line of content within the C<=picture> block specifies the
-source of the image, and the remaining content is treated as caption.
+The C<:src> option of the C<=picture> block specifies the source of the image as
+a single URI. The content of the block is treated as caption.
 
 This source can be either local or remote, and it can be
 specified using different schemas: C<https:> for remote images, C<file:> for
 local ones, or C<data:> for L<embedded images|#Data blocks> in the document.
-If no schema is provided, C<file:> is used as default.
+If no schema is provided, C<file:> is used as default. For example:
 
 =begin code :allow<B>
- =picture https://example.com/image.jpg
- =picture file:/local/image.png
- =picture /local/image.png
- =picture ../image.png
- =picture data:Logo
+ =for picture :src<https://example.com/image.jpg>
+ =for picture :src<file:/local/image.png>
+ =for picture :src</local/image.png>
+ =for picture :src<data:Logo>
 =end code
 
-Following the source line, it possible to include an image caption.
+In C<=picture> and C<P<>>, a relative C<file:> path resolves against the file
+in which the image reference is written, not the parent including document:
+
+=begin code :allow<B>
+ =for picture :src<../image.png>
+=end code
+
+In C<=picture>, content can be given together with C<:src>, and no line of the
+content supplies the source. In C<=data-table>, the C<:src> option and
+inline body content are mutually exclusive. Abbreviated blocks cannot specify
+configuration information, so an abbreviated C<=picture> block takes its source
+only from C<=set> or C<=config>. For example, a caption in the paragraph form:
 
 =begin code 
- =picture astronaut.png
+ =for picture :src<astronaut.png>
  In the vast expanse of the cosmos, an intrepid B<astronaut>
  floats weightlessly above the Earth.
 =end code
+
+=include file:./t/pictures.podlite#picture-content-is-caption
+
+=include file:./t/pictures.podlite#abbreviated-picture-source
 
 In the delimited form of C<=picture>, multiple text blocks can be included:
 
 =begin code 
- =begin picture
- astronaut.png
- 
+ =begin picture :src<astronaut.png>
  In the vast expanse of the cosmos, an intrepid B<astronaut>
  floats weightlessly above the Earth.
 
  This astronaut explores the vastness of space.
- 
  =end picture
 =end code
 
 All inline markup codes supported by L<ordinary paragraph blocks|#Ordinary paragraph blocks>
-can be used within picture captions.
+can be used within the caption.
 
-A caption can also be defined using the C<:caption> attribute:
+The C<:caption> option supplies the caption only if the block has no content
+other than blank lines. As on any block, the option assigns a title to the
+block, which a L<table of contents|#Table of contents> uses as the entry for the
+picture. For example, a caption defined by the C<:caption> option:
 
 =begin code :allow<B>
- =for picture B<:caption<diagram>>
- diag01.png
+ =for picture :src<diag01.png> B<:caption<diagram>>
 =end code
+
+=include file:./t/pictures.podlite#picture-caption-option-and-body
+
+=include file:./t/pictures.podlite#picture-block-and-its-caption
 
 
 =head3 Mathematical formulas
@@ -2407,6 +3347,8 @@ The formula caption can be defined using the C<:caption> attribute:
   =for formula B< :caption('Quadratic Formula') >
   x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 =end code
+
+=include file:./t/formulas.podlite#formula-block-and-its-caption
 
 
 =head3 Markdown support
@@ -2451,6 +3393,7 @@ content within Podlite documents. This is achieved using the C<=markdown> block.
 This block allows to seamlessly combine Podlite's structured blocks with
 the flexibility of Markdown.
 
+=include file:./t/podlite-blocks.podlite#markdown-quote-is-a-nested-block
 
 =head4 Fenced code block attributes
 
@@ -2459,7 +3402,9 @@ attributes following the language identifier. The language identifier on the
 opening fence line maps directly to the C<:lang> attribute of the native
 C<=code> block.
 
-=begin code :allow<B>
+=include file:./t/fenced-code-block-attributes.podlite#fence-language-becomes-lang
+
+=begin code :allow<B> :lang<markdown>
   B<```python>
   def hello():
       print("Hello")
@@ -2478,10 +3423,12 @@ This fenced code block is semantically equivalent to:
 Both backtick (C<```>) and tilde (C<~~~>) fence delimiters are supported.
 The two forms are semantically identical.
 
+=include file:./t/fenced-code-block-attributes.podlite#tilde-fence-is-a-fence
+
 Extended attributes may be specified after the language identifier using
 standard Podlite configuration syntax:
 
-=begin code :allow<B>
+=begin code :allow<B> :lang<markdown>
   B<```python :line-numbers :highlight<2,5-7> :caption<Example>>
   def fibonacci(n):
       if n <= 1:
@@ -2503,12 +3450,14 @@ This is equivalent to:
 
 All attributes defined for C<=code> blocks in this specification are available
 on fenced code blocks. The complete attribute syntax is described in the
-L<Block Configuration|#Block Configuration> section.
+L<block configuration table|#configuration_syntax>.
 
 Implementation of extended attributes beyond the language identifier is optional.
 Parsers not supporting extended attributes parse the language identifier and
 either ignore trailing content or emit a warning, continuing processing in
 accordance with the graceful degradation principle.
+
+=include file:./t/fenced-code-block-attributes.podlite#fence-language-survives-extended-attributes
 
 =begin table :caption('Fence to code block attribute equivalence')
 Markdown fence          Podlite equivalent
@@ -2570,6 +3519,11 @@ the delimiters I<can> be used, but they must be balanced. For example:
     C<  $foo<bar>   >
     C<< $foo<<bar>> >>
 
+A sequence of closing angles closes, nearest first, whatever is still open:
+a balanced sequence the same length as the delimiters, a nested markup code,
+or the markup code itself. The rule on sequences longer than the delimiters
+applies only to a sequence that closes nothing.
+
 If an unbalanced angle is needed, either use different delimiters:
 
 =begin code :allow<B>
@@ -2592,6 +3546,21 @@ required to issue a warning whenever a markup code is terminated by
 the end of an outer block rather than by its own delimiter (unless the
 user explicitly disables the warning).
 
+=include file:./t/markup-codes.podlite#unclosed-code-ends-with-its-block
+
+A nested markup code ends at its own matching delimiter. An unbalanced
+closing delimiter of the enclosing markup code inside it is part of its own
+contents. If the nested code has no matching delimiter before the end of the
+enclosing block, the angle brackets it leaves unbalanced are treated as part
+of the contents of the enclosing markup code, opening ones too. The nested
+code then ends at the end of the enclosing markup code. Podlite parsers are
+required to issue a warning in both cases.
+
+The markup codes C<Q<>> and C<Y<>> are reserved and are not written in
+documents. One that is written is read as a markup code, its contents are
+formatted normally, and it is rendered with its letter and delimiters around
+the contents; a warning is issued.
+
 
 =head3 Significance indicators
 
@@ -2606,7 +3575,7 @@ such content would be rendered in an underlined style.
 =item
 The C<I<>> markup code specifies that the contained text is
 B<important>; that it is of I<major significance>. Such content would
-typically be rendered in italics or in C< <em>...</em> > tags
+typically be rendered in italics or in C< <em>...</em> > tags.
 
 =item
 The C<B<>> markup code specifies that the contained text is the
@@ -2815,7 +3784,7 @@ verbatim, which often eliminates the need for the C<V<>> as well:
 =end code
 
 The C<Z<>> markup code is the inline equivalent of a
-L<C<=comment> block|#Comments>.
+L<C<=comment> block|#Podlite comments>.
 
 
 =head3 Content masking
@@ -2824,6 +3793,8 @@ The C<G<>> markup code marks an inline text fragment, and the
 C<:masked> attribute marks an entire block, as guarded. The original
 content is preserved in the document model; only the rendered output is
 concealed.
+
+=include file:./t/data-blocks.podlite#masked-data-keeps-its-content
 
 The mechanism provides presentation-layer concealment for sensitive
 content (API tokens, credentials, personally identifiable information,
@@ -2842,8 +3813,8 @@ output.
 
 Two render modes are defined:
 
-=item Production mode (default): guarded content is concealed
-=item Draft mode: guarded content is rendered visibly for editing and review
+=item production mode (default): guarded content is concealed;
+=item draft mode: guarded content is rendered visibly for editing and review.
 
 Selection between modes is implementation-defined (renderer-controlled
 through command-line, environment, or interactive interface).
@@ -2882,15 +3853,15 @@ and cross-references (both internal and external).
 
 A link specification consists of a I<scheme specifier> terminated by a
 colon, followed by an I<external address> (in the scheme's preferred
-syntax), followed by an I<internal address> (again, in the scheme's syntax).
-All three components are optional, though at least one must be present in
-any link specification.
+syntax), followed by an I<internal address>. All three components are
+optional, though at least one must be present in any link specification.
 
-Usually, in schemes where an internal address makes sense, it will be
-separated from the preceding external address by a C<#>, unless the
-particular addressing scheme requires some other syntax. When new
-addressing schemes are created specifically for Podlite, it is strongly
-recommended that C<#> be used to mark the start of internal addresses.
+When new addressing schemes are created specifically for Podlite, it is
+strongly recommended that C<#> be used to mark the start of internal
+addresses.
+
+The rules for the internal address and the outcomes of reading it are stated
+in L<#Internal addresses>.
 
 Standard schemes include:
 
@@ -2905,7 +3876,8 @@ A standard web URL. For example:
 =end code
 
 If the link does not start with C<//> it is treated as being relative to
-the location of the current document:
+the location of the document in which it is written, not the parent
+including document:
 
 =begin code :allow<B>
   See also: L<B<http:tutorial/faq.html>> and
@@ -2924,8 +3896,8 @@ A filename on the local system. For example:
   L<B<file:/usr/local/lib/.configrc>> or L<B<file:~/.configrc>>).
 =end code
 
-Filenames that don't begin with a C</> or a C<~> are relative
-to the current document's location:
+Filenames that don't begin with a C</> or a C<~> are relative to the location
+of the file in which the link is written, not the parent including document:
 
 =begin code :allow<B>
     Then, edit the local config file (that is, either
@@ -2988,6 +3960,11 @@ corresponds to a specific part of the document set. An example would be:
     
     ...
 =end code
+
+Only a C<=TITLE> or C<=NAME> block written in the document itself, at any
+depth, names it; one brought in by C<=include> does not. A name that two
+documents carry does not resolve, and the error of resolution names the
+documents.
 
 When Podlite processes a link, it can automatically use the document's title
 from the C<=TITLE> or C<=NAME> blocks as the display text for the hyperlink if no
@@ -3076,7 +4053,7 @@ The scheme name may also be omitted in that case:
 Podlite includes the possibility of assigning a unique identifier to a block.
 These identifiers can be explicitly assigned to any blocks using 
 the C<:id> attribute. Later, these identifiers are utilized for addressing blocks
-and creating links.
+and creating links. An identifier that occurs twice in a document is an error.
 
 =begin code :allow<B>
   =for head1 :id<intro>
@@ -3090,6 +4067,8 @@ and creating links.
 In this example, the link reference to the header block identified by "intro"
 rather than the name "Introduction" and to the paragrapth block with identifier "id1".
 
+=include file:./t/selectors.podlite#address-names-a-block-by-id
+
 Normally a link is presented as some rendered version of the link
 specification itself. However, you can specify an alternate
 presentation by prefixing the link with the desired text and a
@@ -3102,7 +4081,7 @@ For example:
   You could also write the code
   L<B<in Latin |> doc:Lingua::Romana::Perligata>
 
-  His L<B<lexiphanic|>defn:lexiphania>> tendencies were, alas, incurable.
+  His L<B<lexiphanic|>defn:lexiphania> tendencies were, alas, incurable.
 =end code
 
 
@@ -3358,6 +4337,10 @@ the entries with semicolons:
   associated string key.
 =end code
 
+Both notations describe one structure: a list of entries, each of which is a
+list of levels. The order of entries and the order of levels are significant.
+Whitespace adjacent to either separator is not part of a value.
+
 The indexed text can be empty, creating a "zero-width" index entry:
 
 =begin code :allow<B>
@@ -3457,18 +4440,56 @@ The general syntax for configuration directives is:
 
 A C<=config> is a directive, not a block. Hence,
 there is no paragraph or delimited form of the C<=config> directive.
-Each C<=config> specification is lexically scoped to the surrounding
-block or file in which it is specified.
 
-Note that, if a particular block later explicitly specifies a
-configuration option with the same key, that option overrides the
-pre-configured option. For example, given the code blocks configurations in the
-previous example, to specify another language for code block:
+A C<=config boundary> does not affect a C<=boundary>: its optional
+C<:caption> is placed on the directive itself.
+
+Each C<=config> specification is lexically scoped to the surrounding
+block or file in which it is specified. It applies to the blocks of its type
+that follow it within that scope, including blocks placed there by
+C<=include>.
+
+=include file:./t/block-pre-configuration.podlite#included-config-does-not-leak
+
+=include file:./t/block-pre-configuration.podlite#config-before-include-only
+
+A block placed by C<=include> is read with the configuration at the
+directive, including C<:allow> and the preconfiguration of markup codes.
+
+An option takes its value from the first of these that sets it: an option
+written on the block, a C<=set> assignment, a C<=config> setting, the default
+of the option.
+
+Among settings of one kind, the one nearest to the block takes precedence.
+A C<=config> in the block's file takes precedence over one in an including
+file, and a nearer including file over a more distant one. The value taken
+replaces any other for that option as a whole.
+
+=include file:./t/block-pre-configuration.podlite#nearest-config-takes-precedence
+
+For example, a code block can override a preconfigured language:
 
 =begin code
   =for code :lang<javascript>
   print(JSON.stringify([1,2]]));
 =end code
+
+=include file:./t/block-pre-configuration.podlite#config-reaches-included-blocks
+
+=include file:./t/block-pre-configuration.podlite#block-set-config-precedence
+
+=include file:./t/block-pre-configuration.podlite#written-attribute-outranks-set-across-include
+
+=include file:./t/block-pre-configuration.podlite#set-outranks-config-of-included-file
+
+=include file:./t/block-pre-configuration.podlite#config-reaches-markdown
+
+=include file:./t/block-pre-configuration.podlite#included-config-outranks-including-config
+
+=include file:./t/block-pre-configuration.podlite#nearer-including-config-outranks-farther
+
+=include file:./t/block-pre-configuration.podlite#config-replaces-list-value
+
 
 
 =head3 Pre-configuring markup codes
@@ -3500,6 +4521,8 @@ block; unlike C<=config>, it targets a single block instance rather
 than all blocks of a type. Attribute values may include multiline
 content with inline markup codes.
 
+=include file:./t/block-attribute-assignment-with-set.podlite#carried-set-stays-in-its-block
+
 The directive has two syntax variants. Configuration syntax uses
 standard delimited attribute values, for example:
 
@@ -3512,8 +4535,7 @@ B<=set> :lang<en> :numbered
 =end table
 =end code
 
-Alias syntax permits multiline values with inline markup codes, for
-example:
+Alias syntax permits multiline values, for example:
 
 =begin code :allow<B>
 B<=set> :caption Selected B<chemical> elements with their
@@ -3549,14 +4571,19 @@ B<=   >          with detailed analysis
 
 The table receives all three attributes (C<:id>, C<:folded>, C<:caption>).
 
-C<=set> assignments override C<=config> defaults but yield to explicit
-attributes on the block declaration. When multiple C<=set> directives
-assign the same attribute key, the last assignment wins, regardless
-of syntax variant.
+=include file:./t/block-attribute-assignment-with-set.podlite#set-variants-mix-across-continuation-lines
+
+When multiple C<=set> directives assign the same attribute key, the last
+assignment wins, regardless of syntax variant.
+
+=include file:./t/block-attribute-assignment-with-set.podlite#last-set-wins-across-variants
+
+=include file:./t/block-attribute-assignment-with-set.podlite#later-set-outranks-carried-set
 
 Directives (C<=set>, C<=config>, C<=alias>, C<=include>, C<=boundary>)
 and C<=comment> blocks are transparent to C<=set> targeting and do not
-consume the assignment. For example:
+consume the assignment, except an C<=include> directive that fails to
+resolve. For example:
 
 =begin code :allow<B>
 B<=set> :caption Renewable energy sources
@@ -3574,9 +4601,33 @@ Wind        turbine
 The C<=table> block receives the C<:caption> attribute despite the
 intervening directives and C<=comment>.
 
+=include file:./t/block-attribute-assignment-with-set.podlite#directives-and-comments-are-transparent-to-set
+
+=include file:./t/block-attribute-assignment-with-set.podlite#boundary-is-transparent-to-set
+
 For C<=include>, attributes apply to the first block of the resolved
-included content. C<=set> directives inside an included file are
-lexically scoped to that file and do not leak to the parent file.
+included content, under the same rules of transparency. If there is no such
+block, they pass on to the next block after the C<=include> directive.
+
+=include file:./t/block-attribute-assignment-with-set.podlite#set-reaches-first-included-block
+
+=include file:./t/block-attribute-assignment-with-set.podlite#empty-selection-passes-set-on
+
+=include file:./t/block-attribute-assignment-with-set.podlite#comments-only-file-passes-set-on
+
+If the C<=include> directive fails to resolve, for any reason, the attributes are not applied.
+Their non-application is reported with that failure, instead of a warning that
+the C<=set> directive has no target.
+
+=include file:./t/block-attribute-assignment-with-set.podlite#unresolved-include-takes-the-set
+
+C<=set> directives inside an included file are lexically scoped to that file
+and do not leak to the parent file. On the first included block, assignments
+from that file override those accumulated before C<=include> for the same key.
+
+=include file:./t/block-attribute-assignment-with-set.podlite#included-set-outranks-including-set
+
+=include file:./t/block-attribute-assignment-with-set.podlite#included-set-does-not-leak
 
 If no block follows before the end of the containing block or file,
 parsers issue a warning that the C<=set> directive has no target.
@@ -3593,7 +4644,10 @@ L<C<A<> markup code>|#Alias placements>.
 Note that C<=alias> is a fundamental Podlite directive, like C<=begin> or
 C<=for>; there are no equivalent paragraph or delimited forms.
 
-Macro aliases are lexically scoped to the surrounding Podlite block.
+=include file:./t/aliases.podlite#alias-is-a-directive
+
+Macro aliases are lexically scoped to the surrounding Podlite block or file,
+including blocks placed there by C<=include>.
 
 The simplest form of alias takes two arguments. The first is an
 identifier (which is usually specified in uppercase, though this is
@@ -3671,6 +4725,8 @@ For example:
     B<=end nested>
 =end code
 
+=include file:./t/notification-blocks.podlite#notice-names-the-type
+
 Below is a table outlining the different types of notification blocks
 along with a brief description of each type.
 
@@ -3694,16 +4750,6 @@ along with a brief description of each type.
 
 =end table
 
-=begin comment
-TODO:
-custom (e.g. `faq`, etc.)???       Allows for specifying the specific context or content.
-
-    =begin nested :caption("Foldable FAQ: Question 1") :notice<faq> :folded
-    This is how you make content foldable for a cleaner look.
-    =end nested
-
-=end comment
-
 By default, the title of the notification block is its type identifier in title case.
 The title of the block and visibility of the information can be customized
 using the C<:caption> and C<:folded> options.
@@ -3721,6 +4767,8 @@ Title-only callouts can be created by omitting the body.
   =for nested :notice<important> :folded :caption("Title-only callout")
 =end code
 
+=include file:./t/notification-blocks.podlite#title-only-notice
+
 Notification blocks are displayed with distinctive colors and 
 icons that indicate the significance of the content.
 
@@ -3732,12 +4780,12 @@ icons that indicate the significance of the content.
     Directive           Specifies
     _________           ____________________________________________________
     C<=begin>           Start of an explicitly terminated block
-    C<=config>          Lexical modifications to a block or markup code
+    C<=config>          Pre-configuration of following blocks of a type, or of a markup code
     C<=set>             Attribute assignment to the next block
     C<=end>             Explicit termination of a C<=begin> block
     C<=for>             Start of an implicitly (blank-line) terminated block
     C<=alias>           Define a Podlite macro
-    C<=include>         Include content from other sources
+    C<=include>         Include blocks from other sources
     C<=boundary>        Marker for a structural section boundary
 
 =end table
@@ -3762,12 +4810,16 @@ icons that indicate the significance of the content.
     C<=table>           Simple rectangular table
     C<=row>             Row in advanced table format
     C<=cell>            Cell within a C<=row> block
-    C<=data>            Data section
+    C<=data>            Embedded data
     C<=data-table>      Tabular rendering of CSV or TSV data
     C<=toc>             Autogenerated table of contents
     C<=picture>         Insert pictures
     C<=formula>         Mathematical formulas
     C<=markdown>        Markdown support
+    C<=test>            Statements required to hold of a piece of source
+    C<=fixture>         Source supplied to a test
+    C<=assert>          Condition a test requires of a document
+    C<=resource>        Content a test requires to be reachable by a path
     C<=>R<RESERVED>     Semantic blocks (C<=SYNOPSIS>, C<=BUGS>, etc.)
     C<=>R<Typename>     User-defined block
 
@@ -3791,7 +4843,7 @@ icons that indicate the significance of the content.
     C<J<...>>             Subscript
     C<K<...>>             Keyboard input (typically rendered fixed-width)
     C<L<...|...>>         Link (C<L<R<display text>|R<destination URI>>>)
-    C<M<...:...>>         Module-defined code (C<M<R<scheme>:R<contents>>>)
+    C<M<...|...>>         Module-defined code (C<M<R<content text>|R<module name>>>)
     C<N<...>>             Note (not rendered inline)
     C<O<...>>             Strikethrough
     C<P<...>>             Inline eqivalent for C<=picture> block
@@ -3809,6 +4861,9 @@ icons that indicate the significance of the content.
 =end table
 
 =end SUMMARY
+
+=for toc :caption('Tests')
+test
 
 =LICENSE Artistic license 2.0
 

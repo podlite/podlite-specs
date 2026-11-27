@@ -1,0 +1,15 @@
+=begin test :id<input-and-output-blocks> :caption('=input and =output are blocks of their own names')
+=begin fixture
+=begin input
+ls -l
+=end input
+
+=begin output
+total 0
+=end output
+=end fixture
+=for assert :caption('the input block is recognized')
+input
+=for assert :caption('the output block is recognized')
+output
+=end test

@@ -37,3 +37,20 @@ This repository hosts the specification only. Parsers, renderers,
 and tooling live in separate repositories under the [podlite
 organization](https://github.com/podlite). Implementations have
 their own contribution conventions.
+
+## Publishing the specification
+
+An ordinary paragraph directly inside a test included by the specification is
+part of the specification text. Any page that publishes the
+specification shows these paragraphs with the same access as the main
+text:
+
+- the test is reachable from the rule it follows;
+- one keyboard action opens a collapsed test;
+- the test has a direct link;
+- the text is readable without JavaScript;
+- page search finds it;
+- it is printed.
+
+A published version is accepted only after these points are checked on
+the page.

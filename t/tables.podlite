@@ -1,0 +1,52 @@
+=begin test :id<block-in-a-row-is-wrapped-in-a-cell> :caption('a block other than a cell inside a row is wrapped in a cell')
+=begin resource :name<table.podlite>
+=begin table
+=begin row
+=head2 Heading
+=end row
+=end table
+=end resource
+=begin fixture
+=include file:./table.podlite | cell
+=end fixture
+=for assert :caption('a cell is selected although none is written')
+cell
+=for assert :caption('the block written in the row comes with the cell')
+head2
+=end test
+
+=begin test :id<header-and-spanning-are-kept> :caption('a header row and a cell spanning attribute are kept in the document tree')
+=begin fixture
+=begin table
+=begin row :header
+=for cell :colspan(2)
+Title
+=end row
+=end table
+=end fixture
+=for assert :caption('the row keeps :header')
+row[ :header ]
+=for assert :caption('the cell keeps its spanning value')
+cell[ :colspan(2) ]
+=end test
+
+=begin test :id<simple-table-keeps-its-caption> :caption('a simple table keeps the caption written on it')
+=begin fixture
+=begin table :caption<Grid>
+A  B
+=end table
+=end fixture
+=for assert :caption('the caption is read')
+table[ :caption<Grid> ]
+=end test
+
+=begin test :id<mixed-separators-keep-the-table> :caption('a table mixing separator types across lines is not rejected')
+=begin fixture
+=begin table :id<mix>
+A | B
+C  D
+=end table
+=end fixture
+=for assert :caption('the table is read')
+table[ :id<mix> ]
+=end test

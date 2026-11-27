@@ -1,0 +1,32 @@
+=begin test :id<semantic-block-by-name> :caption('a semantic block is a block of its uppercase name, in either form')
+=begin fixture
+=AUTHOR Jane Doe
+
+=begin DESCRIPTION
+What the module does.
+=end DESCRIPTION
+=end fixture
+=for assert :caption('the abbreviated semantic block is recognized')
+AUTHOR
+=for assert :caption('the delimited semantic block is recognized')
+DESCRIPTION
+=end test
+
+=begin test :id<plural-semantic-block-holds-paragraphs-and-code> :caption('the contents of a plural semantic block are paragraph and code blocks')
+=begin resource :name<authors.podlite>
+=begin AUTHORS
+Plain
+
+    sample
+=end AUTHORS
+=end resource
+=begin fixture
+=include file:./authors.podlite | AUTHOR, AUTHORS
+=end fixture
+=for assert :caption('the block is read under the singular or the plural name')
+AUTHOR, AUTHORS
+=for assert :caption('its text is a paragraph')
+para
+=for assert :caption('its indented text is code')
+code
+=end test

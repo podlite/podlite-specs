@@ -1,0 +1,26 @@
+=begin test :id<nested-takes-a-level> :caption('the value of :nested is read as a level or as false; only the value is checked')
+=begin fixture
+=begin para :nested(3)
+text
+=end para
+=end fixture
+=for assert :caption('the attribute has the value 3')
+para[ :nested(3) ]
+
+=begin fixture
+=begin code :!nested
+text
+=end code
+=end fixture
+=for assert :caption('the negated form gives the value false')
+code[ :!nested ]
+=end test
+
+=begin test :id<zero-and-false-values-are-kept> :caption('a zero value of :nested and :folded, and :!checked on any block, are kept')
+=begin fixture
+=for code :nested(0) :!checked :folded(0)
+x
+=end fixture
+=for assert :caption('the values are read as written')
+code[ :nested(0) :!checked :folded(0) ]
+=end test

@@ -1,0 +1,8 @@
+=begin test :id<formula-block-and-its-caption> :caption('=formula is a block, and :caption on it is an option of the block')
+=begin fixture
+=for formula :caption('Quadratic Formula')
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+=end fixture
+=for assert :caption('the formula block carries its caption')
+formula[ :caption('Quadratic Formula') ]
+=end test

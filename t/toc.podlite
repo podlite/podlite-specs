@@ -1,0 +1,10 @@
+=begin test :id<toc-keeps-caption-and-folded-levels> :caption('a =toc block keeps its :caption and :folded-levels')
+=begin fixture
+=for toc :caption<Contents> :folded-levels(2,3)
+head1, head2
+=end fixture
+=for assert :caption('the caption and level 2 are read')
+toc[ :caption<Contents> :folded-levels(in 2) ]
+=for assert :caption('level 3 is read')
+toc[ :folded-levels(in 3) ]
+=end test

@@ -1,0 +1,19 @@
+=begin test :id<notice-names-the-type> :caption('the :notice attribute of a =nested block carries the notification type')
+=begin fixture
+=begin nested :notice<tip>
+Text.
+=end nested
+=end fixture
+=for assert :caption('the block written with :notice is selected by its notification type')
+nested[ :notice<tip> ]
+=end test
+
+=begin test :id<title-only-notice> :caption('a notice without a body is a notification block')
+=begin fixture
+=for nested :notice<important> :folded :caption<Stop>
+=end fixture
+=for assert :caption('the block is read')
+nested
+=for assert :caption('it keeps its options')
+nested[ :notice<important> :folded :caption<Stop> ]
+=end test

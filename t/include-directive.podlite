@@ -1,0 +1,128 @@
+=begin test :id<include-directive-is-not-a-block> :caption('the =include directive is not a block, and no selector reaches it')
+=begin resource :name<part.podlite>
+=for para :v<included>
+Included.
+=end resource
+=begin fixture
+=include file:./part.podlite :mime-type('text/podlite')
+
+=for para :v<own>
+Own.
+=end fixture
+=for assert :caption('the block the include resolves to is reached')
+para[ :v<included> ]
+=for assert :absent :caption('the directive is not reached by its name when it resolves to blocks')
+include
+=for assert :caption('the universal pattern reaches the included block')
+*[ :v<included> ]
+=for assert :absent :caption('the universal pattern does not reach the directive, which alone carries :mime-type')
+*[ :?mime-type ]
+
+=begin fixture
+=include file:./part.podlite | head1
+
+=for para :v<own>
+Own.
+=end fixture
+=for assert :caption('the block after an include that resolves to no block is reached')
+para[ :v<own> ]
+=for assert :absent :caption('the directive is not reached when it resolves to no block')
+include
+
+=begin fixture
+=include file:./missing.podlite
+
+=head2 After
+=end fixture
+=for assert :caption('the block after an include that fails to resolve is reached')
+head2
+=for assert :absent :caption('the directive is not reached when it fails to resolve')
+include
+=end test
+
+=begin test :id<included-test-is-a-block-of-the-document> :caption('a test brought by an include is a block of the document')
+=begin resource :name<cases.podlite>
+=begin test :id<inner>
+=for assert
+para
+=end test
+=end resource
+=begin fixture
+=include file:./cases.podlite
+=end fixture
+=for assert :caption('the included test is reached by a selector')
+test[ :id<inner> ]
+=end test
+
+=begin test :id<wildcard-source> :caption('a wildcard source reads every matching file')
+=begin resource :name<includes/a.md>
+# A
+=end resource
+=begin resource :name<includes/b.md>
+## B
+=end resource
+=begin fixture
+=include file:./includes/*.md
+=end fixture
+=for assert :caption('the heading of the first file is brought in')
+head1
+=for assert :caption('the heading of the second file is brought in')
+head2
+=end test
+
+=begin test :id<includes-of-the-same-document-select-from-one-state> :caption('includes of the same document select from one state of it: its includes of other sources resolved, its own left as written')
+An C<=include> with no source does not select a copy that another such
+C<=include> has placed.
+
+=begin resource :name<meta.podlite>
+=for VERSION :m<1>
+2.0.0
+=end resource
+=begin fixture
+=set :a<1>
+=include VERSION
+
+=set :b<1>
+=include VERSION
+
+=VERSION 1.0.0
+=end fixture
+=for assert :caption('the first include brings a copy, which receives the assignment before it')
+VERSION[ :a<1> ]
+=for assert :caption('the second include brings a copy of its own')
+VERSION[ :b<1> ]
+=for assert :absent :caption('the second include does not bring the copy the first one placed')
+VERSION[ :a<1> :b<1> ]
+
+=begin fixture
+=set :c<1>
+=include VERSION[ :m<1> ]
+
+=VERSION 1.0.0
+
+=include file:./meta.podlite
+=end fixture
+=for assert :caption('a block brought from another source is seen, wherever that include is written')
+VERSION[ :m<1> :c<1> ]
+=for assert :absent :caption('the assignment does not pass on to the written block, since the include brought one')
+VERSION[ :c<1> :!?m ]
+=end test
+
+=begin test :id<self-include-brings-no-blocks> :caption('an include with no source that would bring a block it stands inside brings no blocks')
+=begin fixture
+=begin nested
+=set :picked
+=include nested, head2
+
+=para After
+=end nested
+
+=head2 Outside
+=end fixture
+=for assert :caption('the block after the include is read and does not receive the assignment')
+para[ :!?picked ]
+=for assert :caption('the heading the selector also matches is read and does not receive it')
+head2[ :!?picked ]
+=for assert :absent :caption('the include brings no block, not even the one outside it')
+*[ :picked ]
+=end test

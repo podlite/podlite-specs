@@ -1,0 +1,121 @@
+=begin test :id<indented-directive-sets-the-virtual-margin> :caption('an indented directive sets the first column of its block')
+=begin fixture
+=begin pod
+    =begin nested :v<1>
+    Text at the column of the directive.
+    =end nested
+=end pod
+=end fixture
+=for assert :caption('the indented directive is recognised')
+nested[ :v<1> ]
+=for assert :caption('its text is a paragraph')
+para
+=for assert :absent :caption('text at the virtual margin is not indented and forms no code block')
+code
+
+=begin fixture
+=begin pod
+    =begin nested :v<2>
+        Text indented past the column of the directive.
+    =end nested
+=end pod
+=end fixture
+=for assert :caption('text indented past the virtual margin is a code block')
+code
+=end test
+
+=begin test :id<margin-ends-with-its-block> :caption('the virtual margin of a block ends with it, and the margin of the enclosing block applies again')
+=begin fixture
+=begin pod
+    =head2 Shifted heading
+
+    Text indented to the column of the heading.
+=end pod
+=end fixture
+=for assert :caption('the heading has ended, so the indented text is a code block')
+code
+
+=begin fixture
+=begin pod
+    =head2 Shifted heading
+
+Text at the margin of the enclosing block.
+=end pod
+=end fixture
+=for assert :caption('text at the margin of the enclosing block is a paragraph')
+para
+=for assert :absent :caption('and no code block arises')
+code
+=end test
+
+=begin test :id<line-left-of-the-margin-stays-in-the-block> :caption('a line left of the virtual margin stays in its block and is read as if at the margin')
+=begin fixture
+=begin pod
+    =begin nested
+    =config para :v<1>
+    Text at the margin of the nested block,
+  continued two columns to the left of it.
+    =end nested
+=end pod
+=end fixture
+=for assert :caption('the paragraph stays in the nested block and gets its configuration')
+para[ :v<1> ]
+=for assert :absent :caption('no paragraph arises outside the nested block')
+para[ :!?v ]
+=for assert :absent :caption('the line left of the margin does not start a code block')
+code
+
+=begin fixture
+=begin pod
+    =begin nested
+    =config para :v<1>
+  Text that starts two columns to the left of the margin.
+    =end nested
+=end pod
+=end fixture
+=for assert :caption('a first line left of the margin is a paragraph of the nested block')
+para[ :v<1> ]
+=for assert :absent :caption('no paragraph arises outside the nested block')
+para[ :!?v ]
+=for assert :absent :caption('and no code block arises')
+code
+=end test
+
+=begin test :id<identifier-takes-unicode-and-inner-signs> :caption('a block name may hold Unicode letters, an underscore, and an apostrophe or hyphen followed by a letter')
+=begin fixture
+=for Éтап_2 :id<unicode>
+Text
+
+=for Part-Deux :id<hyphen>
+Text
+
+=for Part'Deux :id<apostrophe>
+Text
+=end fixture
+=for assert :caption('Unicode letters, an underscore and a digit')
+Éтап_2[ :id<unicode> ]
+=for assert :caption('a hyphen followed by a letter')
+Part-Deux[ :id<hyphen> ]
+=for assert :caption('an apostrophe followed by a letter')
+Part'Deux[ :id<apostrophe> ]
+=end test
+
+=begin test :id<directive-starts-its-line> :caption('a = that is not the first non-whitespace character of its line does not start a directive')
+=begin fixture
+prefix =head2 Wrong
+=end fixture
+=for assert :caption('the line is a paragraph')
+para
+=for assert :absent :caption('no heading is read')
+head2
+=end test
+
+=begin test :id<tab-aligns-to-a-tabstop> :caption('with $?TABSTOP not set, a leading tab aligns to the next multiple of 8')
+=begin fixture
+        =begin nested
+	 x
+        =end nested
+=end fixture
+=for assert :caption('the line lies one column right of the margin and is code')
+code
+=end test

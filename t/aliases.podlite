@@ -1,0 +1,10 @@
+=begin test :id<alias-is-a-directive> :caption('the paragraph after an alias declaration is read, and an alias block is not selected by name')
+=begin fixture
+=alias K replacement
+=para A<K>
+=end fixture
+=for assert :caption('the paragraph is read')
+para
+=for assert :absent :caption('the declaration is not a block')
+alias
+=end test
